@@ -126,3 +126,35 @@ if has("autocmd")
     \ endif
   augroup END
 endif
+
+"================
+" NeoBundle
+"================
+set nocompatible
+filetype off
+
+if has('vim_starting')
+  set runtimepath+=~/.vim/bundle/neobundle.vim
+endif
+
+" Initialize
+call neobundle#begin(expand('~/.vim/bundle/'))
+
+" NoeBundle で NeoBundleを管理
+NeoBundleFetch 'Shougo/neobundle.vim'
+
+" originalrepos on github
+NeoBundle 'Shougo/neobundle.vim'        " <-もしかしたら不要
+NeoBundle 'Lokaltog/powerline', { 'rtp' : 'powerline/bindings/vim'}
+NeoBundle 'cocopon/iceberg.vim'
+
+call neobundle#end()
+
+filetype plugin indent on     " required!
+
+" 起動時にインストールチェック
+NeoBundleCheck
+set laststatus=2
+set t_Co=254
+
+colorscheme iceberg

@@ -1,0 +1,6 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =4
+let g:netrw_dirhist_1='/home/edge2992/.zprezto'
+let g:netrw_dirhist_2='/home/edge2992/dotfiles/tmux-powerline'
+let g:netrw_dirhist_3='/home/edge2992/.tmux'
+let g:netrw_dirhist_4='/home/edge2992/.vim'
