@@ -146,6 +146,8 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 " originalrepos on github
 NeoBundle 'Shougo/neobundle.vim'        " <-もしかしたら不要
 NeoBundle 'Lokaltog/powerline', { 'rtp' : 'powerline/bindings/vim'}
+NeoBundle 'davidhalter/jedi-vim'    " pyhonの補完をするプラグイン
+NeoBundle 'ervandew/supertab'       "tabによる補完を有効にするプラグイン
 NeoBundle 'cocopon/iceberg.vim'
 
 call neobundle#end()
@@ -158,3 +160,11 @@ set laststatus=2
 set t_Co=254
 
 colorscheme iceberg
+
+"supertab用の設定　補完が逆順になるので正順にする
+let g:SuperTabContextDefaultCompletionType = "context"
+let g:SuperTabDefaultCompletionType = "<c-n>"
+
+" clipboardの共有
+set clipboard=unnamedplus
+
