@@ -147,8 +147,9 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 NeoBundle 'Shougo/neobundle.vim'        " <-もしかしたら不要
 NeoBundle 'Lokaltog/powerline', { 'rtp' : 'powerline/bindings/vim'}
 NeoBundle 'davidhalter/jedi-vim'    " pyhonの補完をするプラグイン
-NeoBundle 'ervandew/supertab'       "tabによる補完を有効にするプラグイン
+NeoBundle 'ervandew/supertab'       " tabによる補完を有効にするプラグイン
 NeoBundle 'cocopon/iceberg.vim'
+NeoBundle 'tpope/vim-fugitive'      " Git連携
 
 call neobundle#end()
 
