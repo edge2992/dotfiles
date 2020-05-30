@@ -150,6 +150,8 @@ NeoBundle 'davidhalter/jedi-vim'    " pyhonの補完をするプラグイン
 NeoBundle 'ervandew/supertab'       " tabによる補完を有効にするプラグイン
 NeoBundle 'cocopon/iceberg.vim'
 NeoBundle 'tpope/vim-fugitive'      " Git連携
+NeoBundle 'tpope/vim-commentary'    " コメントアウト
+NeoBundle 'tpope/vim-endwise'       " def end if endなどの補完
 
 call neobundle#end()
 
@@ -169,3 +171,5 @@ let g:SuperTabDefaultCompletionType = "<c-n>"
 " clipboardの共有
 set clipboard=unnamedplus
 
+" filetypeによって設定を変える
+filetype plugin indent on
