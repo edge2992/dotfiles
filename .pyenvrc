@@ -1,0 +1,9 @@
+
+# pyenv の設定
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+
+# pyenvの実行
+eval "$(pyenv init -)"
+
+# export PATH="/usr/bin:$PYENV_ROOT/versions/miniconda3-latest/bin:$PATH"
