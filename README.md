@@ -1,0 +1,5 @@
+# パソコンのセットアップ
+tmuxをインストール
+neobundle
+zsh
+
