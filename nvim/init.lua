@@ -1,3 +1,4 @@
+-- ref: https://github.com/craftzdog/dotfiles-public
 require('base')
 require('highlights')
 require('maps')

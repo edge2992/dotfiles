@@ -1,4 +1,5 @@
 #!/bin/bash -eu
+# ref: https://github.com/vwrs/dotfiles/blob/master/bootstrap
 
 ROOT_HOME=/var/root
 DOT_HOME=~/dotfiles
