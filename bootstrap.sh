@@ -97,20 +97,11 @@ symlink_files() {
     # ignore list
     [[ $f = "README.md" ]] && continue
     [[ $f = "bootstrap.sh" ]] && continue
+    [[ $f = "bin" ]] && continue
     if [ $f = "nvim" ]; then
       ln -snfv $DOT_HOME/$f $CONFIG_HOME
-    elif [ $f = "tmux.conf" ]; then
-      ln -snfv $DOT_HOME/$f $1/.$f
-    elif [ $f = "zshrc" ]; then
-      ln -snfv $DOT_HOME/$f $1/.$f
-    elif [ $f = "zshenv" ]; then
-      ln -snfv $DOT_HOME/$f $1/.$f
-    elif [ $f = "zsh.d" ]; then
-      ln -snfv $DOT_HOME/$f $1/.$f
-    elif [ $f = "p10k.zsh" ]; then
-      ln -snfv $DOT_HOME/$f $1/.$f
     else
-      echo "${YELLOW}[future works] ${f} aren't symlinked yet.$NORMAL"
+      ln -snfv $DOT_HOME/$f $1/.$f
     fi
   done
 }
