@@ -70,6 +70,26 @@ nerd_fonts() {
 
 download() {
   cd $HOME
+
+  # dotfiles
+  if [ ! -d $DOT_HOME ]; then
+    echo "Downloading dotfiles..."
+    if has "git"; then
+      git clone --recursive $REMOTE_URL $DOT_HOME
+    else
+      echo "${RED}Please install git.$NORMAL"
+      exit 1
+    fi
+    if [ $? = 0 ]; then
+      echo "${GREEN}Successfully downloaded dotfiles. ✔︎ $NORMAL"
+    else
+      echo "${RED}An unexpected error occurred when trying to install git.$NORMAL"
+      exit 1
+    fi
+  else
+    echo "${BOLD}dotfiles already exists.$NORMAL"
+  fi
+
   # fzf
   if [ ! -d $FZF_HOME ]; then
     echo "${BOLD}Downloading fzf ...$NORMAL"
