@@ -4,6 +4,7 @@ ROOT_HOME=/var/root
 DOT_HOME=~/dotfiles
 REMOTE_URL="https://github.com/edge2992/dotfiles.git"
 CONFIG_HOME=~/.config
+FZF_HOME=~/.fzf
 
 if which tput >/dev/null 2>&1; then
   ncolors=$(tput colors)
@@ -48,6 +49,7 @@ usage() {
   echo $YELLOW
   cat <<\EOF
 Commands:
+  download (download tools fzf)
   font-nerd (install Hack Nerd Font)
   deploy (symlink (force override) dotfiles)
   quit
@@ -63,6 +65,23 @@ nerd_fonts() {
   ./install.sh $1
   cd ..
   rm -rf nerd-fonts
+}
+
+download() {
+  cd $HOME
+  # fzf
+  if [ ! -d $FZF_HOME ]; then
+    echo "${BOLD}Downloading fzf ...$NORMAL"
+    git clone --depth 1 https://github.com/junegunn/fzf.git $FZF_HOME
+    ~/.fzf/install
+    if [ $? = 0 ]; then
+      echo "${GREEN}Successfully installed fzf in $FZF_HOME. ✔︎ $NORMAL"
+    else
+      echo "${RED}An unexpected error occurred when trying to install fzf.$NORMAL"
+    fi
+  else
+    echo "${BOLD}fzf already exists.$NORMAL"
+  fi
 }
 
 symlink_files() {
@@ -105,6 +124,9 @@ main() {
     quit)
       echo "bye!"
       exit 0
+      ;;
+    download)
+      download
       ;;
     font-nerd)
       nerd_fonts Hack
