@@ -80,6 +80,8 @@ symlink_files() {
     [[ $f = "bootstrap.sh" ]] && continue
     if [ $f = "nvim" ]; then
       ln -snfv $DOT_HOME/$f $CONFIG_HOME
+    elif [ $f = "tmux.conf" ]; then
+      ln -snfv $DOT_HOME/$f $1/.$f
     else
       echo "${YELLOW}[future works] ${f} aren't symlinked yet.$NORMAL"
     fi
