@@ -188,3 +188,10 @@ filetype plugin indent on
 " autocmd BufWrite *.{hpp} :CPPCodeCleanup
 " autocmd BufWrite *.{c} :CPPCodeCleanup
 " autocmd BufWrite *.{h} :CPPCodeCleanup
+
+" convert punctuation marks
+nnoremap <Leader>cp :%s/、/，/ge<CR>:%s/。/．/ge<CR>
+vnoremap <Leader>cp :s/、/，/ge<CR>gv:s/。/．/ge<CR>
+
+set helplang=ja,en
+

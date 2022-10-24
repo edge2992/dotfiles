@@ -1,0 +1,13 @@
+*os_beos.txt*	For Vim バージョン 8.2.  Last change: 2020 Jun 07
+
+
+		VIMリファレンスマニュアル    by Bram Moolenaar
+
+
+						*beos* *BeOS* *BeBox*
+このファイルはBeOS向けVimについての詳細を記載するために利用されていた。
+
+BeOSのサポートは 8.2.0849 にて削除された。
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:
