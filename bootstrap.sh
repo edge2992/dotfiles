@@ -51,7 +51,7 @@ usage() {
   cat <<\EOF
 Commands:
   download (download tools fzf)
-  font-nerd (install Hack Nerd Font)
+  font-nerd (install Hack, Meslo Nerd Font)
   deploy (symlink (force override) dotfiles)
   quit
 EOF
@@ -63,7 +63,8 @@ nerd_fonts() {
   # neovimで使用
   git clone --branch=master --depth=1 https://github.com/ryanoasis/nerd-fonts.git
   cd nerd-fonts
-  ./install.sh $1
+  ./install.sh Hack
+  ./install.sh Meslo
   cd ..
   rm -rf nerd-fonts
 }
@@ -141,7 +142,7 @@ main() {
       download
       ;;
     font-nerd)
-      nerd_fonts Hack
+      nerd_fonts
       main
       ;;
     deploy)
