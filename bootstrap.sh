@@ -52,6 +52,7 @@ usage() {
 Commands:
   download (download tools fzf)
   font-nerd (install Hack, Meslo Nerd Font)
+  color-theme (install color scheme for gnome-terminal)
   deploy (symlink (force override) dotfiles)
   quit
 EOF
@@ -67,6 +68,17 @@ nerd_fonts() {
   ./install.sh Meslo
   cd ..
   rm -rf nerd-fonts
+}
+
+color_themes() {
+  git clone --branch=master https://github.com/Gogh-Co/Gogh.git
+  pushd Gogh
+  export TERMINAL=gnome-terminal # necessory on ubuntu
+  ./themes/tokyo-night-storm.sh
+  ./themes/tokyo-night.sh
+  ./themes/twilight.sh
+  popd
+  rm -rf Gogh
 }
 
 download() {
@@ -119,7 +131,6 @@ symlink_files() {
     # ignore list
     [[ $f = "README.md" ]] && continue
     [[ $f = "bootstrap.sh" ]] && continue
-    [[ $f = "bin" ]] && continue
     if [ $f = "nvim" ]; then
       ln -snfv $DOT_HOME/$f $CONFIG_HOME
     else
@@ -140,6 +151,9 @@ main() {
       ;;
     download)
       download
+      ;;
+    color-theme)
+      color_themes
       ;;
     font-nerd)
       nerd_fonts
