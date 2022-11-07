@@ -32,5 +32,7 @@ packer.startup(function(use)
   use 'nvim-telescope/telescope-file-browser.nvim'
 
   use 'tpope/vim-commentary'
+
+  use 'dense-analysis/ale' -- linting plugin
 end)
 
