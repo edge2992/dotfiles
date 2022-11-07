@@ -12,11 +12,6 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
 # alias activate_rna="source $PYENV_ROOT/versions/anaconda3-5.3.1/bin/activate rna"
 
 
-# CUDA
-# export PATH=/usr/local/cuda-11.1/bin:$PATH
-export LD_LIBRARY_PATH=/usr/lib/cuda/lib64:$LD_LIBRARY_PATH
-# memo uninstallするなら
-# run cuda-uninstaller in /usr/local/cuda-11.1/bin
 
 # SAMtools
 # export PATH=/mnt/H/Analysis/samtools-0.1.12a/:$PATH
