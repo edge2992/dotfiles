@@ -1,5 +1,7 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhistcnt =9
+let g:netrw_dirhistcnt =1
+let g:netrw_dirhist_1='/Users/edge2992/dotfiles/.vim/bundle/neobundle.vim'
+let g:netrw_dirhist_0='/Users/edge2992/.git'
 let g:netrw_dirhist_9='/home/edge2992/Documents/code/python/web/photoexhibit_project/templates/exhibit'
 let g:netrw_dirhist_8='/home/edge2992/Documents/code/python/web/photoexhibit_project/photoexhibit_project'
 let g:netrw_dirhist_7='/home/edge2992/Documents/code/python/web/photoexhibit_project/photoapp'
@@ -8,5 +10,3 @@ let g:netrw_dirhist_5='/home/edge2992/Documents/code/python/web/tutorial/account
 let g:netrw_dirhist_4='/home/edge2992/Documents/code/python/cpaw/test'
 let g:netrw_dirhist_3='/home/edge2992/Documents/code/python/cpaw/misc100/Configurations2'
 let g:netrw_dirhist_2='/home/edge2992/Documents/code/cpp/abc157'
-let g:netrw_dirhist_1='/home/edge2992/snap/code'
-let g:netrw_dirhist_0='/home/edge2992/Documents/code/ruby/environment/toy_app/app/views'

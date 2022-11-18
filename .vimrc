@@ -1,8 +1,6 @@
-" ファイルを上書きする前にバックアップを作ることを無効化
 set nowritebackup
-" ファイルを上書きする前にバックアップを作ることを無効化
 set nobackup
-" vim の矩形選択で文字が無くても右へ進める
+" colorscheme iceberg
 set virtualedit=block
 " 挿入モードでバックスペースで削除できるようにする
 set backspace=indent,eol,start
@@ -135,7 +133,7 @@ filetype off
 
 if has('vim_starting')
   set runtimepath+=~/.vim/bundle/neobundle.vim
-"  call neobundle#rc(expand('~/.vim/bundle'))
+ " call neobundle#rc(expand('~/.vim/bundle'))
 endif
 
 " Initialize
