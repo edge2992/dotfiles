@@ -24,6 +24,15 @@ if [ "$(uname -s)" = "Linux" ]; then
 fi
 
 if [ "(uname -s)" = "Darwin" ]; then
+  # tcl-tk
+  export PATH="/opt/homebrew/opt/tcl-tk/bin:$PATH"
+  # # For compilers to find tcl-tk you may need to set:
+  #   export LDFLAGS="-L/opt/homebrew/opt/tcl-tk/lib"
+  #   export CPPFLAGS="-I/opt/homebrew/opt/tcl-tk/include"
+
+  # # For pkg-config to find tcl-tk you may need to set:
+  #   export PKG_CONFIG_PATH="/opt/homebrew/opt/tcl-tk/lib/pkgconfig"
+
   # libomp
   export LDFLAGS="-L/opt/homebrew/opt/libomp/lib"
   export CPPFLAGS="-I/opt/homebrew/opt/libomp/include"
