@@ -1,6 +1,10 @@
 # Aliases
 #
-alias ls='ls --group-directories-first --human-readable --color=auto'
+if [ "$(uname -s)" = "Linux" ]; then
+  # Linux限定の設定
+  alias ls='ls --group-directories-first --human-readable --color=auto'
+fi
+
 alias luamake=/luamake
 alias vim='nvim'
 

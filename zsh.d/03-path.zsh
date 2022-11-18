@@ -11,9 +11,17 @@ if [ -f ~/.pyenvrc ] && [ -d ~/.pyenv ]; then
   . ~/.pyenvrc
 fi
 
-# rbenv
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
+if [ "$(uname -s)" = "Linux" ]; then
+  # rbenv
+  export PATH="$HOME/.rbenv/bin:$PATH"
+  eval "$(rbenv init -)"
+
+  # GO
+  export PATH="$PATH:$(go env GOPATH)/bin"
+
+  # Rust
+  source $HOME/.cargo/env
+fi
 
 export PATH="$HOME/RNA_toolbox/bin:$PATH"
 
@@ -26,10 +34,6 @@ export PATH="/usr/local/texlive/2020/bin/x86_64-linux:$PATH"
 export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
 export PATH=${JAVA_HOME}/bin:${PATH}
 
-# GO
-export PATH="$PATH:$(go env GOPATH)/bin"
-# Rust
-source $HOME/.cargo/env
 export PATH="$PATH:$HOME/tools/lua-language-server/bin"
 # Mecab
 export MECABRC=/etc/mecabrc
