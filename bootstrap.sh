@@ -6,6 +6,7 @@ DOT_HOME=~/dotfiles
 REMOTE_URL="https://github.com/edge2992/dotfiles.git"
 CONFIG_HOME=~/.config
 FZF_HOME=~/.fzf
+PACKER_NVIM=~/.local/share/nvim/site/pack/packer/start/packer.nvim
 
 if which tput >/dev/null 2>&1; then
   ncolors=$(tput colors)
@@ -50,7 +51,8 @@ usage() {
   echo $YELLOW
   cat <<\EOF
 Commands:
-  download (download tools fzf)
+  download (download tools fzf, packer.nvim)
+  brew-install (only mac)
   font-nerd (install Hack, Meslo Nerd Font)
   color-theme (install color scheme for gnome-terminal)
   deploy (symlink (force override) dotfiles)
@@ -116,6 +118,33 @@ download() {
   else
     echo "${BOLD}fzf already exists.$NORMAL"
   fi
+  if [ ! -d $PACKER_NVIM ]; then
+    echo "${BOLD}Downloading packer.nvim ...$NORMAL"
+    # git clone --depth 1 https://github.com/junegunn/fzf.git $FZF_HOME
+    # ~/.fzf/install
+    git clone --depth 1 https://github.com/wbthomason/packer.nvim $PACKER_NVIM
+    if [ $? = 0 ]; then
+      echo "${GREEN}Successfully installed packer.nvim in $PACKER_NVIM. ✔︎ $NORMAL"
+    else
+      echo "${RED}An unexpected error occurred when trying to install packer.nvim.$NORMAL"
+    fi
+  else
+    echo "${BOLD}packer.nvim already exists.$NORMAL"
+  fi
+}
+
+brew_install() {
+  if [ "$(uname -s)" = "Darwin" ]; then
+    echo "${BOLD}Downloading...$NORMAL"
+    brew bundle --file ${DOT_HOME}/Brewfile
+    if [ $? = 0 ]; then
+      echo "${GREEN}Successfully installed. ✔︎ $NORMAL"
+    else
+      echo "${RED}An unexpected error occurred when trying to brew bundle.$NORMAL"
+    fi
+  else
+    echo "${RED}This command is intended to be executed only on a macbook.$NORMAL"
+  fi
 }
 
 symlink_files() {
@@ -131,6 +160,8 @@ symlink_files() {
     # ignore list
     [[ $f = "README.md" ]] && continue
     [[ $f = "bootstrap.sh" ]] && continue
+    [[ $f = "Brewfile" ]] && continue
+    [[ $f = "Brewfile.lock.json" ]] && continue
     if [ $f = "nvim" ]; then
       ln -snfv $DOT_HOME/$f $CONFIG_HOME
     else
@@ -161,6 +192,10 @@ main() {
       ;;
     deploy)
       symlink_files $HOME
+      ;;
+    brew-install)
+      brew_install
+      main
       ;;
     *)
       echo "${RED}bootstrap: command not found.$NORMAL"

@@ -23,6 +23,12 @@ if [ "$(uname -s)" = "Linux" ]; then
   source $HOME/.cargo/env
 fi
 
+if [ "(uname -s)" = "Darwin" ]; then
+  # libomp
+  export LDFLAGS="-L/opt/homebrew/opt/libomp/lib"
+  export CPPFLAGS="-I/opt/homebrew/opt/libomp/include"
+fi
+
 export PATH="$HOME/RNA_toolbox/bin:$PATH"
 
 # Texlive用の設定
