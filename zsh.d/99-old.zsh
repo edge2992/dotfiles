@@ -12,16 +12,6 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
 # alias activate_rna="source $PYENV_ROOT/versions/anaconda3-5.3.1/bin/activate rna"
 
 
-
-# SAMtools
-# export PATH=/mnt/H/Analysis/samtools-0.1.12a/:$PATH
-export PICARD="~/tools/picard.jar"
-# bedtools
-export PATH=~/tools/:$PATH
-#sratoolkit
-export PATH=~/tools/sratoolkit.2.11.0-ubuntu64/bin:$PATH
-
-
 #icSHAPEの設定
 export ICSHAPE="/home/edge2992/H/Analysis/PARIS/tools/icSHAPE"
 export PATH=/home/edge2992/.aspera/connect/bin:${PATH}
