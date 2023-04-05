@@ -162,6 +162,7 @@ symlink_files() {
     [[ $f = "bootstrap.sh" ]] && continue
     [[ $f = "Brewfile" ]] && continue
     [[ $f = "Brewfile.lock.json" ]] && continue
+    [[ $f = "Doc" ]] && continue
     if [ $f = "nvim" ]; then
       ln -snfv $DOT_HOME/$f $CONFIG_HOME
     else
