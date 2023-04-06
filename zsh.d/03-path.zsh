@@ -4,12 +4,12 @@ export PATH=$PATH:$HOME/.local/bin
 export PATH=~/.npm-packages/bin:$PATH
 
 # # pyenv の設定
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-if [ -f ~/.pyenvrc ] && [ -d ~/.pyenv ]; then
-  . ~/.pyenvrc
-fi
+# export PYENV_ROOT="$HOME/.pyenv"
+# export PATH="$PYENV_ROOT/bin:$PATH"
+# eval "$(pyenv init -)"
+# if [ -f ~/.pyenvrc ] && [ -d ~/.pyenv ]; then
+#   . ~/.pyenvrc
+# fi
 
 if [ "$(uname -s)" = "Linux" ]; then
   # rbenv
@@ -36,8 +36,12 @@ if [ "(uname -s)" = "Darwin" ]; then
   # libomp
   export LDFLAGS="-L/opt/homebrew/opt/libomp/lib"
   export CPPFLAGS="-I/opt/homebrew/opt/libomp/include"
+
+  # M1 MAC用homebrew
+  eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
+eval "$(/opt/homebrew/bin/brew shellenv)"
 export PATH="$HOME/RNA_toolbox/bin:$PATH"
 
 # Texlive用の設定
@@ -52,3 +56,4 @@ export PATH=${JAVA_HOME}/bin:${PATH}
 export PATH="$PATH:$HOME/tools/lua-language-server/bin"
 # Mecab
 export MECABRC=/etc/mecabrc
+
