@@ -3,6 +3,8 @@ export PATH=$PATH:$HOME/.local/bin
 # npm settings
 export PATH=~/.npm-packages/bin:$PATH
 
+export PATH="$PATH:$HOME/tools/lua-language-server/bin"
+
 # # pyenv の設定
 # export PYENV_ROOT="$HOME/.pyenv"
 # export PATH="$PYENV_ROOT/bin:$PATH"
@@ -11,49 +13,41 @@ export PATH=~/.npm-packages/bin:$PATH
 #   . ~/.pyenvrc
 # fi
 
-if [ "$(uname -s)" = "Linux" ]; then
-  # rbenv
-  export PATH="$HOME/.rbenv/bin:$PATH"
-  eval "$(rbenv init -)"
+# GO
+export PATH="$PATH:$(go env GOPATH)/bin"
 
-  # GO
-  export PATH="$PATH:$(go env GOPATH)/bin"
+case `uname` in
+  Darwin)
+    # homebrew
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    # tcl-tk
+    export PATH="/opt/homebrew/opt/tcl-tk/bin:$PATH"
 
-  # Rust
-  source $HOME/.cargo/env
-fi
+    # libomp
+    export LDFLAGS="-L/opt/homebrew/opt/libomp/lib"
+    export CPPFLAGS="-I/opt/homebrew/opt/libomp/include"
+      ;;
+  Linux)
+    # rbenv
+    export PATH="$HOME/.rbenv/bin:$PATH"
+    eval "$(rbenv init -)"
 
-if [ "(uname -s)" = "Darwin" ]; then
-  # tcl-tk
-  export PATH="/opt/homebrew/opt/tcl-tk/bin:$PATH"
-  # # For compilers to find tcl-tk you may need to set:
-  #   export LDFLAGS="-L/opt/homebrew/opt/tcl-tk/lib"
-  #   export CPPFLAGS="-I/opt/homebrew/opt/tcl-tk/include"
+    # Rust
+    source $HOME/.cargo/env
 
-  # # For pkg-config to find tcl-tk you may need to set:
-  #   export PKG_CONFIG_PATH="/opt/homebrew/opt/tcl-tk/lib/pkgconfig"
+    # Texlive用の設定
+    export MANPATH="/usr/local/texlive/2020/texmf-dist/doc/man:$MANPATH"
+    export INFOPATH="/usr/local/texlive/2020/texmf-dist/doc/info:$INFOPATH"
+    export PATH="/usr/local/texlive/2020/bin/x86_64-linux:$PATH"
 
-  # libomp
-  export LDFLAGS="-L/opt/homebrew/opt/libomp/lib"
-  export CPPFLAGS="-I/opt/homebrew/opt/libomp/include"
+    #javaの設定
+    export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
+    export PATH=${JAVA_HOME}/bin:${PATH}
 
-  # M1 MAC用homebrew
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
+    # Mecab
+    export MECABRC=/etc/mecabrc
+    ;;
+esac
 
-eval "$(/opt/homebrew/bin/brew shellenv)"
-export PATH="$HOME/RNA_toolbox/bin:$PATH"
 
-# Texlive用の設定
-export MANPATH="/usr/local/texlive/2020/texmf-dist/doc/man:$MANPATH"
-export INFOPATH="/usr/local/texlive/2020/texmf-dist/doc/info:$INFOPATH"
-export PATH="/usr/local/texlive/2020/bin/x86_64-linux:$PATH"
-
-#javaの設定
-export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
-export PATH=${JAVA_HOME}/bin:${PATH}
-
-export PATH="$PATH:$HOME/tools/lua-language-server/bin"
-# Mecab
-export MECABRC=/etc/mecabrc
 
