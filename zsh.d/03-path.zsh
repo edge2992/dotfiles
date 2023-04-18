@@ -46,6 +46,10 @@ case `uname` in
 
     # Mecab
     export MECABRC=/etc/mecabrc
+
+    # volta node version management tools
+    export VOLTA_HOME="$HOME/.volta"
+    export PATH="$VOLTA_HOME/bin:$PATH"
     ;;
 esac
 
