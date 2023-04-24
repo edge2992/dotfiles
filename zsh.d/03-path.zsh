@@ -26,6 +26,10 @@ case `uname` in
     # libomp
     export LDFLAGS="-L/opt/homebrew/opt/libomp/lib"
     export CPPFLAGS="-I/opt/homebrew/opt/libomp/include"
+
+    # volta node version management tools
+    export VOLTA_HOME="$HOME/.volta"
+    export PATH="$VOLTA_HOME/bin:$PATH"
       ;;
   Linux)
     # rbenv
@@ -46,12 +50,6 @@ case `uname` in
 
     # Mecab
     export MECABRC=/etc/mecabrc
-
-    # volta node version management tools
-    export VOLTA_HOME="$HOME/.volta"
-    export PATH="$VOLTA_HOME/bin:$PATH"
-    ;;
+      ;;
 esac
-
-
 
