@@ -22,3 +22,6 @@ alias oj-bundle='\oj-bundle -I /mnt/H/MYWORK/cpplib'
 # Slack notification
 alias yatta=~/tools/yatta.sh
 
+# ghq
+alias g='cd $(ghq list -p | fzf)'
+
