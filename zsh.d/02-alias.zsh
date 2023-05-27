@@ -17,7 +17,7 @@ alias pbcopy='xsel --clipboard --input'
 alias pbpaste='xsel --clipboard --output'
 
 # 競技プログラミング設定
-alias oj-bundle='\oj-bundle -I /mnt/H/MYWORK/cpplib'
+alias oj-bundle='oj-bundle -I /mnt/H/MYWORK/cpplib'
 
 # Slack notification
 alias yatta=~/tools/yatta.sh

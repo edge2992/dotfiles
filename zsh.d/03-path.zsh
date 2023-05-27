@@ -45,8 +45,11 @@ case `uname` in
     export PATH="/usr/local/texlive/2020/bin/x86_64-linux:$PATH"
 
     #javaの設定
-    export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
-    export PATH=${JAVA_HOME}/bin:${PATH}
+    export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+
+    #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+    export SDKMAN_DIR="$HOME/.sdkman"
+    [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
     # Mecab
     export MECABRC=/etc/mecabrc
