@@ -1,14 +1,11 @@
--- ref: https://github.com/craftzdog/dotfiles-public
-require('base')
-require('highlights')
-require('maps')
-require('plugins')
+require("settings")
+require("plugins")
+require("maps")
 
--- clipboard connect (linux, macos)
-vim.opt.clipboard:append { 'unnamedplus' }
+local themeStatus, kanagawa = pcall(require, "kanagawa")
 
--- local has = function(x)
---   return vim.fn.has(x) == 1
--- end
-
-
+if themeStatus then
+	vim.cmd("colorscheme kanagawa")
+else
+	return
+end
