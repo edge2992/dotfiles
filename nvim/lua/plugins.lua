@@ -6,82 +6,100 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 })
 
 return require("packer").startup(function(use)
-  -- Packer
-  use("wbthomason/packer.nvim")
+	-- Packer
+	use("wbthomason/packer.nvim")
 
-  -- Common utilities
-  use("nvim-lua/plenary.nvim")
+	-- Common utilities
+	use("nvim-lua/plenary.nvim")
 
-  -- Icons
-  use("nvim-tree/nvim-web-devicons")
+	-- Icons
+	use("nvim-tree/nvim-web-devicons")
 
-  -- Colorschema
-  use("rebelot/kanagawa.nvim")
+	-- Colorschema
+	use("rebelot/kanagawa.nvim")
 
-  -- Statusline
-  use({
-    "nvim-lualine/lualine.nvim",
-    event = "BufEnter",
-    config = function()
-      require("configs.lualine")
-    end,
-    requires = { "nvim-web-devicons" },
-  })
+	-- Statusline
+	use({
+		"nvim-lualine/lualine.nvim",
+		event = "BufEnter",
+		config = function()
+			require("configs.lualine")
+		end,
+		requires = { "nvim-web-devicons" },
+	})
 
-  -- Treesitter
-  use({
-    "nvim-treesitter/nvim-treesitter",
-    run = function()
-      require("configs.treesitter")
-    end,
-  })
+	-- bufferline
+	use({
+		"akinsho/bufferline.nvim",
+		tag = "*",
+		config = function()
+			require("configs.bufferline")
+		end,
+		requires = { "nvim-web-devicons" },
+	})
 
-  -- Telescope
-  use({
-    "nvim-telescope/telescope.nvim",
-    tag = "0.1.1",
-    requires = {{"nvim-lua/plenary.nvim"}},
-  })
+	-- easyMotion
+	use({
+		"phaazon/hop.nvim",
+		branch = "v2",
+		config = function()
+			require("configs.hop")
+		end,
+	})
 
-  -- LSP
-  use({
-    "neovim/nvim-lspconfig",
-    config = function()
-      require("configs.lsp")
-    end
-  })
+	-- Treesitter
+	use({
+		"nvim-treesitter/nvim-treesitter",
+		run = function()
+			require("configs.treesitter")
+		end,
+	})
 
-  use("onsails/lspkind-nvim")
-  use({
-    "L3MON4D3/LuaSnip",
-    tag = "v<CurrentMajor>.*",
-  })
+	-- Telescope
+	use({
+		"nvim-telescope/telescope.nvim",
+		tag = "0.1.x",
+		requires = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope-fzf-native.nvim" },
+	})
 
-  -- cmp: Autocomplete
-  use({
-    "hrsh7th/nvim-cmp",
-    event = "InsertEnter",
-    config =  function()
-      require("configs.cmp")
-    end,
-  })
+	-- LSP
+	use({
+		"neovim/nvim-lspconfig",
+		config = function()
+			require("configs.lsp")
+		end,
+	})
 
-  use("hrsh7th/cmp-nvim-lsp")
-  use({"hrsh7th/cmp-path", after = "nvim-cmp"})
-  use({"hrsh7th/cmp-buffer", after = "nvim-cmp"})
+	use("onsails/lspkind-nvim")
+	use({
+		"L3MON4D3/LuaSnip",
+		tag = "v<CurrentMajor>.*",
+	})
 
-  -- LSP diagosticsm, code actions, and more via lua
-  use({
-    "jose-elias-alvarez/null-ls.nvim",
-    config = function()
-      require("configs.null-ls")
-    end,
-    requires = { "nvim-lua/plenary.nvim" },
-  })
+	-- cmp: Autocomplete
+	use({
+		"hrsh7th/nvim-cmp",
+		event = "InsertEnter",
+		config = function()
+			require("configs.cmp")
+		end,
+	})
 
-  -- Mason: Portable package manager
-  
-  use({
+	use("hrsh7th/cmp-nvim-lsp")
+	use({ "hrsh7th/cmp-path", after = "nvim-cmp" })
+	use({ "hrsh7th/cmp-buffer", after = "nvim-cmp" })
+
+	-- LSP diagosticsm, code actions, and more via lua
+	use({
+		"jose-elias-alvarez/null-ls.nvim",
+		config = function()
+			require("configs.null-ls")
+		end,
+		requires = { "nvim-lua/plenary.nvim" },
+	})
+
+	-- Mason: Portable package manager
+	use({
 		"williamboman/mason.nvim",
 		config = function()
 			require("mason").setup()
@@ -148,12 +166,14 @@ return require("packer").startup(function(use)
 		end,
 	})
 
+	-- comment out
+	use("tpope/vim-commentary")
+
 	-- Background Transparent
 	use({
 		"xiyaowong/nvim-transparent",
 		config = function()
 			require("configs.transparent")
-    end, 
-  })
+		end,
+	})
 end)
-
