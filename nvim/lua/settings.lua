@@ -29,5 +29,3 @@ o.showcmd = true
 o.showmatch = true
 o.inccomand = "split"
 o.splitbelow = "splitright"
-
-

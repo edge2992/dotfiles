@@ -38,6 +38,16 @@ return require("packer").startup(function(use)
 		requires = { "nvim-web-devicons" },
 	})
 
+	-- show leader commands
+	use({
+		"folke/which-key.nvim",
+		config = function()
+			vim.o.timeout = true
+			vim.o.timeoutlen = 0
+			require("configs.which-key")
+		end,
+	})
+
 	-- easyMotion
 	use({
 		"phaazon/hop.nvim",
