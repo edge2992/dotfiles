@@ -19,15 +19,14 @@ nls.setup({
 		fmt.prettier.with({
 			filetypes = { "html", "json", "yaml", "markdown", "javascript", "typescript" },
 		}),
+		fmt.black,
 		fmt.stylua,
 		fmt.rustfmt,
 
 		-- Diagnostics
 		dgn.eslint_d,
 		dgn.shellcheck,
-		dgn.pylint.with({
-			method = nls.methods.DIAGNOSTICS_ON_SAVE,
-		}),
+		dgn.flake8,
 
 		-- Code Actions
 		cda.eslint_d,

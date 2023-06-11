@@ -66,10 +66,16 @@ return require("packer").startup(function(use)
 	})
 
 	-- Telescope
+	-- TODO: use fzf to fussy search
+	-- use({ "nvim-telescope/telescope-fzf-native.nvim", run = "make" })
 	use({
 		"nvim-telescope/telescope.nvim",
 		tag = "0.1.x",
-		requires = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope-fzf-native.nvim" },
+		-- requires = { "nvim-lua/plenary.nvim", { "nvim-telescope/telescope-fzf-native.nvim", run = "make" } },
+		requires = { "nvim-lua/plenary.nvim" },
+		config = function()
+			require("configs.telescope")
+		end,
 	})
 
 	-- LSP

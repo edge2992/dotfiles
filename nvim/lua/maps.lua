@@ -57,8 +57,11 @@ mappings["e"] = { "<CMD>Neotree toggle<CR>", "Toggle NeoTree" }
 mappings["o"] = { "<CMD>Neotree focus<CR>", "Focus on NeoTree" }
 
 -- Terminal
-mappings["th"] = { "<CMD>ToggleTerm size=10 direction=horizontal<CR>", "Toggle Horizontal Terminal" }
-mappings["tv"] = { "<CMD>ToggleTerm size=80 direction=vertical<CR>", "Toggle Vertical Terminal" }
+mappings["t"] = {
+	name = "+terminal",
+	h = { "<CMD>ToggleTerm size=10 direction=horizontal<CR>", "Toggle Horizontal Terminal" },
+	v = { "<CMD>ToggleTerm size=80 direction=vertical<CR>", "Toggle Vertical Terminal" },
+}
 
 -- Markdown Preview
 mappings["m"] = { "<CMD>MarkdownPreview<CR>", "Preview Markdown" }
