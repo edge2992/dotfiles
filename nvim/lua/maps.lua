@@ -27,12 +27,15 @@ local status, telescope = pcall(require, "telescope.builtin")
 local mappings = {}
 if status then
 	-- Telescope
-	mappings["ff"] = { telescope.find_files, "Find Files" }
-	mappings["fg"] = { telescope.live_grep, "Live Grep" }
-	mappings["fb"] = { telescope.buffers, "Buffers" }
-	mappings["fh"] = { telescope.help_tags, "Help Tags" }
-	mappings["fs"] = { telescope.git_status, "Git Status" }
-	mappings["fc"] = { telescope.git_commits, "Git Commits" }
+	mappings["f"] = {
+		name = "+telescope",
+		f = { telescope.find_files, "Find Files" },
+		g = { telescope.live_grep, "Live Grep" },
+		b = { telescope.buffers, "Buffers" },
+		h = { telescope.help_tags, "Help Tags" },
+		s = { telescope.git_status, "Git Status" },
+		c = { telescope.git_commits, "Git Commits" },
+	}
 else
 	print("Telescope not found")
 end
