@@ -64,8 +64,11 @@ mappings["t"] = {
 }
 
 -- Markdown Preview
-mappings["m"] = { "<CMD>MarkdownPreview<CR>", "Preview Markdown" }
-mappings["mn"] = { "<CMD>MarkdownPreviewStop<CR>", "Stop Markdown Preview" }
+mappings["m"] = {
+	name = "+markdown",
+	m = { "<CMD>MarkdownPreview<CR>", "Preview Markdown" },
+	n = { "<CMD>MarkdownPreviewStop<CR>", "Stop Markdown Preview" },
+}
 
 local status, which_key = pcall(require, "which-key")
 if not status then
