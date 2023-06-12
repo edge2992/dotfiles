@@ -28,7 +28,7 @@ return require("packer").startup(function(use)
 		requires = { "nvim-web-devicons" },
 	})
 
-	-- bufferline
+	-- Show Bufferline
 	use({
 		"akinsho/bufferline.nvim",
 		tag = "*",
@@ -38,7 +38,7 @@ return require("packer").startup(function(use)
 		requires = { "nvim-web-devicons" },
 	})
 
-	-- show leader commands
+	-- Show Leader Commands
 	use({
 		"folke/which-key.nvim",
 		config = function()
@@ -87,9 +87,10 @@ return require("packer").startup(function(use)
 	})
 
 	use("onsails/lspkind-nvim")
+
+	-- TODO: how to use?
 	use({
-		"L3MON4D3/LuaSnip",
-		tag = "v<CurrentMajor>.*",
+		"j-hui/fidget.nvim",
 	})
 
 	-- cmp: Autocomplete
@@ -105,6 +106,10 @@ return require("packer").startup(function(use)
 	use({ "hrsh7th/cmp-path", after = "nvim-cmp" })
 	use({ "hrsh7th/cmp-buffer", after = "nvim-cmp" })
 
+	-- Copilot, AI pair programmer
+	-- To use this plugin, invoke `:Copilot setup`
+	use({ "github/copilot.vim" })
+
 	-- LSP diagosticsm, code actions, and more via lua
 	use({
 		"jose-elias-alvarez/null-ls.nvim",
@@ -114,12 +119,14 @@ return require("packer").startup(function(use)
 		requires = { "nvim-lua/plenary.nvim" },
 	})
 
+	use({
+		"folke/trouble.nvim",
+		requires = { "nvim-tree/nvim-web-devicons" },
+	})
+
 	-- Mason: Portable package manager
 	use({
 		"williamboman/mason.nvim",
-		config = function()
-			require("mason").setup()
-		end,
 	})
 
 	use({
@@ -149,6 +156,11 @@ return require("packer").startup(function(use)
 		end,
 	})
 
+	-- Show Indent Lines
+	use({
+		"lukas-reineke/indent-blankline.nvim",
+	})
+
 	-- Terminal
 	use({
 		"akinsho/toggleterm.nvim",
@@ -166,6 +178,11 @@ return require("packer").startup(function(use)
 		end,
 	})
 
+	use({
+		"akinsho/git-conflict.nvim",
+		tag = "*",
+	})
+
 	-- Markdown Preview
 	use({
 		"iamcco/markdown-preview.nvim",
@@ -174,7 +191,7 @@ return require("packer").startup(function(use)
 		end,
 	})
 
-	-- autopairs
+	-- autoPairs
 	use({
 		"windwp/nvim-autopairs",
 		config = function()
@@ -184,12 +201,4 @@ return require("packer").startup(function(use)
 
 	-- comment out
 	use("tpope/vim-commentary")
-
-	-- Background Transparent
-	use({
-		"xiyaowong/nvim-transparent",
-		config = function()
-			require("configs.transparent")
-		end,
-	})
 end)
