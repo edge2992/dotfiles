@@ -33,6 +33,7 @@ if status then
 		g = { telescope.live_grep, "Live Grep" },
 		b = { telescope.buffers, "Buffers" },
 		h = { telescope.help_tags, "Help Tags" },
+		n = { telescope.notifications, "Notifications" },
 		s = { telescope.git_status, "Git Status" },
 		c = { telescope.git_commits, "Git Commits" },
 	}

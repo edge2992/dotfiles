@@ -28,6 +28,14 @@ return require("packer").startup(function(use)
 		requires = { "nvim-web-devicons" },
 	})
 
+	-- show notification
+	use({
+		"rcarriga/nvim-notify",
+		config = function()
+			require("configs.notify")
+		end,
+	})
+
 	-- Show Bufferline
 	use({
 		"akinsho/bufferline.nvim",
@@ -91,6 +99,9 @@ return require("packer").startup(function(use)
 	-- TODO: how to use?
 	use({
 		"j-hui/fidget.nvim",
+		confing = function()
+			require("fidget").setup()
+		end,
 	})
 
 	-- cmp: Autocomplete
@@ -102,7 +113,10 @@ return require("packer").startup(function(use)
 		end,
 	})
 
-	use("hrsh7th/cmp-nvim-lsp")
+	use({
+		"hrsh7th/cmp-nvim-lsp",
+		-- after = "nvim-cmp",
+	})
 	use({ "hrsh7th/cmp-path", after = "nvim-cmp" })
 	use({ "hrsh7th/cmp-buffer", after = "nvim-cmp" })
 
@@ -127,6 +141,9 @@ return require("packer").startup(function(use)
 	-- Mason: Portable package manager
 	use({
 		"williamboman/mason.nvim",
+		config = function()
+			require("mason").setup()
+		end,
 	})
 
 	use({
@@ -134,7 +151,7 @@ return require("packer").startup(function(use)
 		config = function()
 			require("configs.mason-lsp")
 		end,
-		after = "mason.nvim",
+		after = { "mason.nvim", "cmp-nvim-lsp" },
 	})
 
 	-- File manager
