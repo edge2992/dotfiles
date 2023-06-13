@@ -41,7 +41,7 @@ local mappings = {}
 if status then
 	-- Telescope
 	mappings["f"] = {
-		name = "+telescope",
+		name = "+Telescope",
 		f = { telescope.find_files, "Find Files" },
 		g = { telescope.live_grep, "Live Grep" },
 		b = { telescope.buffers, "Buffers" },
@@ -72,21 +72,21 @@ mappings["o"] = { "<CMD>Neotree focus<CR>", "Focus on NeoTree" }
 
 -- Terminal
 mappings["t"] = {
-	name = "+terminal",
+	name = "+Terminal",
 	h = { "<CMD>ToggleTerm size=10 direction=horizontal<CR>", "Toggle Horizontal Terminal" },
 	v = { "<CMD>ToggleTerm size=80 direction=vertical<CR>", "Toggle Vertical Terminal" },
 }
 
 -- Markdown Preview
 mappings["m"] = {
-	name = "+markdown",
+	name = "+Markdown",
 	m = { "<CMD>MarkdownPreview<CR>", "Preview Markdown" },
 	n = { "<CMD>MarkdownPreviewStop<CR>", "Stop Markdown Preview" },
 }
 
 -- LSP
 mappings["l"] = {
-	"+lsp",
+	name = "+LSP",
 	f = { "<CMD>lua vim.lsp.buf.format{ async = true }<CR>", "Format" },
 	i = { "<CMD>LspInfo<CR>", "LspInfo" },
 	a = { "<CMD>lua vim.lsp.buf.code_action()<CR>", "Code Action" },
@@ -100,7 +100,7 @@ mappings["l"] = {
 
 -- Hop (EasyMotion)
 mappings["j"] = {
-	name = "+hop word",
+	name = "+Hop Word",
 	h = { "<CMD>HopWord<CR>", "Hop" },
 	f = { "<CMD>HopWordAC<CR>", "Hop Front" },
 	F = { "<CMD>HopWordBC<CR>", "Hop Back" },
