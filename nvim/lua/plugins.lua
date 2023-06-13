@@ -104,6 +104,8 @@ return require("packer").startup(function(use)
 		end,
 	})
 
+	-- snippet
+	use({ "L3MON4D3/LuaSnip" })
 	-- cmp: Autocomplete
 	use({
 		"hrsh7th/nvim-cmp",
