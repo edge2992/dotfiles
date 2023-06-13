@@ -98,6 +98,14 @@ mappings["l"] = {
 	-- I = { "<CMD>LspInstallInfo<CR>", "LspInstallInfo" },
 }
 
+-- Hop (EasyMotion)
+mappings["j"] = {
+	name = "+hop word",
+	h = { "<CMD>HopWord<CR>", "Hop" },
+	f = { "<CMD>HopWordAC<CR>", "Hop Front" },
+	F = { "<CMD>HopWordBC<CR>", "Hop Back" },
+}
+
 local status, which_key = pcall(require, "which-key")
 if not status then
 	return
