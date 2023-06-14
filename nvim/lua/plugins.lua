@@ -68,10 +68,13 @@ return require("packer").startup(function(use)
 	-- Treesitter
 	use({
 		"nvim-treesitter/nvim-treesitter",
-		run = function()
+		run = ":TSUpdate",
+		config = function()
 			require("configs.treesitter")
 		end,
 	})
+
+	use({ "nvim-treesitter/playground" })
 
 	-- Telescope
 	-- TODO: use fzf to fussy search
