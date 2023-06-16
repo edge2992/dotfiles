@@ -18,7 +18,13 @@ local on_attach = function(client, bufnr)
 	end
 end
 
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
+local cmp_lsp_status, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+if not cmp_lsp_status then
+	vim.notify("cmp_nvim_lsp not found", vim.log.levels.ERROR)
+	return
+end
+
+local capabilities = cmp_nvim_lsp.default_capabilities()
 
 -- TypeScript
 nvim_lsp.tsserver.setup({
