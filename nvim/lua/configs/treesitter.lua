@@ -29,6 +29,7 @@ ts.setup({
 		"html",
 		"lua",
 	},
+	-- nvim-ts-rainbow
 	rainbow = {
 		enable = true,
 		disable = { "html" },
@@ -37,7 +38,7 @@ ts.setup({
 	},
 	autotag = { enable = true },
 	incremental_selection = { enable = true },
-	indent = { enable = true },
+	indent = { enable = true, disable = { "yaml" } },
 })
 
 local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
