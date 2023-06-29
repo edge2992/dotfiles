@@ -164,7 +164,8 @@ symlink_files() {
     [[ $f = "Brewfile.lock.json" ]] && continue
     [[ $f = "Doc" ]] && continue
     if [ $f = "nvim" ]; then
-      ln -snfv $DOT_HOME/$f $CONFIG_HOME
+      mkdir -p $CONFIG_HOME
+      ln -snfv $DOT_HOME/$f $CONFIG_HOME/$f
     else
       ln -snfv $DOT_HOME/$f $1/.$f
     fi
