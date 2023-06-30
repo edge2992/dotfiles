@@ -53,6 +53,7 @@ usage() {
 Commands:
   download (download tools fzf, packer.nvim)
   brew-install (only mac)
+  apt-install (install necessary packges for nvim plugins)
   font-nerd (install Hack, Meslo Nerd Font)
   color-theme (install color scheme for gnome-terminal)
   deploy (symlink (force override) dotfiles)
@@ -147,6 +148,20 @@ brew_install() {
   fi
 }
 
+apt_install() {
+  if [ "$(uname -s)" == "Linux" ]; then
+    echo "${BOLD}Installing necessary packages for nvim plugins...$NORMAL"
+    sudo apt install -y build-essential zip fd-find ripgrep nodejs npm
+    if [ $? = 0 ]; then
+      echo "${GREEN}Successfully installed necessary packages. ✔︎$NORMAL"
+    else
+      echo "${RED}An unexpected error occurred when trying to install packages.$NORMAL"
+    fi
+  else
+    echo "${RED}This command is intended to be executed only on Linux.$NORMAL"
+  fi
+}
+
 symlink_files() {
   # symlinkを作成する
   if [ ! -d $DOT_HOME ]; then
@@ -197,6 +212,10 @@ main() {
       ;;
     brew-install)
       brew_install
+      main
+      ;;
+    apt-install)
+      apt_install
       main
       ;;
     *)
