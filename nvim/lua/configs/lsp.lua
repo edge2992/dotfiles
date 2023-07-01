@@ -67,3 +67,12 @@ nvim_lsp.pyright.setup({
 	on_attach = on_attach,
 	capabilities = capabilities,
 })
+
+-- Lua
+nvim_lsp.luau_lsp.setup({})
+
+-- sql
+nvim_lsp.sqlls.setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
+})
