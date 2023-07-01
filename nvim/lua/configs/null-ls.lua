@@ -22,6 +22,7 @@ nls.setup({
 		fmt.black,
 		fmt.stylua,
 		fmt.rustfmt,
+		fmt.sqlfmt,
 
 		-- Diagnostics
 		dgn.eslint_d,
