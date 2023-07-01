@@ -7,6 +7,13 @@ end
 local lspkind = require("lspkind")
 
 cmp.setup({
+	formatting = {
+		format = lspkind.cmp_format({
+			mode = "symbol",
+			maxwidth = 50,
+			ellipsis_char = "...",
+		}),
+	},
 	snippet = {
 		expand = function(args)
 			require("luasnip").lsp_expand(args.body)
