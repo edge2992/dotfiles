@@ -15,6 +15,7 @@ let mapleader = " "
 set scrolloff=5
 " Do incremental searching.
 set incsearch
+set clipboard=unnamed
 
 " Don't use Ex mode, use Q for formatting.
 map Q gq
@@ -70,6 +71,14 @@ nnoremap ;a :action CloseAllEditors<CR>
 
 nnoremap <c-f> :action GotoFile<CR>
 nnoremap <c-z> :action ToggleDistractionFreeMode<CR>
+
+""" quick definition
+" same as VSCode mapping
+nnoremap gh :action QuickJavaDoc<CR>
+noremap <F12> :action GotoImplementation<CR>
+
+" sethandler <c-p> a:vim
+" noremap <c-p> :action GotoAction
 
 """ easy motion plugin
 "   easy-motion-s Search backward
