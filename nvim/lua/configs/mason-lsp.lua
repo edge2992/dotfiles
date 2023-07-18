@@ -14,5 +14,6 @@ masonlsp.setup({
 		"tsserver",
 		"pyright",
 		"tailwindcss",
+		"dockerls",
 	},
 })
