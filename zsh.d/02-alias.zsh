@@ -25,3 +25,6 @@ alias yatta=~/tools/yatta.sh
 # ghq
 alias g='cd $(ghq list -p | fzf)'
 
+# kubectl
+alias k='kubectl'
+
