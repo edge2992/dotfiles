@@ -28,6 +28,7 @@ nls.setup({
 		dgn.eslint_d,
 		dgn.shellcheck,
 		dgn.flake8,
+		dgn.hadolint,
 
 		-- Code Actions
 		cda.eslint_d,
