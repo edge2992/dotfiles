@@ -16,3 +16,17 @@ function acs() {
   popd
 }
 
+# atcoder testing function for java
+function actj() {
+  pushd $1
+  oj test -c "java Main.java" 
+  popd
+}
+
+# atcoder submitting function for java
+function acsj() {
+  pushd $1
+  acc submit Main.java -- -l 4005
+  popd
+}
+
