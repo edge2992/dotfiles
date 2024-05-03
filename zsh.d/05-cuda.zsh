@@ -7,4 +7,5 @@
 # cuda-10.1, cuda-10.2, cuda-11.7
 # update-alternatives --config cudaで変更
 export PATH=/usr/local/cuda/bin${PATH+:${PATH}}
-export LD_LIBRARY_PATH=/usr/local/cuda/lib:/usr/local/cuda-11.7/lib64:/usr/local/cuda-10.2/lib64:/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}}
+export LD_LIBRARY_PATH=/usr/local/cuda-12.3/lib64${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}}
+# export LD_LIBRARY_PATH=/usr/local/cuda/lib:/usr/local/cuda-12.3/lib64:/usr/local/cuda-11.7/lib64:/usr/local/cuda-10.2/lib64:/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}}

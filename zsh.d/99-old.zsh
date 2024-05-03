@@ -5,7 +5,7 @@ gg(){
 }
 
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
+export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:/usr/local/lib/:$LD_LIBRARY_PATH:
 # rnascan
 # conda用の設定　aliasでpyenvとの競合問題を回避
 # export PATH="/home/edge2992/.pyenv/versions/anaconda3-5.3.1/bin:$PATH"
