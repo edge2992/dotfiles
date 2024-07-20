@@ -53,6 +53,14 @@ case `uname` in
 
     # Mecab
     export MECABRC=/etc/mecabrc
+
+    fpath+=${ZDOTDIR:-~}/.zsh_functions
+
+    # nvm (node version manager)
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
       ;;
 esac
 

@@ -28,3 +28,10 @@ alias g='cd $(ghq list -p | fzf)'
 # kubectl
 alias k='kubectl'
 
+#eza
+command -v eza       &> /dev/null    && alias ls='eza --group --git --group-directories-first'     || alias ls='ls --color=auto --group-directories-first -h'
+command -v eza       &> /dev/null    && alias la='ll -a'                                           || alias la='ll -A'
+command -v eza       &> /dev/null    && alias lk='ll -s=size'                                      || alias lk='ll -r --sort=size'
+command -v eza       &> /dev/null    && alias lm='ll -s=modified'                                  || alias lm='ll -r --sort=time'
+
+alias ll="ls -l"
