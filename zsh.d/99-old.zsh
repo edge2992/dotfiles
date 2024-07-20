@@ -34,16 +34,3 @@ export PATH=/home/edge2992/.aspera/connect/bin:${PATH}
 
 # alias activate="source $PYENV_ROOT/versions/miniconda3-latest/bin/activate"
 
-# Anyenv
-if [ -e "$HOME/.anyenv" ]
-then
-    export ANYENV_ROOT="$HOME/.anyenv"
-    export PATH="$ANYENV_ROOT/bin:$PATH"
-    if command -v anyenv 1>/dev/null 2>&1
-    then
-        eval "$(anyenv init -)"
-    fi
-fi
-
-
-
