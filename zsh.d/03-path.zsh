@@ -39,6 +39,9 @@ case `uname` in
     # Rust
     source $HOME/.cargo/env
 
+    # Docker (Docker Desktop on Linux)
+    export DOCKER_HOST="unix://$HOME/.docker/desktop/docker.sock"
+
     # Texlive用の設定
     export MANPATH="/usr/local/texlive/2020/texmf-dist/doc/man:$MANPATH"
     export INFOPATH="/usr/local/texlive/2020/texmf-dist/doc/info:$INFOPATH"

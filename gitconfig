@@ -21,6 +21,8 @@
 	wip = commit -m 'wip'
 	co = checkout
 	cob = "!f() { git checkout -b "$1" && git branch; }; f"
+  cof = !git branch -a | fzf | xargs git checkout
+  mgf = !git branch -a  | fzf | xargs git merge
 	cm = commit
 	st = status
 	br = branch
