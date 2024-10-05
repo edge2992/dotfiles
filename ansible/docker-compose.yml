@@ -1,0 +1,9 @@
+services:
+  ansible-controller:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./playbooks:/ansible/playbooks
+    stdin_open: true
+    tty: true

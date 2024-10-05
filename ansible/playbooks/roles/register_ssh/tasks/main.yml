@@ -1,0 +1,26 @@
+---
+- name: Add SSH key from GitHub users to the specified user
+  authorized_key:
+    user: "{{ ssh_user }}"
+    state: present
+    key: "https://github.com/{{ item }}.keys"
+  with_items: "{{ github_users }}"
+
+- name: Create ssh directory
+  file:
+    path: "/home/{{ app_user }}/.ssh"
+    state: directory
+    mode: "0700"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+  become: yes
+
+- name: Copy SSH key to isucon user
+  become: yes
+  copy:
+    src: "/home/{{ ssh_user }}/.ssh/authorized_keys"
+    dest: "/home/{{ app_user }}/.ssh/authorized_keys"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: "0600"
+    remote_src: yes
