@@ -4,6 +4,6 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./playbooks:/ansible/playbooks
+      - ./:/ansible/
     stdin_open: true
     tty: true

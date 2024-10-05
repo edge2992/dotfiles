@@ -1,0 +1,7 @@
+---
+- name: Create symbolic link for dotfiles
+  file:
+    src: "{{ role_path }}/files/{{ item }}"
+    dest: "{{ ansible_env.HOME }}/{{ item }}"
+    state: link
+  with_items: "{{ dotfiles_files }}"

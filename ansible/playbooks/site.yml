@@ -1,6 +1,8 @@
 ---
 - name: "Test playbooks"
   hosts: localhost
-  tasks:
-    - name: Test ping
-      ping:
+  roles:
+    # - role: register_ssh
+    #   vars:
+    #     ssh_user: edge2992
+    - role: dotfiles

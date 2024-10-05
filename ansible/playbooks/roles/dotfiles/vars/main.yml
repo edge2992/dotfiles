@@ -1,0 +1,4 @@
+---
+dotfiles_files:
+  - .gitconfig
+  - .tmux.conf
