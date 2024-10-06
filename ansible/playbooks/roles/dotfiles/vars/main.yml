@@ -2,3 +2,5 @@
 dotfiles_files:
   - .gitconfig
   - .tmux.conf
+  - .zshrc
+  - .zsh.d

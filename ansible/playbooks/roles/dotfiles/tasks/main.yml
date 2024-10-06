@@ -5,3 +5,9 @@
     dest: "{{ ansible_env.HOME }}/{{ item }}"
     state: link
   with_items: "{{ dotfiles_files }}"
+
+- name: Create symbolic link for nvim
+  file:
+    src: "{{ role_path }}/files/nvim"
+    dest: "{{ ansible_env.HOME }}/.config/nvim"
+    state: link
