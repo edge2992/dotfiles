@@ -4,3 +4,7 @@ dotfiles_files:
   - .tmux.conf
   - .zshrc
   - .zsh.d
+  - .vimrc
+  - .p10k.zsh
+  - .ideavimrc
+  - .memo
