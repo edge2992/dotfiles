@@ -22,5 +22,3 @@ autoload -Uz _zinit
 ## ColorTheme
 zinit ice silent depth=1; zinit load romkatv/powerlevel10k
 
-## CapsLock -> zen/han
-xmodmap ~/.Xmodmap

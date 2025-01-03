@@ -48,7 +48,7 @@ case `uname` in
     export PATH="/usr/local/texlive/2020/bin/x86_64-linux:$PATH"
 
     #javaの設定
-    export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+    export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
 
     #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
     export SDKMAN_DIR="$HOME/.sdkman"
