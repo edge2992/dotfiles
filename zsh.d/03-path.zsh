@@ -47,6 +47,9 @@ case `uname` in
     export INFOPATH="/usr/local/texlive/2020/texmf-dist/doc/info:$INFOPATH"
     export PATH="/usr/local/texlive/2020/bin/x86_64-linux:$PATH"
 
+    # RYE (Python)
+    source $HOME/.rye/env
+
     #javaの設定
     export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
 
