@@ -1,13 +1,11 @@
 local status, hop = pcall(require, "hop")
 
 if not status then
-  return
+	return
 end
 
-local directions = hop.HintDirection
-
 hop.setup({
-  keys = "etovxqdygblzhckisuran"
+	keys = "etovxqdygblzhckisuran",
+	jump_on_sole_occurrence = true,
+	case_insensitive = true,
 })
-
-

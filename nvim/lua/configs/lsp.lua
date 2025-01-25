@@ -3,8 +3,6 @@ if not status then
 	return
 end
 
-local protocol = require("vim.lsp.protocol")
-
 local on_attach = function(client, bufnr)
 	-- format on save
 	if client.server_capabilities.documentFormattingProvider then
