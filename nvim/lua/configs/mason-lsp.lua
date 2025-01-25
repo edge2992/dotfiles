@@ -10,7 +10,7 @@ masonlsp.setup({
 		"cssls",
 		"eslint",
 		"html",
-		"tsserver",
+		"ts_ls",
 		"pyright",
 		"tailwindcss",
 		"dockerls",

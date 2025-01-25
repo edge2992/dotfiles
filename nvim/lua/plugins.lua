@@ -54,6 +54,7 @@ return require("packer").startup(function(use)
 			vim.o.timeoutlen = 0
 			require("configs.which-key")
 		end,
+		requires = { "echasnovski/mini.nvim" },
 	})
 
 	-- easyMotion

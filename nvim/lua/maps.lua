@@ -105,19 +105,3 @@ mappings["j"] = {
 	f = { "<CMD>HopWordAC<CR>", "Hop Front" },
 	F = { "<CMD>HopWordBC<CR>", "Hop Back" },
 }
-
-local status, which_key = pcall(require, "which-key")
-if not status then
-	return
-end
-
-local opts = {
-	mode = "n", -- NORMAL mode
-	prefix = "<leader>",
-	buffer = nil, -- Global mappings. Specify a buffer number for buffer local mappings
-	silent = true, -- use `silent` when creating keymaps
-	noremap = true, -- use `noremap` when creating keymaps
-	nowait = true, -- use `nowait` when creating keymaps
-}
-
-which_key.register(mappings, opts)
