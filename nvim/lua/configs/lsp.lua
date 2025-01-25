@@ -77,6 +77,13 @@ nvim_lsp.sqlls.setup({
 	capabilities = capabilities,
 })
 
+-- go
+nvim_lsp.gopls.setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
+})
+
+-- docker
 nvim_lsp.dockerls.setup({
 	on_attach = on_attach,
 	capabilities = capabilities,
