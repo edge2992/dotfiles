@@ -36,5 +36,3 @@ command -v eza       &> /dev/null    && alias lm='ll -s=modified'               
 
 alias ll="ls -l"
 
-# github
-alias git=hub
