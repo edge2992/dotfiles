@@ -29,3 +29,4 @@ o.showcmd = true
 o.showmatch = true
 o.inccommand = "split" -- Show live preview of substitution commands
 o.splitright = true -- Open new splits to the right
+o.termguicolors = true -- Enable true color support

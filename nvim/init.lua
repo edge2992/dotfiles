@@ -6,10 +6,10 @@ local has = function(x)
 	return vim.fn.has(x) == 1
 end
 
-local themeStatus, kanagawa = pcall(require, "kanagawa")
+local themeStatus, solarized = pcall(require, "solarized")
 
 if themeStatus then
-	vim.cmd("colorscheme kanagawa")
+	vim.cmd("colorscheme solarized")
 else
 	return
 end

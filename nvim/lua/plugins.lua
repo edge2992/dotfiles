@@ -16,7 +16,7 @@ return require("packer").startup(function(use)
 	use("nvim-tree/nvim-web-devicons")
 
 	-- Colorschema
-	use("rebelot/kanagawa.nvim")
+	use("altercation/vim-colors-solarized")
 
 	-- Statusline
 	use({
