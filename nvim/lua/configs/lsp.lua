@@ -3,8 +3,6 @@ if not status then
 	return
 end
 
-local protocol = require("vim.lsp.protocol")
-
 local on_attach = function(client, bufnr)
 	-- format on save
 	if client.server_capabilities.documentFormattingProvider then
@@ -77,6 +75,13 @@ nvim_lsp.sqlls.setup({
 	capabilities = capabilities,
 })
 
+-- go
+nvim_lsp.gopls.setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
+})
+
+-- docker
 nvim_lsp.dockerls.setup({
 	on_attach = on_attach,
 	capabilities = capabilities,
