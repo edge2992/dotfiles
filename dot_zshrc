@@ -8,4 +8,5 @@ command -v eza &> /dev/null && alias ls='eza --group --git --group-directories-f
 
 # zsh plugin
 eval "$(sheldon source)"
+eval "$(starship init zsh)"
 
