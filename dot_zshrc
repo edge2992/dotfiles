@@ -1,6 +1,11 @@
 # Created by newuser for 5.8.1
 
 alias vim='nvim'
-alias ll='ls -al'
 alias g='cd $(ghq list -p | fzf)'
+
+# ls command
+command -v eza &> /dev/null && alias ls='eza --group --git --group-directories-first' || alias ls='ls --color=auto --group-directories-first -h'
+
+# zsh plugin
+eval "$(sheldon source)"
 
