@@ -1,0 +1,5 @@
+github.com:
+    git_protocol: ssh
+    users:
+        edge2992:
+    user: edge2992
