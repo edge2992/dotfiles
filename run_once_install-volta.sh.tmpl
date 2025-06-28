@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+# volta install check
+if ! command -v volta >/dev/null 2>&1; then
+  echo "Installing Volta..."
+  curl https://get.volta.sh | bash
+fi
+
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
+
+# Node をインストール 
+volta install node
+
+# npm packages
+volta install aicommits
+
+echo "Volta, Node, aicommits installation completed."

@@ -22,15 +22,27 @@ if ! command -v go >/dev/null 2>&1; then
   sudo apt install -y golang
 fi
 
-# uv
-if ! command -v uv >/dev/null 2>&1; then
-  echo "Installing uv..."
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-fi
-
 # mattn/memo
 if ! command -v memo >/dev/null 2>&1; then
   go install github.com/mattn/memo@latest
 fi
 
+# uv (Python)
+if ! command -v uv >/dev/null 2>&1; then
+  echo "Installing uv..."
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+fi
+
+# tmux
+if ! command -v tmux >/dev/null 2>&1; then
+  sudo apt update
+  sudo apt install -y tmux
+fi
+
 {{ end }}
+
+# tpm (tmux plugin manager)
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+  echo "Installing tmux plugin manager (tpm)..."
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+fi

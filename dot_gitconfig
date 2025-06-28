@@ -1,0 +1,38 @@
+[user]
+  name = edge2992
+  email = torune.summer@gmail.com
+[color]
+  ui = true
+[color "diff"]
+  new = green
+  old = red
+[core]
+  editor = nvim
+  autocrlf = input
+[init]
+  defaultBranch = main
+[push]
+  default = current
+[alias]
+  alias = !git config --get-regexp '^alias\\.' | sed 's/alias\\.\\([^ ]*\\) \\(.*\\)/\\1\\\t => \\2/' | sort
+  a = !git add -A && git status
+  au = !git add -u && git status
+  aic = !git add -A && aicommits
+  cam = commit --amend
+  wip = commit -m 'wip'
+  co = checkout
+  cob = "!f() { git checkout -b "$1" && git branch; }; f"
+  cof = !git branch -a | fzf | xargs git checkout
+  mgf = !git branch -a | fzf | xargs git merge
+  cm = commit
+  st = status
+  br = branch
+  graph = log --graph --date=short --decorate=short --pretty=format:'%Cgreen%h %Creset%cd %Cblue%cn %Cred%d %Creset%s'
+  lg = log --oneline --decorate --graph --all
+  cancel = reset --soft HEAD^
+[rerere]
+  enabled = true
+[pull]
+  rebase = true
+[fetch]
+  prune = true
