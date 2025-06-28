@@ -27,6 +27,11 @@ if ! command -v memo >/dev/null 2>&1; then
   go install github.com/mattn/memo@latest
 fi
 
+# x-motemen/ghq
+if ! command -v ghq >/dev/null 2>&1; then
+  go install github.com/x-motemen/ghq@latest
+fi
+
 # uv (Python)
 if ! command -v uv >/dev/null 2>&1; then
   echo "Installing uv..."
