@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -e
+
+{{ if eq .chezmoi.os "darwin" }}
+echo "Install fzf and memo via brew"
+
+
+{{ else if eq .chezmoi.os "linux" }}
+echo "Installing fzf and memo via apt / manual"
+
+# fzf
+if ! command -v fzf >/dev/null 2>&1; then
+  sudo apt update
+  sudo apt install -y fzf
+fi
+
+# Go install check
+if ! command -v go >/dev/null 2>&1; then
+  echo "Installing Go..."
+  sudo apt update
+  sudo apt install -y golang
+fi
+
+# uv
+if ! command -v uv >/dev/null 2>&1; then
+  echo "Installing uv..."
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+fi
+
+# mattn/memo
+if ! command -v memo >/dev/null 2>&1; then
+  go install github.com/mattn/memo@latest
+fi
+
+{{ end }}

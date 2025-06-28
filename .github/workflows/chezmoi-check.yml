@@ -1,0 +1,31 @@
+name: chezmoi check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  chezmoi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install chezmoi
+        run: |
+          sh -c "$(curl -fsLS get.chezmoi.io)"
+
+      - name: Initialize chezmoi
+        run: |
+          chezmoi init --source=.
+
+      - name: Check chezmoi diff
+        run: |
+          chezmoi diff
+
+      - name: Check shell scripts syntax
+        run: |
+          find . -type f -name '*.sh' -exec bash -n {} +
+
