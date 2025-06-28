@@ -1,3 +1,6 @@
 # Created by newuser for 5.8.1
-export PATH="$HOME/go/bin:$PATH"
+
+alias vim='nvim'
+alias ll='ls -al'
+alias g='cd $(ghq list -p | fzf)'
 
