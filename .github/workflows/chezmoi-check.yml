@@ -18,5 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dotfiles
+        env:
+          SKIP_NERD_FONTS_INSTALL: true
         run: |
           sh -c "$(curl -fsLS get.chezmoi.io/get)" -- init --apply -S .

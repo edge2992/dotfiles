@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ "${SKIP_NERD_FONTS_INSTALL:-}" == "true" ]]; then
+  echo "Skipping Nerd Fonts installation due to SKIP_NERD_FONTS_INSTALL."
+  exit 0
+fi
+
+tmpdir=$(mktemp -d)
+
+git clone --branch=master --depth=1 https://github.com/ryanoasis/nerd-fonts.git "$tmpdir/nerd-fonts"
+cd "$tmpdir/nerd-fonts"
+
+./install.sh UbuntuMono
+
+cd /
+rm -rf "$tmpdir"
+
