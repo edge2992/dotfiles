@@ -21,13 +21,13 @@ jobs:
           sh -c "$(curl -fsLS get.chezmoi.io)"
           echo "$PWD/bin" >> $GITHUB_PATH
 
-      - name: Run chezmoi doctor (verify environment)
-        run: |
-          chezmoi doctor
-
       - name: Initialize chezmoi
         run: |
           chezmoi init --source=.
+
+      - name: Run chezmoi doctor (verify environment)
+        run: |
+          chezmoi doctor
 
       - name: Check chezmoi diff
         run: |
