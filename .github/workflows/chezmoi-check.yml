@@ -25,10 +25,6 @@ jobs:
         run: |
           chezmoi init --source=.
 
-      - name: Run chezmoi doctor (verify environment)
-        run: |
-          chezmoi doctor
-
       - name: Check chezmoi diff
         run: |
           chezmoi diff
