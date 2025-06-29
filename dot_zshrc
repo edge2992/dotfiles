@@ -1,5 +1,16 @@
-# Created by newuser for 5.8.1
+# zsh configuration file
+export HISTFILE=$HOME/.zsh_history
+export HISTSIZE=10000
+export SAVEHIST=10000
 
+setopt APPEND_HISTORY
+setopt SHARE_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_REDUCE_BLANKS
+setopt EXTENDED_HISTORY
+
+# alias for zsh
 alias vim='nvim'
 alias g='cd $(ghq list -p | fzf)'
 
@@ -10,3 +21,13 @@ command -v eza &> /dev/null && alias ls='eza --group --git --group-directories-f
 eval "$(sheldon source)"
 eval "$(starship init zsh)"
 
+# fzf integration
+# if (( $+commands[fzf] )); then
+#   source <(fzf --zsh)
+# fi
+
+# setup when compinit is available
+if type compinit >/dev/null 2>&1; then
+  autoload -Uz compinit
+  compinit -C
+fi
