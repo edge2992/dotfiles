@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+{{ if eq .chezmoi.os "linux" }}
+
+# nvim
+if ! command -v nvim >/dev/null 2>&1; then
+  arch=$(uname -m)
+  case "$arch" in
+    x86_64)  appimage="nvim-linux-x86_64.appimage" ;;
+    aarch64) appimage="nvim-linux-arm64.appimage"  ;;
+    *) echo "Unsupported architecture: $arch"; exit 1 ;;
+  esac
+
+  curl -L -O "https://github.com/neovim/neovim/releases/latest/download/${appimage}"
+  chmod +x "${appimage}"
+  ./"${appimage}" --appimage-extract
+  sudo mv squashfs-root /opt/nvim
+  sudo ln -sf /opt/nvim/AppRun /usr/local/bin/nvim
+  rm "${appimage}"
+fi
+
+{{ end }}
