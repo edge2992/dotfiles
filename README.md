@@ -121,9 +121,39 @@ The Neovim configuration uses Lua and is managed by [lazy.nvim](https://github.c
 ### AI Integration
 - **copilot.lua** - GitHub Copilot integration for AI-powered code completion
 
+### Language Server Protocol (LSP) Support
+- **nvim-lspconfig** - Easy LSP configuration for Neovim
+- **mason.nvim** - Package manager for LSP servers, DAP servers, linters, and formatters
+- **mason-lspconfig.nvim** - Bridge between mason.nvim and lspconfig
+- **nvim-cmp** - Completion framework with multiple sources
+- **cmp-nvim-lsp** - LSP source for nvim-cmp
+- **cmp-buffer** - Buffer words source for nvim-cmp
+- **cmp-path** - Path source for nvim-cmp
+- **cmp-cmdline** - Command line source for nvim-cmp
+- **LuaSnip** - Snippet engine for Neovim
+- **cmp_luasnip** - LuaSnip source for nvim-cmp
+
+#### Supported LSP Servers
+The configuration automatically installs and configures the following LSP servers:
+- **lua_ls** - Lua language server
+- **ts_ls** - TypeScript/JavaScript language server
+- **rust_analyzer** - Rust language server
+- **pyright** - Python language server
+- **gopls** - Go language server
+- **clangd** - C/C++ language server
+- **bashls** - Bash language server
+- **jsonls** - JSON language server
+- **yamlls** - YAML language server
+- **html** - HTML language server
+- **cssls** - CSS language server
+- **tailwindcss** - Tailwind CSS language server
+
 ### Key Features
 - **Lazy loading** - Plugins are loaded only when needed for better performance
 - **Modern Lua configuration** - Clean, maintainable configuration structure
+- **LSP Integration** - Full language server support with intelligent completions, diagnostics, and code actions
+- **Automated LSP Server Management** - LSP servers are automatically installed and configured via Mason
+- **Advanced Completion** - Multi-source completion with snippets, LSP, buffer, and path completion
 - **Customizable keymaps** - Window management and plugin-specific shortcuts
 - **Consistent UI** - Cohesive visual experience across all plugins
 
@@ -141,8 +171,11 @@ The Neovim configuration uses Lua and is managed by [lazy.nvim](https://github.c
         ├── init.lua           # Base plugins (plenary)
         ├── autopairs.lua      # Auto-pairing configuration
         ├── copilot.lua        # GitHub Copilot setup
+        ├── lspconfig.lua      # LSP server configurations
         ├── lualine.lua        # Statusline configuration
+        ├── mason.lua          # LSP server management
         ├── neo-tree.lua       # File explorer setup
+        ├── nvim-cmp.lua       # Completion framework setup
         └── vim-commentary.lua # Commenting plugin
 ```
 
