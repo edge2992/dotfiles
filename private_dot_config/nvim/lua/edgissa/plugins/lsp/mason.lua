@@ -34,7 +34,6 @@ return {
         "lua_ls",
         "pyright",
         "sqlls",
-        "tsserver",
         "zls",
       },
       automatic_installation = true,
