@@ -1,27 +1,21 @@
 #!/bin/bash
-
 set -e
 
-# cargo (rust)
+# Rust toolchain
 if ! command -v cargo >/dev/null 2>&1; then
-  echo "Installing cargo..."
+  echo "Installing Rust..."
   curl https://sh.rustup.rs -sSf | sh -s -- -y
-
-  # load cargo (rust) env 
   . "$HOME/.cargo/env" 
 fi
 
-# sheldon (zsh package manager)
+# Rust tools
 if ! command -v sheldon >/dev/null 2>&1; then
   cargo install sheldon
 fi
 
-# eza (alternative to ls)
 if ! command -v eza >/dev/null 2>&1; then
   cargo install eza
 fi
-
-
 
 if ! command -v starship >/dev/null 2>&1; then
   cargo install starship --locked

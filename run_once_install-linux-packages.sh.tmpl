@@ -1,0 +1,30 @@
+#!/bin/bash
+set -e
+
+{{ if eq .chezmoi.os "linux" }}
+echo "Installing system packages and Go tools"
+
+sudo apt update
+
+# Development tools
+if ! command -v fzf >/dev/null 2>&1; then
+  sudo apt install -y fzf
+fi
+
+if ! command -v go >/dev/null 2>&1; then
+  sudo apt install -y golang
+fi
+
+if ! command -v tmux >/dev/null 2>&1; then
+  sudo apt install -y tmux
+fi
+
+# Go tools (after Go installation)
+if ! command -v memo >/dev/null 2>&1; then
+  go install github.com/mattn/memo@latest
+fi
+
+if ! command -v ghq >/dev/null 2>&1; then
+  go install github.com/x-motemen/ghq@latest
+fi
+{{ end }}

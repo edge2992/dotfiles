@@ -1,0 +1,10 @@
+# Git repositories
+[".tmux/plugins/tpm"]
+  type = "git-repo"
+  url = "https://github.com/tmux-plugins/tpm.git"
+  refreshPeriod = "168h"
+
+[".local/share/nvim/lazy/lazy.nvim"]
+  type = "git-repo"
+  url = "https://github.com/folke/lazy.nvim.git"
+  refreshPeriod = "168h"

@@ -1,8 +1,7 @@
 #!/bin/bash
-
 set -e
 
-# volta install check
+# Volta (Node.js manager)
 if ! command -v volta >/dev/null 2>&1; then
   echo "Installing Volta..."
   curl https://get.volta.sh | bash
@@ -11,14 +10,8 @@ fi
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
 
-# Node をインストール 
+# Node.js and global packages
 volta install node
-
-# npm packages
 volta install aicommits
-
-# ClaudeCode (Anthropic CLI) install
 volta install @anthropic-ai/claude-code
 volta install ccusage
-
-echo "Volta, Node, aicommits, claude-code installation completed."

@@ -7,7 +7,7 @@ Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
 - **Shell**: Zsh configuration with Starship prompt, sheldon plugin manager, and Go binary path setup
 - **Git**: Git configuration with color settings and nvim as default editor
 - **Tmux**: Terminal multiplexer configuration with plugin manager
-- **Neovim**: Lua-based configuration
+- **Neovim**: Lua-based configuration with lazy.nvim plugin manager and essential plugins
 - **Development Tools**: Automated installation of essential development tools
 - **Fonts**: Nerd Fonts support for enhanced shell experience
 
@@ -39,7 +39,7 @@ Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
 - `.zshenv` - Zsh environment variables
 - `.gitconfig` - Git configuration
 - `.tmux.conf` - Tmux configuration
-- `~/.config/nvim/` - Neovim configuration
+- `~/.config/nvim/` - Neovim configuration with plugins
 
 ### Development Tools (Auto-installed)
 - **fzf** - Fuzzy finder
@@ -103,6 +103,48 @@ The Starship prompt requires a Nerd Font to display icons correctly. Nerd Fonts 
 - Fonts are automatically installed during chezmoi setup
 - To skip font installation, set `SKIP_NERD_FONTS_INSTALL=true` before running chezmoi
 - Restart your terminal application after setup for fonts to take effect
+
+## Neovim Configuration
+
+The Neovim configuration uses Lua and is managed by [lazy.nvim](https://github.com/folke/lazy.nvim) for plugin management. It includes the following plugins:
+
+### Core Plugins
+- **lazy.nvim** - Modern plugin manager for Neovim
+- **plenary.nvim** - Lua functions library used by many plugins
+
+### Editor Enhancements
+- **neo-tree.nvim** - File explorer with modern UI
+- **lualine.nvim** - Statusline plugin with themes and components
+- **nvim-autopairs** - Auto-pairing of brackets, quotes, etc.
+- **vim-commentary** - Easy commenting and uncommenting of code
+
+### AI Integration
+- **copilot.lua** - GitHub Copilot integration for AI-powered code completion
+
+### Key Features
+- **Lazy loading** - Plugins are loaded only when needed for better performance
+- **Modern Lua configuration** - Clean, maintainable configuration structure
+- **Customizable keymaps** - Window management and plugin-specific shortcuts
+- **Consistent UI** - Cohesive visual experience across all plugins
+
+### Configuration Structure
+```
+~/.config/nvim/
+├── init.lua                    # Main configuration entry point
+└── lua/edgissa/
+    ├── core/
+    │   ├── init.lua           # Core configuration loader
+    │   ├── keymaps.lua        # Custom key mappings
+    │   └── options.lua        # Neovim options and settings
+    ├── lazy.lua               # Plugin manager setup
+    └── plugins/               # Individual plugin configurations
+        ├── init.lua           # Base plugins (plenary)
+        ├── autopairs.lua      # Auto-pairing configuration
+        ├── copilot.lua        # GitHub Copilot setup
+        ├── lualine.lua        # Statusline configuration
+        ├── neo-tree.lua       # File explorer setup
+        └── vim-commentary.lua # Commenting plugin
+```
 
 ## Customization
 
