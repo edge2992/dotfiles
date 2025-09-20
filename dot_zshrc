@@ -2,8 +2,7 @@
 export HISTFILE=$HOME/.zsh_history
 export HISTSIZE=10000
 export SAVEHIST=10000
-export LANG=C
-export LC_ALL=C
+
 
 setopt APPEND_HISTORY
 setopt SHARE_HISTORY

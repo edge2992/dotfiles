@@ -3,5 +3,8 @@ export PATH="$VOLTA_HOME/bin:$PATH"
 export PATH="/usr/local/go/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 
+# uv, uvx
+source $HOME/.local/bin/env
+
 # load cargo (rust) env
 . "$HOME/.cargo/env"

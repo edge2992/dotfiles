@@ -1,16 +1,44 @@
 {
   "permissions": {
     "allow": [
+      "Read(**)",
+      "Write(src/**)",
+      "Write(docs/**)",
+      "Write(.tmp/**)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
       "WebFetch(domain:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
       "List(*)",
       "Edit(*)",
-      "Bash(git:*)",
       "Bash(npm:*)",
       "Bash(ls:*)",
       "Bash(cat:*)",
       "Bash(mkdir:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(grep:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "mcp__serena"
+    ],
+    "deny": [
+      "Bash(sudo:*)",
+      "Bash(rm -rf:*)",
+      "Bash(git push:*)",
+      "Bash(git reset:*)",
+      "Bash(git rebase:*)",
+      "Read(.env.*)",
+      "Read(id_rsa)",
+      "Read(id_ed25519)",
+      "Write(.env*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)"
     ]
   },
-  "cleanupPeriodDays": 60
+  "cleanupPeriodDays": 60,
+  "preferredNotifChannel": "auto",
+  "includeCoAuthoredBy": false,
+  "enableAllProjectMcpServers": false
 }
