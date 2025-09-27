@@ -26,12 +26,14 @@ command -v eza &> /dev/null && alias ls='eza --group --git --group-directories-f
 {{ end }}
 
 # Atuin: modern shell history tool
-. "$HOME/.atuin/bin/env"
+if [ -f "$HOME/.atuin/bin/env" ]; then
+  . "$HOME/.atuin/bin/env"
+fi
 
 # zsh plugin
-eval "$(sheldon source)"
-eval "$(starship init zsh)"
-eval "$(atuin init zsh)"
+command -v sheldon >/dev/null 2>&1 && eval "$(sheldon source)"
+command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
+command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh)"
 
 # fzf integration
 # if (( $+commands[fzf] )); then

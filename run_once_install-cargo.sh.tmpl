@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# Skip Rust compilation in CI environment
+if [ -n "$CI" ]; then
+  echo "CI environment detected. Skipping Rust tools installation."
+  exit 0
+fi
+
 # Rust toolchain
 if ! command -v cargo >/dev/null 2>&1; then
   echo "Installing Rust..."
