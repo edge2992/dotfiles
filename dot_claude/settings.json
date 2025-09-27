@@ -40,5 +40,5 @@
   "cleanupPeriodDays": 60,
   "preferredNotifChannel": "auto",
   "includeCoAuthoredBy": false,
-  "enableAllProjectMcpServers": false
+  "enableAllProjectMcpServers": true
 }

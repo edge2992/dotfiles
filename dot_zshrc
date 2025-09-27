@@ -21,9 +21,12 @@ alias vlast='vim "$(ls -1 | tail -n 1)"'
 # ls command
 command -v eza &> /dev/null && alias ls='eza --group --git --group-directories-first' || alias ls='ls --color=auto --group-directories-first -h'
 
+. "$HOME/.atuin/bin/env"
+
 # zsh plugin
 eval "$(sheldon source)"
 eval "$(starship init zsh)"
+eval "$(atuin init zsh)"
 
 # fzf integration
 # if (( $+commands[fzf] )); then
