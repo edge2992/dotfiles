@@ -32,6 +32,17 @@ Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
    chezmoi init --apply https://github.com/edge2992/dotfiles.git
    ```
 
+   During initialization, you'll be prompted to enter:
+   - **Email address** - Used for Git configuration
+   - **GitHub username** - Used for Git configuration
+
+3. For updating an existing chezmoi installation with new configuration prompts:
+   ```bash
+   chezmoi update --init
+   ```
+   
+   Use this command when the dotfiles repository has been updated with new configuration templates that require user input.
+
 ## What Gets Installed
 
 ### Configuration Files
