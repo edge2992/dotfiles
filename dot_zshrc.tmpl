@@ -14,13 +14,18 @@ setopt EXTENDED_HISTORY
 # alias for zsh
 alias vim='nvim'
 alias g='cd $(ghq list -p | fzf)'
-alias m='make'
-alias ma='m before-bench && sleep 5 && ((m sql-all;) & m bench) && m after-bench; '
 alias vlast='vim "$(ls -1 | tail -n 1)"'
 
+# alis for isucon
+alias m='make'
+alias ma='m before-bench && sleep 5 && ((m sql-all;) & m bench) && m after-bench; '
+
+{{ if eq .chezmoi.os "linux" }}
 # ls command
 command -v eza &> /dev/null && alias ls='eza --group --git --group-directories-first' || alias ls='ls --color=auto --group-directories-first -h'
+{{ end }}
 
+# Atuin: modern shell history tool
 . "$HOME/.atuin/bin/env"
 
 # zsh plugin
