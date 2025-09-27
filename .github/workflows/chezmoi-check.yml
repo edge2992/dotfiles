@@ -21,4 +21,4 @@ jobs:
         env:
           SKIP_NERD_FONTS_INSTALL: true
         run: |
-          sh -c "$(curl -fsLS get.chezmoi.io/get)" -- init --apply -S .
+          sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply -S .
