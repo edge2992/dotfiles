@@ -1,5 +1,5 @@
-{{ $email := promptStringOnce . "email" "What is your email address" -}}
-{{ $name := promptStringOnce . "name" "What is your Github username" -}}
+{{ $email := or (env "GIT_EMAIL") (promptStringOnce . "email" "What is your email address") -}}
+{{ $name := or (env "GIT_NAME") (promptStringOnce . "name" "What is your Github username") -}}
 
 data:
   email: {{ $email | quote }}

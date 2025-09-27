@@ -20,5 +20,7 @@ jobs:
       - name: Install dotfiles
         env:
           SKIP_NERD_FONTS_INSTALL: true
+          GIT_EMAIL: "ci@example.com"
+          GIT_NAME: "CI"
         run: |
           sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply -S .
