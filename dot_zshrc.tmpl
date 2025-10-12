@@ -46,3 +46,20 @@ if type compinit >/dev/null 2>&1; then
   compinit -C
 fi
 
+# SSH shortcut with fzf
+function sshf() {
+  # Listing Host and HostName from ~/.ssh/config and selecting with fzf
+  local selection=$(grep -E "^\s*(Host|HostName) " ~/.ssh/config | \
+    sed -E 's/^\s*Host(Name)?[ ]*//g' | \
+    awk '{print $1}' | \
+    grep -v '^HostName$' | \
+    grep -v '\*' | \
+    sort -u | \
+    fzf --prompt="Select Host or HostName: ")
+
+  # If a selection was made, initiate SSH connection
+  if [ -n "$selection" ]; then
+    ssh "$@""$selection"
+  fi
+}
+
