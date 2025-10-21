@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Skip Install in CI environment
-if [ -n "$CI" ]; then
+if [ -n "${CI:-}" ]; then
   echo "CI environment detected. Skipping Nerd Fonts installation."
   exit 0
 fi

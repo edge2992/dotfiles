@@ -19,6 +19,7 @@ alias vlast='vim "$(ls -1 | tail -n 1)"'
 # alis for isucon
 alias m='make'
 alias ma='m before-bench && sleep 5 && ((m sql-all;) & m bench) && m after-bench; '
+alias slackcat='cat'
 
 {{ if eq .chezmoi.os "linux" }}
 # ls command
