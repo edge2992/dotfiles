@@ -5,10 +5,11 @@ Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
 ## Features
 
 - **Shell**: Zsh configuration with Starship prompt, sheldon plugin manager, and Go binary path setup
-- **Git**: Git configuration with color settings and nvim as default editor
-- **Tmux**: Terminal multiplexer configuration with plugin manager
-- **Neovim**: Lua-based configuration with lazy.nvim plugin manager and essential plugins
-- **Development Tools**: Automated installation of essential development tools
+- **Git**: Git configuration with color settings, nvim as default editor, and AI-powered commit messages
+- **Tmux**: Terminal multiplexer configuration with plugin manager and custom status bar
+- **Neovim**: Lua-based configuration with lazy.nvim plugin manager, LSP integration, and GitHub Copilot
+- **Claude CLI**: AI-powered development workflow with custom agents, security controls, and MCP integration
+- **Development Tools**: Automated installation of essential development tools with cross-platform support
 - **Fonts**: Nerd Fonts support for enhanced shell experience
 
 ## Prerequisites
@@ -62,7 +63,7 @@ Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
 - **volta** - JavaScript tool manager
 - **Node.js** - Via volta
 - **aicommits** - AI-powered commit messages
-- **claude-code** - Anthropic's Claude CLI
+- **claude-code** - Anthropic's Claude CLI with custom agents and MCP integration
 - **cargo** - Rust package manager
 - **sheldon** - Zsh plugin manager
 - **starship** - Cross-shell prompt
@@ -83,6 +84,21 @@ chezmoi diff
 
 # Update from repository
 chezmoi update
+```
+
+### Claude CLI Workflow
+```bash
+# Initialize Claude CLI session with context
+claude-code
+
+# Use custom agents for specialized tasks
+claude-code --agent code-reviewer
+claude-code --agent ultra-think
+
+# AI-enhanced development workflow
+aic "implement user authentication"  # AI commit messages
+g                                   # Switch repos with fzf + Claude context
+memo "project notes"               # Quick notes with Claude integration
 ```
 
 ### Platform Support
@@ -194,15 +210,54 @@ The configuration automatically installs and configures the following LSP server
 
 The configuration supports different operating systems through chezmoi templates. Installation scripts automatically detect your OS and install appropriate packages.
 
+## Claude CLI Integration
+
+This dotfiles repository includes sophisticated Claude CLI integration for AI-powered development workflows.
+
+### Custom Agents
+- **Code Reviewer** (`dot_claude/agents/code-reviewer.md`) - Automated code quality analysis with security, maintainability, and performance focus
+- **Ultra-think** (`dot_claude/commands/ultra-think.md`) - Deep analysis framework for complex problem-solving with multi-dimensional perspectives
+
+### Configuration
+- **Global Instructions** (`dot_claude/CLAUDE.md`) - Project rules, programming guidelines, and workflow optimization
+- **Permission System** (`dot_claude/settings.json`) - Granular security controls for file operations, Git commands, and system access
+- **Local Settings** (`dot_claude/settings.local.json`) - Desktop notifications and tool completion feedback
+- **MCP Integration** - Context7 plugin for real-time library documentation
+
+### Key Features
+- **Multilingual Workflow** - Think in English, respond in Japanese for international development
+- **Concurrent Tool Execution** - Optimized for maximum efficiency
+- **Security Controls** - Blocks destructive commands and sensitive file access
+- **AI-Enhanced Development** - Integrated with existing tools (Git, Neovim, shell workflows)
+
+### Usage Examples
+```bash
+# AI-powered code review
+claude-code review
+
+# Deep problem analysis
+claude-code ultra-think "complex system design question"
+
+# Integrated development workflow with existing aliases
+aic  # AI-powered commit messages (aicommits)
+g    # Repository switching with ghq + fzf + Claude context
+```
+
 ## Structure
 
 ```
 .
-├── dot_gitconfig           # Git configuration
-├── dot_tmux.conf          # Tmux configuration  
-├── dot_zshenv             # Zsh environment variables
-├── dot_zshrc              # Zsh configuration
-├── private_dot_config/    # Private config directory
-│   └── nvim/             # Neovim configuration
-└── run_once_*.sh.tmpl    # Installation scripts
+├── dot_claude/            # Claude CLI configuration
+│   ├── CLAUDE.md         # Global instructions and rules
+│   ├── agents/           # Custom AI agents
+│   ├── commands/         # Custom commands
+│   ├── settings.json     # Permission and security settings
+│   └── settings.local.json # Local preferences and hooks
+├── dot_gitconfig.tmpl    # Git configuration
+├── dot_tmux.conf         # Tmux configuration  
+├── dot_zshenv            # Zsh environment variables
+├── dot_zshrc.tmpl        # Zsh configuration
+├── private_dot_config/   # Private config directory
+│   └── nvim/            # Neovim configuration
+└── run_once_*.sh.tmpl   # Installation scripts
 ```
