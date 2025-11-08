@@ -24,6 +24,9 @@ alias slackcat='cat'
 {{ if eq .chezmoi.os "linux" }}
 # ls command
 command -v eza &> /dev/null && alias ls='eza --group --git --group-directories-first' || alias ls='ls --color=auto --group-directories-first -h'
+
+# global claude
+alias claude="$HOME/.claude/local/claude"
 {{ end }}
 
 # Atuin: modern shell history tool
