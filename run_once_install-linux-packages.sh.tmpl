@@ -8,7 +8,7 @@ sudo apt update
 
 # Development tools
 if ! command -v fzf >/dev/null 2>&1; then
-  sudo apt install -y fzf
+  sudo apt install -y fzf htop build-essential libssl-dev pkg-config
 fi
 
 if ! command -v go >/dev/null 2>&1; then
@@ -16,10 +16,19 @@ if ! command -v go >/dev/null 2>&1; then
   wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
   sudo tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
   rm go${GO_VERSION}.linux-amd64.tar.gz
+
+  if [ -d /usr/local/go/bin ]; then
+    export PATH="/usr/local/go/bin:$PATH"
+  fi
 fi
 
 if ! command -v tmux >/dev/null 2>&1; then
   sudo apt install -y tmux
+fi
+
+if ! command -v go >/dev/null 2>&1; then
+  echo "go command still not found; PATH is: $PATH"
+  exit 1
 fi
 
 # Go tools (after Go installation)

@@ -16,6 +16,9 @@ Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
 
 - [chezmoi](https://www.chezmoi.io/install/) - dotfiles manager
 - Git
+- build-essential
+- libssl-dev
+- pkg-config
 
 ## Installation
 
