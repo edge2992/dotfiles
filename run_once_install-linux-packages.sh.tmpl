@@ -8,7 +8,10 @@ sudo apt update
 
 # Development tools
 if ! command -v fzf >/dev/null 2>&1; then
-  sudo apt install -y fzf htop build-essential libssl-dev pkg-config
+  sudo apt install -y fzf htop build-essential libssl-dev pkg-config cmake
+
+  # x11
+  sudo apt install -y xclip
 fi
 
 if ! command -v go >/dev/null 2>&1; then
