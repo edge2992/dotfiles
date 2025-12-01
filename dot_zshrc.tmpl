@@ -3,6 +3,12 @@ export HISTFILE=$HOME/.zsh_history
 export HISTSIZE=10000
 export SAVEHIST=10000
 
+# Force English messages in terminal
+export LANG=en_US.UTF-8
+export LC_MESSAGES=en_US.UTF-8
+
+# eza color scheme
+export LS_COLORS="$LS_COLORS:di=36"
 
 setopt APPEND_HISTORY
 setopt SHARE_HISTORY
@@ -23,7 +29,7 @@ alias slackcat='cat'
 
 {{ if eq .chezmoi.os "linux" }}
 # ls command
-command -v eza &> /dev/null && alias ls='eza --group --git --group-directories-first' || alias ls='ls --color=auto --group-directories-first -h'
+command -v eza &> /dev/null && alias ls='eza --icons --group --git --group-directories-first' || alias ls='ls --color=auto --group-directories-first -h'
 
 # global claude
 alias claude="$HOME/.claude/local/claude"
