@@ -1,0 +1,187 @@
+#!/usr/bin/env bash
+# Smart git commit with AI-suggested message and nvim editing
+# Usage: git-claude-commit [additional context]
+
+set -e
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Check if there are changes to commit
+if ! git diff --cached --quiet 2>/dev/null; then
+    :
+elif ! git diff --quiet 2>/dev/null; then
+    echo -e "${YELLOW}⚡ No staged changes. Staging all changes...${NC}"
+    git add -A
+else
+    echo -e "${RED}✗ No changes to commit${NC}"
+    exit 1
+fi
+
+# Get git diff
+DIFF=$(git diff --cached)
+DIFF_STAT=$(git diff --cached --stat)
+if [ -z "$DIFF" ]; then
+    echo -e "${RED}✗ No staged changes${NC}"
+    exit 1
+fi
+
+# Get recent commits for style reference
+RECENT_COMMITS=$(git log -5 --pretty=format:"%s" 2>/dev/null || echo "")
+
+# Analyze changes to suggest commit type
+analyze_commit_type() {
+    local diff="$1"
+    local type="chore"
+    local scope=""
+
+    # Check file patterns
+    if echo "$diff" | grep -q "^+.*TODO\|^+.*FIXME"; then
+        type="chore"
+    elif echo "$diff" | grep -q "test"; then
+        type="test"
+        scope="testing"
+    elif echo "$diff" | grep -q "\.md\$\|README\|docs/"; then
+        type="docs"
+    elif echo "$diff" | grep -q "^+.*function\|^+.*class\|^+.*def "; then
+        # New functions/classes might be features
+        if echo "$diff" | grep -q "^+.*bug\|^+.*fix"; then
+            type="fix"
+        else
+            type="feat"
+        fi
+    elif echo "$diff" | grep -q "^+.*fix\|^+.*bug"; then
+        type="fix"
+    elif echo "$diff" | grep -q "style\|format\|prettier\|eslint"; then
+        type="style"
+    elif echo "$diff" | grep -q "refactor"; then
+        type="refactor"
+    elif echo "$diff" | grep -q "perf\|performance\|optimize"; then
+        type="perf"
+    fi
+
+    # Detect scope from file paths
+    if echo "$diff" | grep -q "src/components/"; then
+        scope="components"
+    elif echo "$diff" | grep -q "src/api/\|src/service"; then
+        scope="api"
+    elif echo "$diff" | grep -q "src/utils/\|src/lib/"; then
+        scope="utils"
+    elif echo "$diff" | grep -q "\.config\.\|config/"; then
+        scope="config"
+    fi
+
+    if [ -n "$scope" ]; then
+        echo "${type}(${scope}): "
+    else
+        echo "${type}: "
+    fi
+}
+
+# Get suggested commit prefix
+SUGGESTED_PREFIX=$(analyze_commit_type "$DIFF_STAT")
+
+# Extract changed files summary
+CHANGED_FILES=$(echo "$DIFF_STAT" | head -n -1 | awk '{print $1}' | head -5)
+FILES_COUNT=$(echo "$DIFF_STAT" | tail -1 | grep -oE '[0-9]+ file' | grep -oE '[0-9]+')
+
+# Create temporary file for commit message
+TEMP_MSG=$(mktemp /tmp/git-commit-msg.XXXXXX)
+
+# Cleanup on exit
+cleanup() {
+    rm -f "$TEMP_MSG"
+}
+trap cleanup EXIT
+
+# Generate smart commit message template
+cat > "$TEMP_MSG" << TEMPLATE
+${SUGGESTED_PREFIX}
+
+# ──────────────────────────────────────────────────────────
+# Conventional Commits: <type>(<scope>): <subject>
+#
+# Types: feat, fix, docs, style, refactor, perf, test, chore
+# Subject: imperative mood, no period, max 50 chars
+# Body: explain what and why (not how), wrap at 72 chars
+# ──────────────────────────────────────────────────────────
+#
+# Recent commits in this repo:
+TEMPLATE
+
+echo "$RECENT_COMMITS" | sed 's/^/# /' >> "$TEMP_MSG"
+
+cat >> "$TEMP_MSG" << TEMPLATE
+#
+# ──────────────────────────────────────────────────────────
+# Changes to be committed (${FILES_COUNT} file(s)):
+TEMPLATE
+
+echo "$DIFF_STAT" | sed 's/^/# /' >> "$TEMP_MSG"
+
+if [ -n "$1" ]; then
+    cat >> "$TEMP_MSG" << TEMPLATE
+#
+# Additional context: $*
+TEMPLATE
+fi
+
+cat >> "$TEMP_MSG" << 'TEMPLATE'
+# ──────────────────────────────────────────────────────────
+# Quick reference:
+#   feat: New feature
+#   fix: Bug fix
+#   docs: Documentation only
+#   style: Formatting, missing semicolons, etc.
+#   refactor: Code restructuring without behavior change
+#   perf: Performance improvements
+#   test: Adding or updating tests
+#   chore: Maintenance, tooling, dependencies
+TEMPLATE
+
+# Display summary
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}📝 Commit Summary${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}Suggested type:${NC} ${SUGGESTED_PREFIX}"
+echo -e "${YELLOW}Changed files:${NC} ${FILES_COUNT}"
+echo ""
+echo "$DIFF_STAT"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+echo -e "${GREEN}Opening nvim to edit commit message...${NC}"
+sleep 1
+
+# Open in nvim for editing
+"${EDITOR:-nvim}" "$TEMP_MSG"
+
+# Remove comment lines and trim whitespace
+FINAL_MSG=$(grep -v '^#' "$TEMP_MSG" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed '/^$/d')
+
+if [ -z "$FINAL_MSG" ]; then
+    echo -e "${RED}✗ Commit message is empty. Aborting.${NC}"
+    exit 1
+fi
+
+# Show final message for confirmation
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${GREEN}Final commit message:${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo "$FINAL_MSG"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+
+# Create the commit
+git commit -F - << COMMIT_EOF
+$FINAL_MSG
+COMMIT_EOF
+
+echo ""
+echo -e "${GREEN}✓ Commit created successfully${NC}"
+git log -1 --pretty=format:"  %C(yellow)%h%Creset %s %C(blue)(%cr)%Creset"
+echo ""

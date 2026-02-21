@@ -17,7 +17,9 @@
   alias = !git config --get-regexp '^alias\\.' | sed 's/alias\\.\\([^ ]*\\) \\(.*\\)/\\1\\\t => \\2/' | sort
   a = !git add -A && git status
   au = !git add -u && git status
-  aic = !git add -A && aicommits
+  # AI-powered commit (replaces aicommits)
+  aic = !git add -A && git-claude-commit
+  ai = !git-claude-commit
   cam = commit --amend
   wip = commit -m 'wip'
   co = checkout
