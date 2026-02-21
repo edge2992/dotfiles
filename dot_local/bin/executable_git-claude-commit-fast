@@ -1,0 +1,270 @@
+#!/usr/bin/env bash
+# Smart git commit with AI-suggested message and nvim editing
+# Usage: git-claude-commit [additional context]
+# Debug: DEBUG=1 git-claude-commit
+
+set -e
+
+# Debug mode
+DEBUG=${DEBUG:-0}
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Check if there are changes to commit
+if ! git diff --cached --quiet 2>/dev/null; then
+    :
+elif ! git diff --quiet 2>/dev/null; then
+    echo -e "${YELLOW}⚡ No staged changes. Staging all changes...${NC}"
+    git add -A
+else
+    echo -e "${RED}✗ No changes to commit${NC}"
+    exit 1
+fi
+
+# Get git diff and status
+DIFF=$(git diff --cached)
+DIFF_STAT=$(git diff --cached --stat)
+GIT_STATUS=$(git status --porcelain --cached)
+
+if [ -z "$DIFF" ]; then
+    echo -e "${RED}✗ No staged changes${NC}"
+    exit 1
+fi
+
+# Get recent commits for style reference
+RECENT_COMMITS=$(git log -5 --pretty=format:"%s" 2>/dev/null || echo "")
+
+# Analyze changes to suggest commit type
+analyze_commit_type() {
+    local diff_full="$1"
+    local diff_stat="$2"
+    local git_status="$3"
+    local type="chore"
+    local scope=""
+
+    # Count additions and deletions
+    local additions=$(echo "$diff_full" | grep -c "^+" || echo "0")
+    local deletions=$(echo "$diff_full" | grep -c "^-" || echo "0")
+
+    # Check git status for file operations
+    local new_files=$(echo "$git_status" | grep -c "^A " || echo "0")
+    local deleted_files=$(echo "$git_status" | grep -c "^D " || echo "0")
+    local modified_files=$(echo "$git_status" | grep -c "^M " || echo "0")
+    local renamed_files=$(echo "$git_status" | grep -c "^R " || echo "0")
+
+    # Debug output
+    if [ "$DEBUG" = "1" ]; then
+        echo "[DEBUG] Analysis:" >&2
+        echo "  New: $new_files, Deleted: $deleted_files, Modified: $modified_files, Renamed: $renamed_files" >&2
+        echo "  Additions: $additions, Deletions: $deletions" >&2
+    fi
+
+    # Check for new files (strong indicator of feature)
+    if [ "$new_files" -gt 0 ] && [ "$deleted_files" -eq 0 ]; then
+        type="feat"
+        [ "$DEBUG" = "1" ] && echo "  → Detected: new files = feat" >&2
+    elif [ "$deleted_files" -gt 0 ] && [ "$new_files" -eq 0 ]; then
+        type="refactor"
+        [ "$DEBUG" = "1" ] && echo "  → Detected: deleted files = refactor" >&2
+    elif [ "$renamed_files" -gt 0 ]; then
+        type="refactor"
+        [ "$DEBUG" = "1" ] && echo "  → Detected: renamed files = refactor" >&2
+    fi
+
+    # Priority 1: File type patterns (most reliable)
+    if echo "$diff_stat" | grep -qE "test|spec|\.test\.|\.spec\."; then
+        type="test"
+        scope="testing"
+        [ "$DEBUG" = "1" ] && echo "  → Pattern: test files" >&2
+    elif echo "$diff_stat" | grep -qE "\.md$|README|CHANGELOG|docs/"; then
+        type="docs"
+        [ "$DEBUG" = "1" ] && echo "  → Pattern: documentation" >&2
+    elif echo "$diff_stat" | grep -qE "package\.json|package-lock\.json|yarn\.lock|go\.mod|Cargo\.toml|requirements\.txt|Gemfile"; then
+        type="chore"
+        scope="deps"
+        [ "$DEBUG" = "1" ] && echo "  → Pattern: dependencies" >&2
+    elif echo "$diff_stat" | grep -qE "\.config\.|\.eslintrc|\.prettierrc|tsconfig|vite\.config|webpack"; then
+        type="chore"
+        scope="config"
+        [ "$DEBUG" = "1" ] && echo "  → Pattern: config files" >&2
+    elif echo "$diff_stat" | grep -qE "Dockerfile|docker-compose|\.github/workflows|Makefile"; then
+        type="chore"
+        scope="ci"
+        [ "$DEBUG" = "1" ] && echo "  → Pattern: CI/build files" >&2
+    # Priority 2: Actual code changes
+    elif echo "$diff_full" | grep -qiE "^\+.*\b(bug|fix|error|issue|crash|broken)\b"; then
+        type="fix"
+        [ "$DEBUG" = "1" ] && echo "  → Content: fix keywords found" >&2
+    elif echo "$diff_full" | grep -qE "^\+.*(function|const|let|var|def |class |interface |type |export |impl )"; then
+        # New code elements - likely a feature if substantial additions
+        if [ "$additions" -gt "$((deletions * 2))" ]; then
+            type="feat"
+            [ "$DEBUG" = "1" ] && echo "  → Content: new code elements + more additions = feat" >&2
+        else
+            type="refactor"
+            [ "$DEBUG" = "1" ] && echo "  → Content: new code elements but balanced changes = refactor" >&2
+        fi
+    elif echo "$diff_full" | grep -qiE "^\+.*(TODO|FIXME|XXX|HACK)"; then
+        type="chore"
+        [ "$DEBUG" = "1" ] && echo "  → Content: TODO/FIXME markers" >&2
+    elif echo "$diff_full" | grep -qiE "^\+.*(optimize|performance|faster|cache|memo)"; then
+        type="perf"
+        [ "$DEBUG" = "1" ] && echo "  → Content: performance keywords" >&2
+    elif echo "$diff_full" | grep -qiE "^\+.*(refactor|reorganize|restructure|cleanup)"; then
+        type="refactor"
+        [ "$DEBUG" = "1" ] && echo "  → Content: refactor keywords" >&2
+    elif echo "$diff_full" | grep -qiE "^\+.*(style|format|indent|whitespace)"; then
+        type="style"
+        [ "$DEBUG" = "1" ] && echo "  → Content: style keywords" >&2
+    # Priority 3: Pattern-based detection
+    elif [ "$additions" -gt "$((deletions * 3))" ] && [ "$additions" -gt 20 ]; then
+        # Significantly more additions than deletions = likely new feature
+        type="feat"
+        [ "$DEBUG" = "1" ] && echo "  → Stats: many additions = feat" >&2
+    elif [ "$deletions" -gt "$((additions * 2))" ] && [ "$deletions" -gt 20 ]; then
+        # Significantly more deletions = cleanup or removal
+        type="refactor"
+        [ "$DEBUG" = "1" ] && echo "  → Stats: many deletions = refactor" >&2
+    else
+        [ "$DEBUG" = "1" ] && echo "  → Default: no pattern matched, staying as $type" >&2
+    fi
+
+    # Detect scope from file paths
+    if [ -z "$scope" ]; then
+        if echo "$diff_stat" | grep -qE "src/components/|components/"; then
+            scope="components"
+        elif echo "$diff_stat" | grep -qE "src/api/|src/services/|api/|services/"; then
+            scope="api"
+        elif echo "$diff_stat" | grep -qE "src/utils/|src/lib/|utils/|lib/"; then
+            scope="utils"
+        elif echo "$diff_stat" | grep -qE "src/hooks/|hooks/"; then
+            scope="hooks"
+        elif echo "$diff_stat" | grep -qE "src/store/|src/state/|store/|redux/"; then
+            scope="state"
+        elif echo "$diff_stat" | grep -qE "src/types/|types/|\.d\.ts"; then
+            scope="types"
+        elif echo "$diff_stat" | grep -qE "src/styles/|styles/|\.css|\.scss|\.sass"; then
+            scope="styles"
+        elif echo "$diff_stat" | grep -qE "database/|migrations/|db/"; then
+            scope="db"
+        elif echo "$diff_stat" | grep -qE "auth|login|user"; then
+            scope="auth"
+        fi
+    fi
+
+    if [ -n "$scope" ]; then
+        echo "${type}(${scope}): "
+    else
+        echo "${type}: "
+    fi
+}
+
+# Get suggested commit prefix (pass diff, stat, and git status)
+SUGGESTED_PREFIX=$(analyze_commit_type "$DIFF" "$DIFF_STAT" "$GIT_STATUS")
+
+# Extract changed files summary
+CHANGED_FILES=$(echo "$DIFF_STAT" | head -n -1 | awk '{print $1}' | head -5)
+FILES_COUNT=$(echo "$DIFF_STAT" | tail -1 | grep -oE '[0-9]+ file' | grep -oE '[0-9]+')
+
+# Create temporary file for commit message
+TEMP_MSG=$(mktemp /tmp/git-commit-msg.XXXXXX)
+
+# Cleanup on exit
+cleanup() {
+    rm -f "$TEMP_MSG"
+}
+trap cleanup EXIT
+
+# Generate smart commit message template
+cat > "$TEMP_MSG" << TEMPLATE
+${SUGGESTED_PREFIX}
+
+# ──────────────────────────────────────────────────────────
+# Conventional Commits: <type>(<scope>): <subject>
+#
+# Types: feat, fix, docs, style, refactor, perf, test, chore
+# Subject: imperative mood, no period, max 50 chars
+# Body: explain what and why (not how), wrap at 72 chars
+# ──────────────────────────────────────────────────────────
+#
+# Recent commits in this repo:
+TEMPLATE
+
+echo "$RECENT_COMMITS" | sed 's/^/# /' >> "$TEMP_MSG"
+
+cat >> "$TEMP_MSG" << TEMPLATE
+#
+# ──────────────────────────────────────────────────────────
+# Changes to be committed (${FILES_COUNT} file(s)):
+TEMPLATE
+
+echo "$DIFF_STAT" | sed 's/^/# /' >> "$TEMP_MSG"
+
+if [ -n "$1" ]; then
+    cat >> "$TEMP_MSG" << TEMPLATE
+#
+# Additional context: $*
+TEMPLATE
+fi
+
+cat >> "$TEMP_MSG" << 'TEMPLATE'
+# ──────────────────────────────────────────────────────────
+# Quick reference:
+#   feat: New feature
+#   fix: Bug fix
+#   docs: Documentation only
+#   style: Formatting, missing semicolons, etc.
+#   refactor: Code restructuring without behavior change
+#   perf: Performance improvements
+#   test: Adding or updating tests
+#   chore: Maintenance, tooling, dependencies
+TEMPLATE
+
+# Display summary
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}📝 Commit Summary${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}AI Suggested:${NC} ${SUGGESTED_PREFIX}"
+echo -e "${YELLOW}Changed files:${NC} ${FILES_COUNT}"
+echo -e "${YELLOW}Lines:${NC} +$(echo "$DIFF" | grep -c '^+' || echo 0) -$(echo "$DIFF" | grep -c '^-' || echo 0)"
+echo ""
+echo "$DIFF_STAT"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+echo -e "${GREEN}Opening nvim to edit commit message...${NC}"
+sleep 1
+
+# Open in nvim for editing
+"${EDITOR:-nvim}" "$TEMP_MSG"
+
+# Remove comment lines and trim whitespace
+FINAL_MSG=$(grep -v '^#' "$TEMP_MSG" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed '/^$/d')
+
+if [ -z "$FINAL_MSG" ]; then
+    echo -e "${RED}✗ Commit message is empty. Aborting.${NC}"
+    exit 1
+fi
+
+# Show final message for confirmation
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${GREEN}Final commit message:${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo "$FINAL_MSG"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+
+# Create the commit
+git commit -F - << COMMIT_EOF
+$FINAL_MSG
+COMMIT_EOF
+
+echo ""
+echo -e "${GREEN}✓ Commit created successfully${NC}"
+git log -1 --pretty=format:"  %C(yellow)%h%Creset %s %C(blue)(%cr)%Creset"
+echo ""
