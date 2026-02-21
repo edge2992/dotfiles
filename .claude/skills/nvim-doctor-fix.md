@@ -56,3 +56,40 @@ Perl、Ruby providerの警告を無効にしたい場合は、以下を`~/.confi
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 ```
+
+## Node.js provider のyarnエラーについて
+
+Node.js providerで「Failed to run: yarn info neovim --json」というエラーが表示される場合：
+
+### 解決方法1: シェルセッションを再起動
+
+```bash
+# tmuxを使用している場合
+tmux kill-session
+# 新しいtmuxセッションを開始
+
+# またはシンプルに新しいzshセッションを開始
+exec zsh
+```
+
+### 解決方法2: Node.js providerを無効化（使用しない場合）
+
+`~/.config/nvim/lua/edgissa/core/options.lua`に以下を追加：
+
+```lua
+vim.g.loaded_node_provider = 0
+```
+
+## pynvim バージョン警告について
+
+pynvimのバージョンが古い（0.5.0）という警告が表示される場合、これは通常の動作には影響しません。最新バージョン（0.6.0）が必要な場合は、以下のコマンドでアップグレードできます：
+
+```bash
+# pipxを使用（推奨）
+pipx install pynvim
+# Neovimに使用するPythonを明示的に設定
+# ~/.config/nvim/lua/edgissa/core/options.luaに追加:
+# vim.g.python3_host_prog = vim.fn.expand('~/.local/pipx/venvs/pynvim/bin/python')
+```
+
+ただし、0.5.0でもほとんどの機能は正常に動作します。
