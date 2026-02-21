@@ -40,6 +40,7 @@ fi
 command -v sheldon >/dev/null 2>&1 && eval "$(sheldon source)"
 command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
 command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh)"
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 
 # fzf integration
 # if (( $+commands[fzf] )); then
