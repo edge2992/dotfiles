@@ -40,5 +40,9 @@
   "cleanupPeriodDays": 60,
   "preferredNotifChannel": "auto",
   "includeCoAuthoredBy": false,
-  "enableAllProjectMcpServers": true
+  "enableAllProjectMcpServers": true,
+  "statusLine": {
+    "type": "command",
+    "command": "printf '%s@%s:%s' \"$(whoami)\" \"$(hostname -s)\" \"$(pwd)\" | sed 's|'\"$HOME\"'|~|'"
+  }
 }
