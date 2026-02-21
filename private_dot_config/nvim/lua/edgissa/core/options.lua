@@ -1,5 +1,9 @@
 local opt = vim.opt
 
+-- Disable optional providers to suppress warnings
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
+
 -- Browse
 opt.number = true
 opt.relativenumber = true

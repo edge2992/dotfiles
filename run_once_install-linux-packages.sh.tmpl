@@ -14,6 +14,11 @@ if ! command -v fzf >/dev/null 2>&1; then
   sudo apt install -y xclip
 fi
 
+# Install ripgrep for better grep performance (needed by Neovim)
+if ! command -v rg >/dev/null 2>&1; then
+  sudo apt install -y ripgrep
+fi
+
 if ! command -v go >/dev/null 2>&1; then
   GO_VERSION="1.22.4"
   wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz

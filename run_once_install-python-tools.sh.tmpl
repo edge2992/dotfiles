@@ -1,6 +1,14 @@
 #!/bin/bash
 set -e
 
+{{ if eq .chezmoi.os "linux" }}
+# Install pynvim for Neovim Python support via apt
+if ! python3 -c "import pynvim" 2>/dev/null; then
+  echo "Installing python3-pynvim for Neovim..."
+  sudo apt install -y python3-pynvim
+fi
+{{ end }}
+
 # uv (Python package manager)
 if ! command -v uv >/dev/null 2>&1; then
   echo "Installing uv..."

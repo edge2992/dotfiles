@@ -15,3 +15,8 @@ volta install node
 volta install aicommits
 volta install @anthropic-ai/claude-code
 volta install ccusage
+
+# Install neovim package for Neovim Node.js support
+if ! npm list -g neovim >/dev/null 2>&1; then
+  npm install -g neovim
+fi
