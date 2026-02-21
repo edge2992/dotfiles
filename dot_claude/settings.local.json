@@ -1,12 +1,23 @@
 {
   "hooks": {
-    "PostToolUse": [
+    "Notification": [
       {
-        "matcher": "*",
+        "matcher": "",
         "hooks": [
           {
             "type": "command",
-            "command": "if command -v osascript >/dev/null 2>&1; then osascript -e 'display notification \"Tool: $CLAUDE_TOOL_NAME completed\" with title \"Claude Code\"'; elif command -v notify-send >/dev/null 2>&1; then notify-send 'Claude Code' \"Tool: $CLAUDE_TOOL_NAME completed\"; fi"
+            "command": "notify-send -u normal -i dialog-question 'Claude Code' 'Waiting for your input' 2>/dev/null; spd-say -l ja '入力待ちです' 2>/dev/null &"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "notify-send -u low -i dialog-information 'Claude Code' 'Response complete' 2>/dev/null; spd-say -l ja '完了しました' 2>/dev/null &"
           }
         ]
       }
