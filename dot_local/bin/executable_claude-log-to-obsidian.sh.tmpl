@@ -2,10 +2,15 @@
 # Log Claude Code tool usage to Obsidian daily note
 # Called by Claude Code hooks via stdin (JSON)
 
-VAULT_PATH="{{ .obsidian_vault_path }}"
+VAULT_PATH="{{ if hasKey . "obsidian_vault_path" }}{{ .obsidian_vault_path }}{{ end }}"
 
 # Skip if vault path is not configured or does not exist
 if [ -z "$VAULT_PATH" ] || [ ! -d "$VAULT_PATH" ]; then
+  exit 0
+fi
+
+# Require jq for JSON parsing
+if ! command -v jq >/dev/null 2>&1; then
   exit 0
 fi
 

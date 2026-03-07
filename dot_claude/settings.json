@@ -67,7 +67,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/claude-log-to-obsidian.sh",
+            "command": "$HOME/.local/bin/claude-log-to-obsidian.sh",
             "timeout": 5
           }
         ]
