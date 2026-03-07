@@ -1,2 +1,12 @@
-# Claude Code skills - should not be managed by chezmoi
+# Repository-only files (not dotfiles)
+CLAUDE.md
+README.md
+docs/
+.pre-commit-config.yaml
+.stylua.toml
+
+# Claude Code auto-generated / transient files
 .claude/skills/
+.claude/.update.lock
+.claude/shell-snapshots
+.claude/plugins/
