@@ -1,0 +1,59 @@
+format = """
+$directory\
+$git_branch\
+$git_status\
+$python\
+$rust\
+$golang\
+$nodejs\
+$lua\
+$line_break\
+$character"""
+
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+
+[git_branch]
+format = "[$symbol$branch]($style) "
+symbol = " "
+
+[git_status]
+format = '([\[$modified$staged$untracked\]]($style) )'
+modified = "M${count}"
+staged = "S${count}"
+untracked = "?${count}"
+
+[python]
+format = "[$symbol$version]($style) "
+
+[rust]
+format = "[$symbol$version]($style) "
+
+[golang]
+format = "[$symbol$version]($style) "
+
+[nodejs]
+format = "[$symbol$version]($style) "
+
+[lua]
+format = "[$symbol$version]($style) "
+
+[aws]
+disabled = true
+
+[azure]
+disabled = true
+
+[gcloud]
+disabled = true
+
+[package]
+disabled = true
+
+[docker_context]
+disabled = true
+
+[character]
+success_symbol = "[>](bold green)"
+error_symbol = "[>](bold red)"

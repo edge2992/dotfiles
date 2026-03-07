@@ -38,3 +38,7 @@ github = "agkozak/zsh-z"
 # abbr
 [plugins.zsh-abbr]
 github = "olets/zsh-abbr"
+
+# fzf-tab: replace zsh default completion with fzf
+[plugins.fzf-tab]
+github = "Aloxaf/fzf-tab"
