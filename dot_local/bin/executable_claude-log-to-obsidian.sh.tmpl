@@ -1,0 +1,45 @@
+#!/bin/sh
+# Log Claude Code tool usage to Obsidian daily note
+# Called by Claude Code hooks via stdin (JSON)
+
+VAULT_PATH="{{ if hasKey . "obsidian_vault_path" }}{{ .obsidian_vault_path }}{{ end }}"
+
+# Skip if vault path is not configured or does not exist
+if [ -z "$VAULT_PATH" ] || [ ! -d "$VAULT_PATH" ]; then
+  exit 0
+fi
+
+# Require jq for JSON parsing
+if ! command -v jq >/dev/null 2>&1; then
+  exit 0
+fi
+
+DAILY_DIR="$VAULT_PATH/daily"
+TODAY="$(date +%Y-%m-%d)"
+DAILY_NOTE="$DAILY_DIR/$TODAY.md"
+TIMESTAMP="$(date +%H:%M:%S)"
+
+# Read JSON from stdin
+INPUT="$(cat)"
+
+TOOL_NAME="$(printf '%s' "$INPUT" | jq -r '.tool_name // empty')"
+CWD="$(printf '%s' "$INPUT" | jq -r '.cwd // empty')"
+PROJECT="$(basename "$CWD")"
+
+# Skip if no tool name
+if [ -z "$TOOL_NAME" ]; then
+  exit 0
+fi
+
+# Create daily directory if needed
+mkdir -p "$DAILY_DIR"
+
+# Create daily note with header if it doesn't exist
+if [ ! -f "$DAILY_NOTE" ]; then
+  printf '# %s\n\n' "$TODAY" > "$DAILY_NOTE"
+fi
+
+# Append log entry
+printf '- `%s` **%s** | %s | %s\n' "$TIMESTAMP" "$TOOL_NAME" "$PROJECT" "$CWD" >> "$DAILY_NOTE"
+
+exit 0
