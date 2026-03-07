@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# fzf version: 0.70.0
+
+log() { echo "[install] $*"; }
+
+if [ -n "${CI:-}" ]; then
+  log "CI environment detected. Skipping fzf installation."
+  exit 0
+fi
+
+{{ if eq .chezmoi.os "linux" }}
+
+FZF_VERSION="0.70.0"
+
+if command -v fzf >/dev/null 2>&1; then
+  CURRENT_VERSION=$(fzf --version | awk '{print $1}')
+  if [ "$CURRENT_VERSION" = "$FZF_VERSION" ]; then
+    log "fzf is already up to date: ${CURRENT_VERSION}"
+    exit 0
+  fi
+fi
+
+log "Installing fzf ${FZF_VERSION}..."
+
+arch=$(uname -m)
+case "$arch" in
+  x86_64)  fzf_arch="linux_amd64" ;;
+  aarch64) fzf_arch="linux_arm64" ;;
+  *) log "Unsupported architecture: $arch"; exit 1 ;;
+esac
+
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
+
+curl -fsSL "https://github.com/junegunn/fzf/releases/download/v${FZF_VERSION}/fzf-${FZF_VERSION}-${fzf_arch}.tar.gz" \
+  -o "$tmpdir/fzf.tar.gz"
+tar -xzf "$tmpdir/fzf.tar.gz" -C "$tmpdir"
+
+install -Dm755 "$tmpdir/fzf" "${HOME}/.local/bin/fzf"
+
+log "fzf ${FZF_VERSION} installed to ~/.local/bin/fzf"
+
+{{ end }}
