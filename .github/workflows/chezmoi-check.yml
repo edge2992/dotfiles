@@ -40,6 +40,7 @@ jobs:
         env:
           GIT_EMAIL: "ci@example.com"
           GIT_NAME: "CI"
+          CI: "true"
         run: |
           sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply --exclude=scripts -S .
 
@@ -83,6 +84,7 @@ jobs:
         env:
           GIT_EMAIL: "ci@example.com"
           GIT_NAME: "CI"
+          CI: "true"
         run: |
           sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply --exclude=scripts -S .
 
