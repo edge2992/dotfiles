@@ -14,9 +14,9 @@ log "Installing system packages and Go tools"
 sudo apt update
 
 # Development tools
-if ! command -v fzf >/dev/null 2>&1; then
+if ! command -v htop >/dev/null 2>&1; then
   log "Installing development tools..."
-  sudo apt install -y fzf htop build-essential libssl-dev pkg-config cmake
+  sudo apt install -y htop build-essential libssl-dev pkg-config cmake
 
   # x11
   sudo apt install -y xclip
