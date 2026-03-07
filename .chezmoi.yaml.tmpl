@@ -1,6 +1,8 @@
 {{ $email := or (env "GIT_EMAIL") (promptStringOnce . "email" "What is your email address") -}}
 {{ $name := or (env "GIT_NAME") (promptStringOnce . "name" "What is your Github username") -}}
+{{ $op_account := or (env "OP_ACCOUNT") (promptStringOnce . "op_account" "What is your 1Password account (e.g. my.1password.com, leave empty to skip)") -}}
 
 data:
   email: {{ $email | quote }}
   name: {{ $name | quote }}
+  op_account: {{ $op_account | quote }}
