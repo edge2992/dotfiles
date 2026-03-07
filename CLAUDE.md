@@ -100,7 +100,8 @@ chezmoi execute-template < dot_zshrc.tmpl
 2. **実装**: worktreeを使い、独立した変更は並列で作業する
 3. **PR作成**: `gh pr create` でPRを作成。bodyにissue番号を含める (`Closes #XX`)
 4. **レビュー**: code-reviewer エージェントでセルフレビューを実施してからPRを出す
-5. **マージ**: レビュー通過後にマージ
+5. **CI確認**: `gh pr checks <PR番号>` でCIが全て通過していることを確認する。失敗時は修正してから次へ進む
+6. **マージ**: レビュー通過かつCI通過後にマージ。`--admin` でのCI迂回は禁止
 
 ### 並列作業時のルール
 - **worktree必須**: 並列作業時は `isolation: "worktree"` でエージェントを起動する
