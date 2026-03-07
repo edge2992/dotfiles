@@ -1,0 +1,31 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.10.0
+    hooks:
+      - id: shellcheck
+        args: ["-s", "bash", "-e", "SC1091"]
+        files: \.sh(\.tmpl)?$
+
+  - repo: https://github.com/JohnnyMorganz/StyLua
+    rev: v2.0.2
+    hooks:
+      - id: stylua
+        args: ["--check"]
+        files: \.lua$
+
+  - repo: local
+    hooks:
+      - id: chezmoi-template-check
+        name: chezmoi template validation
+        entry: sh -c 'for f in "$@"; do chezmoi execute-template < "$f" > /dev/null || exit 1; done' --
+        language: system
+        files: \.tmpl$
+        types: [file]
