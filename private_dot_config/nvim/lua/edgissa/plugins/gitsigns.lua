@@ -3,6 +3,20 @@ return {
   event = "VeryLazy",
   config = function()
     require('gitsigns').setup {
+      on_attach = function(bufnr)
+        local gs = package.loaded.gitsigns
+        local map = function(mode, lhs, rhs, desc)
+          vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = "Git: " .. desc })
+        end
+
+        map("n", "]h", gs.next_hunk, "Next hunk")
+        map("n", "[h", gs.prev_hunk, "Prev hunk")
+        map("n", "<leader>gs", gs.stage_hunk, "Stage hunk")
+        map("n", "<leader>gr", gs.reset_hunk, "Reset hunk")
+        map("n", "<leader>gS", gs.stage_buffer, "Stage buffer")
+        map("n", "<leader>gp", gs.preview_hunk, "Preview hunk")
+        map("n", "<leader>gb", function() gs.blame_line({ full = true }) end, "Blame line")
+      end,
       signs = {
         add          = { text = '┃' },
         change       = { text = '┃' },
