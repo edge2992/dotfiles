@@ -8,6 +8,11 @@ typeset -U path
 
 # --- PATH management (all PATH settings belong here) ---
 
+{{ if eq .chezmoi.os "darwin" -}}
+# Homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
+{{ end -}}
+
 # Volta (Node.js manager)
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"

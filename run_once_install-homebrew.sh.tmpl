@@ -1,0 +1,35 @@
+#!/bin/bash
+set -e
+
+if [ -n "${CI:-}" ]; then
+  echo "CI environment detected. Skipping Homebrew installation."
+  exit 0
+fi
+
+{{ if eq .chezmoi.os "darwin" }}
+echo "Installing Homebrew and core packages for macOS"
+
+# Install Homebrew if not present
+if ! command -v brew >/dev/null 2>&1; then
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+  # Add Homebrew to PATH for the rest of this script
+  if [ -f /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  fi
+fi
+
+# Core packages
+brew install \
+  eza \
+  fzf \
+  ghq \
+  sheldon \
+  starship \
+  atuin \
+  direnv \
+  neovim \
+  ripgrep \
+  fd \
+  bat
+{{ end }}
