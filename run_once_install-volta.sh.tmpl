@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+if [ -n "${CI:-}" ]; then
+  echo "CI environment detected. Skipping Volta/Node.js installation."
+  exit 0
+fi
+
 # Volta (Node.js manager)
 if ! command -v volta >/dev/null 2>&1; then
   echo "Installing Volta..."

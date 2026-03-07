@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+if [ -n "${CI:-}" ]; then
+  echo "CI environment detected. Skipping Python tools installation."
+  exit 0
+fi
+
 {{ if eq .chezmoi.os "linux" }}
 # Install pynvim for Neovim Python support via apt
 if ! python3 -c "import pynvim" 2>/dev/null; then

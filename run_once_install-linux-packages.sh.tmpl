@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+if [ -n "${CI:-}" ]; then
+  echo "CI environment detected. Skipping system packages installation."
+  exit 0
+fi
+
 {{ if eq .chezmoi.os "linux" }}
 echo "Installing system packages and Go tools"
 

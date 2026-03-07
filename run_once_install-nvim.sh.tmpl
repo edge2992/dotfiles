@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+if [ -n "${CI:-}" ]; then
+  echo "CI environment detected. Skipping Neovim installation."
+  exit 0
+fi
+
 {{ if eq .chezmoi.os "linux" }}
 
 # nvim

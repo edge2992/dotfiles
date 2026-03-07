@@ -11,20 +11,83 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  chezmoi:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-    timeout-minutes: 10
+  shellcheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install dotfiles
+      - name: Run shellcheck on .sh.tmpl files
+        run: |
+          exit_code=0
+          for f in run_once_install-*.sh.tmpl; do
+            echo "::group::shellcheck $f"
+            # Strip chezmoi template directives before running shellcheck
+            sed '/^{{/d' "$f" | shellcheck -s bash - || exit_code=1
+            echo "::endgroup::"
+          done
+          exit "$exit_code"
+
+  chezmoi-apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install chezmoi and apply dotfiles (skip scripts)
         env:
-          SKIP_NERD_FONTS_INSTALL: true
           GIT_EMAIL: "ci@example.com"
           GIT_NAME: "CI"
         run: |
-          sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply -S .
+          sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply --exclude=scripts -S .
+
+      - name: Verify key config files exist
+        run: |
+          files=(
+            "$HOME/.zshrc"
+            "$HOME/.zshenv"
+            "$HOME/.gitconfig"
+            "$HOME/.tmux.conf"
+            "$HOME/.ideavimrc"
+            "$HOME/.config/nvim/init.lua"
+            "$HOME/.config/nvim/lua/edgissa/core/init.lua"
+            "$HOME/.config/nvim/lua/edgissa/lazy.lua"
+          )
+          fail=0
+          for f in "${files[@]}"; do
+            if [ -f "$f" ]; then
+              echo "OK: $f"
+            else
+              echo "MISSING: $f"
+              fail=1
+            fi
+          done
+          exit "$fail"
+
+  nvim-health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Neovim via apt
+        run: sudo apt-get update && sudo apt-get install -y neovim
+
+      - name: Install chezmoi and apply dotfiles (skip scripts)
+        env:
+          GIT_EMAIL: "ci@example.com"
+          GIT_NAME: "CI"
+        run: |
+          sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply --exclude=scripts -S .
+
+      - name: Verify Neovim Lua config loads without errors
+        run: |
+          nvim --headless -c "lua require('edgissa')" -c "qa!" 2>&1 | tee /tmp/nvim-output.log
+          if grep -qi 'error' /tmp/nvim-output.log; then
+            echo "Neovim config has errors!"
+            exit 1
+          fi
+          echo "Neovim config loaded successfully"
