@@ -4,11 +4,13 @@ return {
     "hrsh7th/cmp-buffer", -- Buffer completions
     "hrsh7th/cmp-path", -- Path completions
     "L3MON4D3/LuaSnip", -- Snippet engine
+    "saadparwaiz1/cmp_luasnip", -- Snippet completions
     "hrsh7th/cmp-nvim-lsp", -- LSP completions
     "onsails/lspkind-nvim", -- LSP icons
   },
   config = function()
     local cmp = require("cmp")
+    local luasnip = require("luasnip")
     local lspkind = require("lspkind")
 
     cmp.setup({
@@ -25,9 +27,24 @@ return {
         ["<C-Space>"] = cmp.mapping.complete(),
         ["<CR>"] = cmp.mapping.confirm({ select = true }),
         ["<C-e>"] = cmp.mapping.abort(),
+        ["<Tab>"] = cmp.mapping(function(fallback)
+          if luasnip.expand_or_jumpable() then
+            luasnip.expand_or_jump()
+          else
+            fallback()
+          end
+        end, { "i", "s" }),
+        ["<S-Tab>"] = cmp.mapping(function(fallback)
+          if luasnip.jumpable(-1) then
+            luasnip.jump(-1)
+          else
+            fallback()
+          end
+        end, { "i", "s" }),
       }),
       sources = {
         { name = "nvim_lsp" },
+        { name = "luasnip" },
         { name = "buffer" },
         { name = "path" },
       },
