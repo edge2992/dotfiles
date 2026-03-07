@@ -13,86 +13,11 @@ setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_REDUCE_BLANKS
 setopt EXTENDED_HISTORY
 
-# alias for zsh
-alias vim='nvim'
-alias g='cd $(ghq list -p | fzf)'
-alias vlast='vim "$(ls -1 | tail -n 1)"'
-
-# alias for isucon
-alias m='make'
-alias ma='m before-bench && sleep 5 && ((m sql-all;) & m bench) && m after-bench; '
-alias slackcat='cat'
-
-{{ if eq .chezmoi.os "linux" }}
-# ls command
-command -v eza &> /dev/null && alias ls='eza --icons --group --git --group-directories-first' || alias ls='ls --color=auto --group-directories-first -h'
-
-# global claude
-# alias claude="$HOME/.claude/local/claude"
-{{ end }}
-
-# zsh plugin
-command -v sheldon >/dev/null 2>&1 && eval "$(sheldon source)"
-command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
-
-# fzf settings
-export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --info=inline'
-
-# fzf integration
-if (( $+commands[fzf] )); then
-  source <(fzf --zsh)
-fi
-
-command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh)"
-command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
-
 # setup completions
 autoload -Uz compinit
 compinit -C
 
-# SSH shortcut with fzf
-function sshf() {
-  # Listing Host and HostName from ~/.ssh/config and selecting with fzf
-  local selection=$(grep -E "^\s*(Host|HostName) " ~/.ssh/config | \
-    sed -E 's/^\s*Host(Name)?[ ]*//g' | \
-    awk '{print $1}' | \
-    grep -v '^HostName$' | \
-    grep -v '\*' | \
-    sort -u | \
-    fzf --prompt="Select Host or HostName: ")
-
-  # If a selection was made, initiate SSH connection
-  if [ -n "$selection" ]; then
-    ssh "$@""$selection"
-  fi
-}
-
-# Git + fzf workflow functions
-
-# Switch git branch with fzf
-function gb() {
-  local branch
-  branch=$(git branch -a --format='%(refname:short)' | fzf --preview 'git log --oneline --graph --color=always {}' | sed 's/^origin\///')
-  [ -n "$branch" ] && git switch "$branch"
-}
-
-# Browse git log with fzf and copy commit hash
-function glog() {
-  local commit
-  commit=$(git log --oneline --color=always | fzf --ansi --preview 'git show --color=always {1}' | awk '{print $1}')
-  [ -n "$commit" ] && echo "$commit"
-}
-
-# Browse and checkout GitHub PRs with fzf
-function gpr() {
-  local pr
-  pr=$(gh pr list | fzf --preview 'gh pr view {1}' | awk '{print $1}')
-  [ -n "$pr" ] && gh pr checkout "$pr"
-}
-
-# Browse git stash entries with fzf
-function gst() {
-  local stash
-  stash=$(git stash list | fzf --preview 'echo {1} | sed "s/:$//" | xargs git stash show -p' | awk -F: '{print $1}')
-  [ -n "$stash" ] && git stash show -p "$stash"
-}
+# source modular config files
+[ -f ~/.config/zsh/aliases.zsh ] && source ~/.config/zsh/aliases.zsh
+[ -f ~/.config/zsh/plugins.zsh ] && source ~/.config/zsh/plugins.zsh
+[ -f ~/.config/zsh/functions.zsh ] && source ~/.config/zsh/functions.zsh
