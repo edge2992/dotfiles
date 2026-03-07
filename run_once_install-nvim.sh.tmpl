@@ -1,28 +1,34 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
+
+log() { echo "[install] $*"; }
 
 if [ -n "${CI:-}" ]; then
-  echo "CI environment detected. Skipping Neovim installation."
+  log "CI environment detected. Skipping Neovim installation."
   exit 0
 fi
 
 {{ if eq .chezmoi.os "linux" }}
 
 # nvim
-if ! command -v nvim >/dev/null 2>&1; then
-  arch=$(uname -m)
-  case "$arch" in
-    x86_64)  appimage="nvim-linux-x86_64.appimage" ;;
-    aarch64) appimage="nvim-linux-arm64.appimage"  ;;
-    *) echo "Unsupported architecture: $arch"; exit 1 ;;
-  esac
-
-  curl -L -O "https://github.com/neovim/neovim/releases/latest/download/${appimage}"
-  chmod +x "${appimage}"
-  ./"${appimage}" --appimage-extract
-  sudo mv squashfs-root /opt/nvim
-  sudo ln -sf /opt/nvim/AppRun /usr/local/bin/nvim
-  rm "${appimage}"
+if command -v nvim >/dev/null 2>&1; then
+  log "Neovim is already installed: $(nvim --version | head -1)"
+  exit 0
 fi
+
+log "Installing Neovim..."
+arch=$(uname -m)
+case "$arch" in
+  x86_64)  appimage="nvim-linux-x86_64.appimage" ;;
+  aarch64) appimage="nvim-linux-arm64.appimage"  ;;
+  *) log "Unsupported architecture: $arch"; exit 1 ;;
+esac
+
+curl -L -O "https://github.com/neovim/neovim/releases/latest/download/${appimage}"
+chmod +x "${appimage}"
+./"${appimage}" --appimage-extract
+sudo mv squashfs-root /opt/nvim
+sudo ln -sf /opt/nvim/AppRun /usr/local/bin/nvim
+rm "${appimage}"
 
 {{ end }}
