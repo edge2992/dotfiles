@@ -77,14 +77,14 @@ function sshf() {
 # Switch git branch with fzf
 function gb() {
   local branch
-  branch=$(git branch -a | fzf --preview 'git log --oneline --graph --color=always {1}' | sed 's/^[* ]*//' | sed 's/remotes\/origin\///')
+  branch=$(git branch -a --format='%(refname:short)' | fzf --preview 'git log --oneline --graph --color=always {}' | sed 's/^origin\///')
   [ -n "$branch" ] && git switch "$branch"
 }
 
 # Browse git log with fzf and copy commit hash
 function glog() {
   local commit
-  commit=$(git log --oneline --graph --color=always | fzf --ansi --preview 'git show --color=always {2}' | awk '{print $2}')
+  commit=$(git log --oneline --color=always | fzf --ansi --preview 'git show --color=always {1}' | awk '{print $1}')
   [ -n "$commit" ] && echo "$commit"
 }
 
@@ -98,6 +98,6 @@ function gpr() {
 # Browse git stash entries with fzf
 function gst() {
   local stash
-  stash=$(git stash list | fzf --preview 'git stash show -p {1}' | awk -F: '{print $1}')
+  stash=$(git stash list | fzf --preview 'echo {1} | sed "s/:$//" | xargs git stash show -p' | awk -F: '{print $1}')
   [ -n "$stash" ] && git stash show -p "$stash"
 }
