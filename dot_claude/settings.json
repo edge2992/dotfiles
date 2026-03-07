@@ -31,8 +31,9 @@
     "deny": [
       "Bash(sudo:*)",
       "Bash(rm -rf:*)",
-      "Bash(git push:*)",
-      "Bash(git reset:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
       "Bash(git rebase:*)",
       "Bash(chezmoi destroy:*)",
       "Bash(chezmoi purge:*)",
