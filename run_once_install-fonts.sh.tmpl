@@ -1,17 +1,27 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+log() { echo "[install] $*"; }
+
 # Skip Install in CI environment
 if [ -n "${CI:-}" ]; then
-  echo "CI environment detected. Skipping Nerd Fonts installation."
+  log "CI environment detected. Skipping Nerd Fonts installation."
   exit 0
 fi
 
 if [[ "${SKIP_NERD_FONTS_INSTALL:-}" == "true" ]]; then
-  echo "Skipping Nerd Fonts installation due to SKIP_NERD_FONTS_INSTALL."
+  log "Skipping Nerd Fonts installation due to SKIP_NERD_FONTS_INSTALL."
   exit 0
 fi
 
+# Check if UbuntuMono Nerd Font is already installed
+font_dir="${HOME}/.local/share/fonts"
+if ls "${font_dir}"/UbuntuMono*.ttf >/dev/null 2>&1; then
+  log "UbuntuMono Nerd Font is already installed, skipping"
+  exit 0
+fi
+
+log "Installing UbuntuMono Nerd Font..."
 tmpdir=$(mktemp -d)
 
 git clone --branch=master --depth=1 https://github.com/ryanoasis/nerd-fonts.git "$tmpdir/nerd-fonts"

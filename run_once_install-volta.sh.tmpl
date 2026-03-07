@@ -1,14 +1,18 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
+
+log() { echo "[install] $*"; }
 
 if [ -n "${CI:-}" ]; then
-  echo "CI environment detected. Skipping Volta/Node.js installation."
+  log "CI environment detected. Skipping Volta/Node.js installation."
   exit 0
 fi
 
 # Volta (Node.js manager)
-if ! command -v volta >/dev/null 2>&1; then
-  echo "Installing Volta..."
+if command -v volta >/dev/null 2>&1; then
+  log "Volta is already installed"
+else
+  log "Installing Volta..."
   curl https://get.volta.sh | bash
 fi
 
@@ -16,6 +20,7 @@ export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
 
 # Node.js and global packages
+log "Ensuring Node.js and global packages..."
 volta install node
 volta install yarn
 volta install aicommits
@@ -23,5 +28,6 @@ volta install ccusage
 
 # Install neovim package for Neovim Node.js support
 if ! npm list -g neovim >/dev/null 2>&1; then
+  log "Installing neovim npm package..."
   npm install -g neovim
 fi

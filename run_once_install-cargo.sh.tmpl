@@ -1,33 +1,41 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+log() { echo "[install] $*"; }
+
 # Skip Rust compilation in CI environment
 if [ -n "${CI:-}" ]; then
-  echo "CI environment detected. Skipping Rust tools installation."
+  log "CI environment detected. Skipping Rust tools installation."
   exit 0
 fi
 
 # Rust toolchain
-if ! command -v cargo >/dev/null 2>&1; then
-  echo "Installing Rust..."
+if command -v cargo >/dev/null 2>&1; then
+  log "cargo is already installed, skipping rustup"
+else
+  log "Installing Rust..."
   curl https://sh.rustup.rs -sSf | sh -s -- -y
-  . "$HOME/.cargo/env" 
+  . "$HOME/.cargo/env"
 fi
 
 # Rust tools
 if ! command -v sheldon >/dev/null 2>&1; then
+  log "Installing sheldon..."
   cargo install sheldon
 fi
 
 if ! command -v eza >/dev/null 2>&1; then
+  log "Installing eza..."
   cargo install eza
 fi
 
 if ! command -v starship >/dev/null 2>&1; then
+  log "Installing starship..."
   cargo install starship --locked
 fi
 
 if ! command -v atuin >/dev/null 2>&1; then
+  log "Installing atuin..."
   cargo install atuin
 fi
 
