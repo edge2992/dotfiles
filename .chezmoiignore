@@ -8,5 +8,5 @@ docs/
 # Claude Code auto-generated / transient files
 .claude/skills/
 .claude/.update.lock
-.claude/shell-snapshots
+.claude/shell-snapshots/
 .claude/plugins/
