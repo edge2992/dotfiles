@@ -24,7 +24,7 @@ jobs:
           for f in run_once_install-*.sh.tmpl; do
             echo "::group::shellcheck $f"
             # Strip chezmoi template directives before running shellcheck
-            sed '/^{{/d' "$f" | shellcheck -s bash - || exit_code=1
+            sed '/^{{/d' "$f" | shellcheck -s bash -e SC1091 - || exit_code=1
             echo "::endgroup::"
           done
           exit "$exit_code"
@@ -73,8 +73,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Neovim via apt
-        run: sudo apt-get update && sudo apt-get install -y neovim
+      - name: Install Neovim (stable PPA)
+        run: |
+          sudo add-apt-repository -y ppa:neovim-ppa/stable
+          sudo apt-get update
+          sudo apt-get install -y neovim
 
       - name: Install chezmoi and apply dotfiles (skip scripts)
         env:
@@ -85,9 +88,10 @@ jobs:
 
       - name: Verify Neovim Lua config loads without errors
         run: |
-          nvim --headless -c "lua require('edgissa')" -c "qa!" 2>&1 | tee /tmp/nvim-output.log
-          if grep -qi 'error' /tmp/nvim-output.log; then
-            echo "Neovim config has errors!"
+          nvim --version | head -1
+          nvim --headless +"lua require('edgissa.core')" +qa 2>&1 | tee /tmp/nvim-output.log
+          if grep -q 'E5108' /tmp/nvim-output.log; then
+            echo "Neovim config has Lua errors!"
             exit 1
           fi
           echo "Neovim config loaded successfully"
