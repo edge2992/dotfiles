@@ -2,265 +2,48 @@
 
 Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
 
-## Features
-
-- **Shell**: Zsh configuration with Starship prompt, sheldon plugin manager, and Go binary path setup
-- **Git**: Git configuration with color settings, nvim as default editor, and AI-powered commit messages
-- **Tmux**: Terminal multiplexer configuration with plugin manager and custom status bar
-- **Neovim**: Lua-based configuration with lazy.nvim plugin manager, LSP integration, and GitHub Copilot
-- **Claude CLI**: AI-powered development workflow with custom agents, security controls, and MCP integration
-- **Development Tools**: Automated installation of essential development tools with cross-platform support
-- **Fonts**: Nerd Fonts support for enhanced shell experience
-
 ## Prerequisites
 
-- [chezmoi](https://www.chezmoi.io/install/) - dotfiles manager
 - Git
-- build-essential
-- libssl-dev
-- pkg-config
+- curl
+- Linux (Ubuntu/Debian)
 
-## Installation
+## Install
 
-1. Install chezmoi:
-   ```bash
-   # macOS
-   brew install chezmoi
-   
-   # Linux
-   sh -c "$(curl -fsLS get.chezmoi.io)"
-   ```
-
-2. Initialize and apply dotfiles:
-   ```bash
-   chezmoi init --apply https://github.com/edge2992/dotfiles.git
-   ```
-
-   During initialization, you'll be prompted to enter:
-   - **Email address** - Used for Git configuration
-   - **GitHub username** - Used for Git configuration
-
-3. For updating an existing chezmoi installation with new configuration prompts:
-   ```bash
-   chezmoi update --init
-   ```
-   
-   Use this command when the dotfiles repository has been updated with new configuration templates that require user input.
-
-## What Gets Installed
-
-### Configuration Files
-- `.zshrc` - Zsh shell configuration
-- `.zshenv` - Zsh environment variables
-- `.gitconfig` - Git configuration
-- `.tmux.conf` - Tmux configuration
-- `~/.config/nvim/` - Neovim configuration with plugins
-
-### Development Tools (Auto-installed)
-- **fzf** - Fuzzy finder
-- **memo** - Note-taking tool (`github.com/mattn/memo`)
-- **ghq** - Git repository manager (`github.com/x-motemen/ghq`)
-- **uv** - Python package manager
-- **tmux** - Terminal multiplexer
-- **tpm** - Tmux plugin manager
-- **volta** - JavaScript tool manager
-- **Node.js** - Via volta
-- **aicommits** - AI-powered commit messages
-- **claude-code** - Anthropic's Claude CLI with custom agents and MCP integration
-- **cargo** - Rust package manager
-- **sheldon** - Zsh plugin manager
-- **starship** - Cross-shell prompt
-- **Nerd Fonts** - Patched fonts for better terminal experience
-
-## Usage
-
-### Managing Dotfiles
 ```bash
-# Edit a dotfile
-chezmoi edit ~/.zshrc
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/edge2992/dotfiles.git
+```
 
-# Apply changes
-chezmoi apply
+初期化時に以下の入力を求められます:
 
-# Check what would change
-chezmoi diff
+- **Email** — Git の `user.email` に使用
+- **GitHub username** — Git の `user.name` に使用
 
-# Update from repository
+## Update
+
+```bash
 chezmoi update
 ```
 
-### Claude CLI Workflow
+設定テンプレートに新しい変数が追加された場合:
+
 ```bash
-# Initialize Claude CLI session with context
-claude-code
-
-# Use custom agents for specialized tasks
-claude-code --agent code-reviewer
-claude-code --agent ultra-think
-
-# AI-enhanced development workflow
-aic "implement user authentication"  # AI commit messages
-g                                   # Switch repos with fzf + Claude context
-memo "project notes"               # Quick notes with Claude integration
+chezmoi update --init
 ```
 
-### Platform Support
-- **macOS**: Uses Homebrew for package installation
-- **Linux**: Uses apt package manager and manual installation
+## What's Included
 
-## Font Setup
+| カテゴリ | ツール | 概要 |
+|---------|--------|------|
+| Shell | Zsh + [sheldon](https://github.com/rossmacarthur/sheldon) + [starship](https://starship.rs/) + [fzf](https://github.com/junegunn/fzf) + [atuin](https://atuin.sh/) | プラグイン管理、プロンプト、ファジー検索、履歴管理 |
+| Editor | [Neovim](https://neovim.io/) + [lazy.nvim](https://github.com/folke/lazy.nvim) | LSP、補完、フォーマッタ、Git 連携 |
+| Terminal | [Tmux](https://github.com/tmux/tmux) + TPM | セッション管理、ペイン分割 |
+| Git | gitconfig + [gitsigns](https://github.com/lewis6991/gitsigns.nvim) + [diffview](https://github.com/sindrets/diffview.nvim) | 署名、差分表示、hunk 操作 |
+| AI | [GitHub Copilot](https://github.com/features/copilot) + [Claude CLI](https://docs.anthropic.com/en/docs/claude-cli) | コード補完、AI 開発ワークフロー |
 
-The Starship prompt requires a Nerd Font to display icons correctly. Nerd Fonts are automatically installed via the `run_once_install-fonts.sh.tmpl` script (Ubuntu Mono Nerd Font). After installation, configure your terminal:
+## Documentation
 
-### macOS (iTerm2)
-
-1. **Configure iTerm2:**
-   - Open iTerm2 → Preferences (`Cmd + ,`)
-   - Go to Profiles → Text
-   - Change Font to "UbuntuMono Nerd Font" or "UbuntuMono NF"
-   - Set size to 14pt or your preference
-
-### Ubuntu (Terminal)
-
-1. **Configure Terminal:**
-   - Open Terminal → Preferences
-   - Go to your profile → Text
-   - Uncheck "Use system fixed-width font"
-   - Change Custom font to "UbuntuMono Nerd Font Regular"
-   - Set size to 12pt or your preference
-
-**Note:** 
-- Fonts are automatically installed during chezmoi setup
-- To skip font installation, set `SKIP_NERD_FONTS_INSTALL=true` before running chezmoi
-- Restart your terminal application after setup for fonts to take effect
-
-## Neovim Configuration
-
-The Neovim configuration uses Lua and is managed by [lazy.nvim](https://github.com/folke/lazy.nvim) for plugin management. It includes the following plugins:
-
-### Core Plugins
-- **lazy.nvim** - Modern plugin manager for Neovim
-- **plenary.nvim** - Lua functions library used by many plugins
-
-### Editor Enhancements
-- **neo-tree.nvim** - File explorer with modern UI
-- **lualine.nvim** - Statusline plugin with themes and components
-- **nvim-autopairs** - Auto-pairing of brackets, quotes, etc.
-- **vim-commentary** - Easy commenting and uncommenting of code
-
-### AI Integration
-- **copilot.lua** - GitHub Copilot integration for AI-powered code completion
-
-### Language Server Protocol (LSP) Support
-- **nvim-lspconfig** - Easy LSP configuration for Neovim
-- **mason.nvim** - Package manager for LSP servers, DAP servers, linters, and formatters
-- **mason-lspconfig.nvim** - Bridge between mason.nvim and lspconfig
-- **nvim-cmp** - Completion framework with multiple sources
-- **cmp-nvim-lsp** - LSP source for nvim-cmp
-- **cmp-buffer** - Buffer words source for nvim-cmp
-- **cmp-path** - Path source for nvim-cmp
-- **cmp-cmdline** - Command line source for nvim-cmp
-- **LuaSnip** - Snippet engine for Neovim
-- **cmp_luasnip** - LuaSnip source for nvim-cmp
-
-#### Supported LSP Servers
-The configuration automatically installs and configures the following LSP servers:
-- **lua_ls** - Lua language server
-- **ts_ls** - TypeScript/JavaScript language server
-- **rust_analyzer** - Rust language server
-- **pyright** - Python language server
-- **gopls** - Go language server
-- **clangd** - C/C++ language server
-- **bashls** - Bash language server
-- **jsonls** - JSON language server
-- **yamlls** - YAML language server
-- **html** - HTML language server
-- **cssls** - CSS language server
-- **tailwindcss** - Tailwind CSS language server
-
-### Key Features
-- **Lazy loading** - Plugins are loaded only when needed for better performance
-- **Modern Lua configuration** - Clean, maintainable configuration structure
-- **LSP Integration** - Full language server support with intelligent completions, diagnostics, and code actions
-- **Automated LSP Server Management** - LSP servers are automatically installed and configured via Mason
-- **Advanced Completion** - Multi-source completion with snippets, LSP, buffer, and path completion
-- **Customizable keymaps** - Window management and plugin-specific shortcuts
-- **Consistent UI** - Cohesive visual experience across all plugins
-
-### Configuration Structure
-```
-~/.config/nvim/
-├── init.lua                    # Main configuration entry point
-└── lua/edgissa/
-    ├── core/
-    │   ├── init.lua           # Core configuration loader
-    │   ├── keymaps.lua        # Custom key mappings
-    │   └── options.lua        # Neovim options and settings
-    ├── lazy.lua               # Plugin manager setup
-    └── plugins/               # Individual plugin configurations
-        ├── init.lua           # Base plugins (plenary)
-        ├── autopairs.lua      # Auto-pairing configuration
-        ├── copilot.lua        # GitHub Copilot setup
-        ├── lspconfig.lua      # LSP server configurations
-        ├── lualine.lua        # Statusline configuration
-        ├── mason.lua          # LSP server management
-        ├── neo-tree.lua       # File explorer setup
-        ├── nvim-cmp.lua       # Completion framework setup
-        └── vim-commentary.lua # Commenting plugin
-```
-
-## Customization
-
-The configuration supports different operating systems through chezmoi templates. Installation scripts automatically detect your OS and install appropriate packages.
-
-## Claude CLI Integration
-
-This dotfiles repository includes sophisticated Claude CLI integration for AI-powered development workflows.
-
-### Custom Agents
-- **Code Reviewer** (`dot_claude/agents/code-reviewer.md`) - Automated code quality analysis with security, maintainability, and performance focus
-- **Ultra-think** (`dot_claude/commands/ultra-think.md`) - Deep analysis framework for complex problem-solving with multi-dimensional perspectives
-
-### Configuration
-- **Global Instructions** (`dot_claude/CLAUDE.md`) - Project rules, programming guidelines, and workflow optimization
-- **Permission System** (`dot_claude/settings.json`) - Granular security controls for file operations, Git commands, and system access
-- **Local Settings** (`dot_claude/settings.local.json`) - Desktop notifications and tool completion feedback
-- **MCP Integration** - Context7 plugin for real-time library documentation
-
-### Key Features
-- **Multilingual Workflow** - Think in English, respond in Japanese for international development
-- **Concurrent Tool Execution** - Optimized for maximum efficiency
-- **Security Controls** - Blocks destructive commands and sensitive file access
-- **AI-Enhanced Development** - Integrated with existing tools (Git, Neovim, shell workflows)
-
-### Usage Examples
-```bash
-# AI-powered code review
-claude-code review
-
-# Deep problem analysis
-claude-code ultra-think "complex system design question"
-
-# Integrated development workflow with existing aliases
-aic  # AI-powered commit messages (aicommits)
-g    # Repository switching with ghq + fzf + Claude context
-```
-
-## Structure
-
-```
-.
-├── dot_claude/            # Claude CLI configuration
-│   ├── CLAUDE.md         # Global instructions and rules
-│   ├── agents/           # Custom AI agents
-│   ├── commands/         # Custom commands
-│   ├── settings.json     # Permission and security settings
-│   └── settings.local.json # Local preferences and hooks
-├── dot_gitconfig.tmpl    # Git configuration
-├── dot_tmux.conf         # Tmux configuration  
-├── dot_zshenv            # Zsh environment variables
-├── dot_zshrc.tmpl        # Zsh configuration
-├── private_dot_config/   # Private config directory
-│   └── nvim/            # Neovim configuration
-└── run_once_*.sh.tmpl   # Installation scripts
-```
+- **[Getting Started](docs/getting-started.md)** — chezmoi の仕組み、ファイル構造、拡張方法
+- **[Neovim Guide](docs/neovim.md)** — プラグイン一覧、各プラグインの役割と使い方
+- **[Keybindings](docs/keybindings.md)** — Neovim / Tmux / Zsh のキーバインド一覧
+- **[Troubleshooting](docs/troubleshooting.md)** — よくある問題と解決方法
