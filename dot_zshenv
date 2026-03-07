@@ -3,13 +3,24 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 
+# Prevent duplicate PATH entries
+typeset -U path
+
+# --- PATH management (all PATH settings belong here) ---
+
+# Volta (Node.js manager)
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
+
+# Go
 export PATH="/usr/local/go/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 
-# uv, uvx
+# Atuin (shell history)
+[ -f "$HOME/.atuin/bin/env" ] && . "$HOME/.atuin/bin/env"
+
+# uv, uvx (Python)
 [ -f "$HOME/.local/bin/env" ] && source "$HOME/.local/bin/env"
 
-# load cargo (rust) env
+# Cargo (Rust)
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
