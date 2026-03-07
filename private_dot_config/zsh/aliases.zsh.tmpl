@@ -15,3 +15,11 @@ command -v eza &> /dev/null && alias ls='eza --icons --group --git --group-direc
 # global claude
 # alias claude="$HOME/.claude/local/claude"
 {{ end }}
+
+{{ if eq .chezmoi.os "darwin" }}
+# ls command
+command -v eza &> /dev/null && alias ls='eza --icons --group --git --group-directories-first' || alias ls='ls --color=auto -h'
+
+# open shortcut (consistent with Linux xdg-open)
+alias xdg-open='open'
+{{ end }}
