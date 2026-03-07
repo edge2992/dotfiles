@@ -1,0 +1,27 @@
+#!/bin/sh
+# Global pre-commit hook: runs gitleaks + project-local hooks
+
+# --- gitleaks ---
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --pre-commit --staged --no-banner
+  if [ $? -ne 0 ]; then
+    echo "gitleaks: secrets detected. Commit aborted."
+    exit 1
+  fi
+else
+  echo "warning: gitleaks not installed, skipping secret scan"
+fi
+
+# --- project-local pre-commit hook ---
+# If the project uses pre-commit framework, delegate to it
+if [ -f .pre-commit-config.yaml ] && command -v pre-commit >/dev/null 2>&1; then
+  pre-commit run --hook-stage pre-commit
+  exit $?
+fi
+
+# If project has its own .git/hooks/pre-commit (not this global one), run it
+LOCAL_HOOK="$(git rev-parse --git-dir)/hooks/pre-commit"
+if [ -f "$LOCAL_HOOK" ] && [ "$LOCAL_HOOK" != "$0" ]; then
+  "$LOCAL_HOOK"
+  exit $?
+fi
