@@ -59,5 +59,19 @@
     "gopls-lsp@claude-plugins-official": true,
     "claude-code-setup@claude-plugins-official": true
   },
-  "preferredNotifChannel": "auto"
+  "preferredNotifChannel": "auto",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/claude-log-to-obsidian.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
 }
