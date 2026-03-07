@@ -34,19 +34,8 @@ return {
 
     local capabilities = cmp_nvim_lsp.default_capabilities()
 
-    mason_lspconfig.setup({
-      ensure_installed = {
-        "bashls",      -- Bash language server
-        "cssls",       -- CSS language server
-        "html",        -- HTML language server
-        "jsonls",      -- JSON language server
-        "pyright",     -- Python language server
-        "lua_ls",      -- Lua language server
-        "gopls",       -- Go language server
-      },
-    })
-
     -- neovim v0.11+ and mason-lspconfig v2
+    -- ensure_installed is managed in mason.lua
     -- default configuration for all LSP servers
     vim.lsp.config("*", {
       on_attach = on_attach,

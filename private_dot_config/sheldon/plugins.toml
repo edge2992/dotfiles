@@ -25,7 +25,7 @@ github = "zsh-users/zsh-completions"
 
 # syntax-highlight
 [plugins.fast-syntax]
-github = "zdharma/fast-syntax-highlighting"
+github = "zdharma-continuum/fast-syntax-highlighting"
 
 # suggest
 [plugins.zsh-autosuggestions]

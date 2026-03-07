@@ -1,3 +1,5 @@
 return {
-  "tpope/vim-commentary",
+  "numToStr/Comment.nvim",
+  event = "VeryLazy",
+  opts = {},
 }

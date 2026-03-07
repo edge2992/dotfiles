@@ -18,7 +18,7 @@ alias vim='nvim'
 alias g='cd $(ghq list -p | fzf)'
 alias vlast='vim "$(ls -1 | tail -n 1)"'
 
-# alis for isucon
+# alias for isucon
 alias m='make'
 alias ma='m before-bench && sleep 5 && ((m sql-all;) & m bench) && m after-bench; '
 alias slackcat='cat'
@@ -47,11 +47,9 @@ command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 #   source <(fzf --zsh)
 # fi
 
-# setup when compinit is available
-if type compinit >/dev/null 2>&1; then
-  autoload -Uz compinit
-  compinit -C
-fi
+# setup completions
+autoload -Uz compinit
+compinit -C
 
 # SSH shortcut with fzf
 function sshf() {

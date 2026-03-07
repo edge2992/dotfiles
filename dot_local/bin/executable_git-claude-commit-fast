@@ -29,7 +29,7 @@ fi
 # Get git diff and status
 DIFF=$(git diff --cached)
 DIFF_STAT=$(git diff --cached --stat)
-GIT_STATUS=$(git status --porcelain --cached)
+GIT_STATUS=$(git diff --cached --name-status)
 
 if [ -z "$DIFF" ]; then
     echo -e "${RED}✗ No staged changes${NC}"

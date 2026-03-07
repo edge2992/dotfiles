@@ -1,8 +1,8 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
 # Skip Rust compilation in CI environment
-if [ -n "$CI" ]; then
+if [ -n "${CI:-}" ]; then
   echo "CI environment detected. Skipping Rust tools installation."
   exit 0
 fi
