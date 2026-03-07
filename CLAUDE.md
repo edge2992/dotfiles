@@ -92,6 +92,21 @@ chezmoi execute-template < dot_zshrc.tmpl
 3. Run `chezmoi apply` to apply changes to the home directory
 4. Commit with Conventional Commits format
 
+## PR-Driven Development (必須)
+
+すべての変更はPRベースで行う。直接mainにコミットしない。
+
+1. **ブランチ作成**: issue番号に基づくブランチ名 (`feat/colorscheme`, `refactor/zsh-split` 等)
+2. **実装**: worktreeを使い、独立した変更は並列で作業する
+3. **PR作成**: `gh pr create` でPRを作成。bodyにissue番号を含める (`Closes #XX`)
+4. **レビュー**: code-reviewer エージェントでセルフレビューを実施してからPRを出す
+5. **マージ**: レビュー通過後にマージ
+
+### 並列作業時のルール
+- **worktree必須**: 並列作業時は `isolation: "worktree"` でエージェントを起動する
+- **独立性の確認**: 同じファイルを変更するissueは並列にしない
+- **レビュー後にマージ**: 各PRは個別にレビュー・マージする
+
 ## Commit Message Conventions
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/):
