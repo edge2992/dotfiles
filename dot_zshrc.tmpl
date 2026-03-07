@@ -31,11 +31,6 @@ command -v eza &> /dev/null && alias ls='eza --icons --group --git --group-direc
 # alias claude="$HOME/.claude/local/claude"
 {{ end }}
 
-# Atuin: modern shell history tool
-if [ -f "$HOME/.atuin/bin/env" ]; then
-  . "$HOME/.atuin/bin/env"
-fi
-
 # zsh plugin
 command -v sheldon >/dev/null 2>&1 && eval "$(sheldon source)"
 command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
