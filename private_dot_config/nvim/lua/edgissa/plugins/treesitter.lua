@@ -21,6 +21,7 @@ return {
     "nvim-treesitter/nvim-treesitter",
     lazy = false,
     build = ":TSUpdate",
+    cond = vim.fn.has("nvim-0.10") == 1,
     config = function()
       local ts = require("nvim-treesitter")
       local installed = ts.get_installed()
@@ -51,6 +52,7 @@ return {
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
     lazy = false,
+    cond = vim.fn.has("nvim-0.10") == 1,
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     config = function()
       require("nvim-treesitter-textobjects").setup({

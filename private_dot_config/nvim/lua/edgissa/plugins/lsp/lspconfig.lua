@@ -3,6 +3,7 @@
 -- LSP client implementation is provided by Neovim itself.
 return {
   "neovim/nvim-lspconfig",
+  cond = vim.fn.has("nvim-0.11") == 1,
   event = { "BufReadPre", "BufNewFile" }, -- Load on buffer read or new file
   dependencies = {
     "williamboman/mason.nvim", -- LSP server installer

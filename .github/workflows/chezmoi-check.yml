@@ -70,15 +70,24 @@ jobs:
   nvim-health:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        nvim-version: [v0.11.5, stable, nightly]
+        include:
+          - nvim-version: nightly
+            continue-on-error: true
+    continue-on-error: ${{ matrix.continue-on-error || false }}
+    name: nvim-health (${{ matrix.nvim-version }})
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Neovim (stable PPA)
-        run: |
-          sudo add-apt-repository -y ppa:neovim-ppa/stable
-          sudo apt-get update
-          sudo apt-get install -y neovim
+      - name: Install Neovim (${{ matrix.nvim-version }})
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: ${{ matrix.nvim-version }}
 
       - name: Install chezmoi and apply dotfiles (skip scripts)
         env:
