@@ -25,7 +25,7 @@ return {
 
     -- Setup LSP servers and tools
     mason_lspconfig.setup({
-      automatic_enable = vim.fn.has("nvim-0.11") == 1,
+      automatic_enable = true,
       ensure_installed = {
         "bashls",
         "cssls",
