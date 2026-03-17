@@ -1,5 +1,6 @@
 return {
   "williamboman/mason.nvim",
+  cond = vim.fn.has("nvim-0.11") == 1,
   dependencies = {
     "williamboman/mason-lspconfig.nvim",
     "WhoIsSethDaniel/mason-tool-installer.nvim",
@@ -24,6 +25,7 @@ return {
 
     -- Setup LSP servers and tools
     mason_lspconfig.setup({
+      automatic_enable = vim.fn.has("nvim-0.11") == 1,
       ensure_installed = {
         "bashls",
         "cssls",
