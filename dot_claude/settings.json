@@ -60,10 +60,6 @@
     ],
     "deny": [
       "Bash(sudo:*)",
-      "Bash(rm -r:*)",
-      "Bash(rm -rf:*)",
-      "Bash(rm -fr:*)",
-      "Bash(rm --recursive:*)",
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
       "Bash(git reset --hard:*)",
