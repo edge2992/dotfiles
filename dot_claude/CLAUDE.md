@@ -7,7 +7,7 @@ Project-specific instructions are defined in each project's `CLAUDE.md`.
 
 - **Parallel execution**: To maximize efficiency, if multiple independent processes need to run, invoke those tools concurrently, not sequentially.
 - **Language**: Think exclusively in English. Respond in Japanese.
-- **Library documentation**: Always use the Context7 MCP to retrieve the latest library documentation before implementing anything library-specific.
+- **Library documentation**: Always use the Context7 MCP (plugin) to retrieve the latest library documentation before implementing anything library-specific.
 - **Read before edit**: Always read a file before modifying it. Never guess at file contents.
 - **Minimal changes**: Only make changes directly requested or clearly necessary. Avoid over-engineering.
 

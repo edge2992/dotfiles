@@ -3,7 +3,7 @@ description: Ultra-fast commit using Haiku model
 argument-hint: [optional context]
 ---
 
-Use the Task tool to launch the fast-committer agent with model haiku.
+Use the Agent tool to launch the fast-committer agent with model haiku.
 
 Pass the following prompt:
 "Create a git commit now. Additional context: $ARGUMENTS"
