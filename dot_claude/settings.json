@@ -79,14 +79,16 @@
     "command": "printf '%s@%s:%s' \"$(whoami)\" \"$(hostname -s)\" \"$(pwd)\" | sed 's|'\"$HOME\"'|~|'"
   },
   "enabledPlugins": {
-    "example-skills@anthropic-agent-skills": true,
-    "document-skills@anthropic-agent-skills": true,
-    "context7@claude-plugins-official": true,
-    "commit-commands@claude-plugins-official": true,
+    "claude-code-setup@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "document-skills@anthropic-agent-skills": true,
+    "github@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
-    "claude-code-setup@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true
   },
   "preferredNotifChannel": "auto"
 }
