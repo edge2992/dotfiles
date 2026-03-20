@@ -23,8 +23,8 @@ Project-specific instructions are defined in each project's `CLAUDE.md`.
 
 - Use dedicated tools (Read, Glob, Grep, Edit, Write) over Bash equivalents whenever possible.
 - Launch independent tool calls in parallel within a single response.
-- Use the Task tool with specialized subagents for complex multi-step research or exploration.
-- Use Context7 MCP for library/framework documentation (not web search).
+- Use the Agent tool with specialized subagents for complex multi-step research or exploration.
+- Use Context7 MCP (plugin) for library/framework documentation (not web search).
 
 ## Code Style
 
