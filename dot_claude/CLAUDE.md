@@ -19,7 +19,7 @@ Project-specific instructions are defined in each project's `CLAUDE.md`.
 - Before starting work, read relevant files to understand existing patterns.
 - Prefer editing existing files over creating new ones.
 - After making changes, verify they work as intended.
-- Commit and push are allowed without explicit permission.
+- Commit and push to feature branches are allowed without explicit permission.
 - Always ask for user permission before creating a Pull Request.
 
 ## Tool Usage

@@ -15,24 +15,42 @@ Claude should read this file to understand the project context before making any
 
 ```
 .
-├── CLAUDE.md                   # This file (project-specific Claude instructions)
+├── CLAUDE.md                   # Project-specific Claude instructions
+├── Makefile                    # Lint targets (make lint)
 ├── README.md                   # Human-readable documentation
+├── .chezmoi.yaml.tmpl          # chezmoi config template (template data)
+├── .chezmoiexternal.toml       # External file sources
+├── .chezmoiignore              # Files excluded from chezmoi apply
+├── .github/                    # GitHub Actions workflows
+├── .pre-commit-config.yaml     # Pre-commit hooks config
+├── docs/                       # Documentation
 ├── dot_claude/                 # → ~/.claude/ (Claude CLI configuration)
 │   ├── CLAUDE.md               # Global Claude instructions (all projects)
 │   ├── agents/                 # Custom subagent definitions
-│   ├── commands/               # Custom slash command definitions
+│   ├── hooks/                  # Event-triggered hooks
+│   ├── private_plugins/        # Plugin configuration
 │   ├── settings.json           # Permission and security settings
-│   └── settings.local.json     # Local preferences (not synced)
+│   ├── shell-snapshots/        # Shell environment snapshots
+│   ├── skills/                 # Custom skill definitions
+│   └── statusline.py           # Status line configuration
 ├── dot_gitconfig.tmpl          # → ~/.gitconfig (templated)
 ├── dot_ideavimrc               # → ~/.ideavimrc
 ├── dot_tmux.conf               # → ~/.tmux.conf
-├── dot_zshenv                  # → ~/.zshenv
+├── dot_zshenv.tmpl             # → ~/.zshenv (templated)
 ├── dot_zshrc.tmpl              # → ~/.zshrc (templated)
 ├── dot_atuin/                  # → ~/.atuin/
 ├── dot_local/                  # → ~/.local/
 ├── private_dot_config/         # → ~/.config/ (private permissions)
-│   └── nvim/                   # Neovim configuration (Lua + lazy.nvim)
-└── run_once_install-*.sh.tmpl  # One-time installation scripts
+│   ├── nvim/                   # Neovim configuration (Lua + lazy.nvim)
+│   ├── gh/                     # GitHub CLI configuration
+│   ├── git/                    # Git config (ignore, attributes)
+│   ├── private_fcitx5/         # Fcitx5 input method configuration
+│   ├── sheldon/                # Zsh plugin manager
+│   ├── starship.toml           # Starship prompt configuration
+│   ├── wezterm/                # WezTerm terminal configuration
+│   └── zsh/                    # Zsh configuration modules
+├── run_once_install-*.sh.tmpl  # One-time installation scripts
+└── run_onchange_*.sh.tmpl      # Scripts that re-run on content change
 ```
 
 ## chezmoi File Naming Conventions
@@ -62,6 +80,8 @@ Files ending in `.tmpl` support Go template syntax with chezmoi variables:
 ```
 
 Template data is defined in `~/.config/chezmoi/chezmoi.toml` (not in this repo).
+
+**Note**: `.chezmoi.yaml.tmpl` (リポジトリルート) が chezmoi 初期設定時のテンプレートデータ (`email`, `name`, `op_account`) を定義している。
 
 ## Key chezmoi Commands
 
@@ -97,6 +117,19 @@ make lint-json
 
 **コミット前に必ず `make lint` を実行すること。**
 
+## Pre-commit Hooks
+
+`.pre-commit-config.yaml` により、コミット時に以下が自動実行される:
+
+- **check-toml / check-yaml**: 構文チェック
+- **end-of-file-fixer / trailing-whitespace**: フォーマット自動修正
+- **shellcheck**: シェルスクリプトの静的解析
+- **stylua**: Lua コードのフォーマットチェック
+- **gitleaks**: シークレット漏洩検知
+- **chezmoi-template-check**: `.tmpl` ファイルのテンプレート構文検証
+
+フックが失敗した場合は原因を調査し、`--no-verify` で迂回しないこと。
+
 ## Development Workflow
 
 1. **Edit source files directly** in this repository (preferred for Claude)
@@ -129,7 +162,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 <type>(<scope>): <subject>
 ```
 
-**Types**: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`
+**Types**: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `test`
 
 **Scopes** (for this repo): `zsh`, `nvim`, `tmux`, `git`, `claude`, `atuin`, `fonts`, `install`
 
