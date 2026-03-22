@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+log() { echo "[install] $*"; }
+
+if [ -n "${CI:-}" ]; then
+  log "CI environment detected. Skipping build dependencies installation."
+  exit 0
+fi
+
+{{ if eq .chezmoi.os "linux" }}
+log "Installing build dependencies for Linux"
+
+if [ -f /etc/os-release ]; then
+  . /etc/os-release
+  case "${ID:-}" in
+    ubuntu|debian|pop|linuxmint)
+      sudo apt update
+      sudo apt install -y build-essential libssl-dev pkg-config cmake
+      ;;
+    fedora)
+      sudo dnf groupinstall -y "Development Tools"
+      sudo dnf install -y openssl-devel pkg-config cmake
+      ;;
+    rhel|centos|rocky|alma)
+      sudo dnf groupinstall -y "Development Tools"
+      sudo dnf install -y openssl-devel pkg-config cmake
+      ;;
+    arch|manjaro|endeavouros)
+      sudo pacman -Syu --noconfirm --needed base-devel openssl pkg-config cmake
+      ;;
+    # opensuse-leap, opensuse-tumbleweed, etc.
+    opensuse*|sles)
+      sudo zypper install -y -t pattern devel_basis
+      sudo zypper install -y libopenssl-devel pkg-config cmake
+      ;;
+    *)
+      log "WARNING: Unsupported distro '${ID:-unknown}'. Install a C compiler, OpenSSL dev headers, pkg-config, and cmake manually."
+      exit 1
+      ;;
+  esac
+else
+  log "WARNING: /etc/os-release not found. Cannot detect distro."
+  exit 1
+fi
+{{ else if eq .chezmoi.os "darwin" }}
+# macOS: Xcode CLT provides cc (requires GUI dialog for installation)
+if ! xcode-select -p >/dev/null 2>&1; then
+  log "Installing Xcode Command Line Tools..."
+  xcode-select --install
+  log "Please complete the Xcode CLT installation dialog and re-run chezmoi apply"
+  exit 1
+fi
+{{ end }}

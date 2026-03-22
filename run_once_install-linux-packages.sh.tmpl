@@ -13,13 +13,10 @@ log "Installing system packages and Go tools"
 
 sudo apt update
 
-# Development tools
+# Utility tools
 if ! command -v htop >/dev/null 2>&1; then
-  log "Installing development tools..."
-  sudo apt install -y htop build-essential libssl-dev pkg-config cmake
-
-  # x11
-  sudo apt install -y xclip
+  log "Installing utility tools..."
+  sudo apt install -y htop xclip
 fi
 
 # Install ripgrep for better grep performance (needed by Neovim)

@@ -9,6 +9,12 @@ if [ -n "${CI:-}" ]; then
   exit 0
 fi
 
+# macOS: Rust tools are installed via Homebrew
+if [ "$(uname -s)" = "Darwin" ]; then
+  log "macOS detected. Rust tools are installed via Homebrew. Skipping."
+  exit 0
+fi
+
 # Rust toolchain
 if command -v cargo >/dev/null 2>&1; then
   log "cargo is already installed, skipping rustup"
