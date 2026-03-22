@@ -72,7 +72,6 @@
       "Bash(diff:*)",
       "Bash(date:*)",
       "Bash(uname:*)",
-      "Bash(python3 -c:*)",
       "WebFetch(domain:*)",
       "mcp__plugin_context7_context7__resolve-library-id",
       "mcp__plugin_context7_context7__query-docs",
