@@ -1,61 +1,21 @@
-# Guidelines
+# Global Guidelines
 
-This document defines Claude's global behavioral rules across all projects.
-Project-specific instructions are defined in each project's `CLAUDE.md`.
+Project-specific instructions are in each project's `CLAUDE.md`.
 
-## Top-Level Rules
+## Rules
 
-- **Parallel execution**: To maximize efficiency, if multiple independent processes need to run, invoke those tools concurrently, not sequentially.
-- **Language**: Think exclusively in English. Respond in Japanese.
-- **Library documentation**: Always use the Context7 MCP to retrieve the latest library documentation before implementing anything library-specific.
-- **Read before edit**: Always read a file before modifying it. Never guess at file contents.
-- **Minimal changes**: Only make changes directly requested or clearly necessary. Avoid over-engineering.
-- **Worktree isolation**: 機能開発・バグ修正は常にgit worktreeで隔離して作業する。mainブランチで直接作業しない。Agentツールでは `isolation: "worktree"` を使用すること。
+- **Language**: Think in English. Respond in Japanese.
+- **Library docs**: Use Context7 MCP before implementing anything library-specific.
+- **Worktree isolation**: Always use git worktree for feature work and bug fixes. Never work directly on main. Use `isolation: "worktree"` with the Agent tool.
 - **Superpowers skills**: Actively use superpowers skills whenever applicable.
-- **Agentic coding**: Prefer autonomous, agent-driven approaches — use subagents, parallel execution, and proactive problem-solving.
-
-## Development Workflow
-
-- Before starting work, read relevant files to understand existing patterns.
-- Prefer editing existing files over creating new ones.
-- After making changes, verify they work as intended.
-- Commit and push to feature branches are allowed without explicit permission.
-- Always ask for user permission before creating a Pull Request.
-
-## Tool Usage
-
-- Use dedicated tools (Read, Glob, Grep, Edit, Write) over Bash equivalents whenever possible.
-- Launch independent tool calls in parallel within a single response.
-- Use the Agent tool with specialized subagents for complex multi-step research or exploration.
-- Use Context7 MCP (plugin) for library/framework documentation (not web search).
-
-## Code Style
-
-- Avoid hard-coding values unless absolutely necessary.
-- Prefer simple, readable code over clever solutions.
-- Do not add comments, docstrings, or type annotations to code that wasn't changed.
-- Do not add error handling for scenarios that cannot occur.
-- Do not create abstractions or utilities for one-time operations.
+- **Agentic coding**: Prefer autonomous, agent-driven approaches — subagents, parallel execution, proactive problem-solving.
+- **PRs**: Commit and push to feature branches without asking. Always ask before creating a PR.
 
 ## Commit Conventions
 
-Follow [Conventional Commits](https://www.conventionalcommits.org/) format:
-
-```
-<type>(<scope>): <subject>
-
-<optional body>
-```
+[Conventional Commits](https://www.conventionalcommits.org/): `<type>(<scope>): <subject>`
 
 **Types**: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `test`
 
-- Subject: 50 chars or less, imperative mood, no trailing period
-- Body: Explain *what* and *why*, not *how*; wrap at 72 chars
-- Never commit `.env`, credentials, private keys, or secrets
-
-## Security
-
-- Never expose API keys, tokens, passwords, or private keys.
-- Never run destructive commands (`rm -rf`, `git reset --hard`, force push) without explicit user confirmation.
-- Never bypass git hooks (`--no-verify`) unless explicitly asked.
-- Validate inputs at system boundaries; trust internal code.
+- Subject: ≤50 chars, imperative mood, no trailing period
+- Body: *what* and *why*, not *how*; wrap at 72 chars
