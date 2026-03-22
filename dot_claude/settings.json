@@ -90,5 +90,18 @@
     "skill-creator@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true
   },
-  "preferredNotifChannel": "auto"
+  "preferredNotifChannel": "auto",
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/permission-notify.sh"
+          }
+        ]
+      }
+    ]
+  }
 }
