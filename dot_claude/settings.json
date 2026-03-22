@@ -5,6 +5,7 @@
     "defaultMode": "plan",
     "allow": [
       "Read(**)",
+      "Read(~/.claude/**)",
       "Edit(**)",
       "Write(**.md)",
       "Write(dot_**)",
