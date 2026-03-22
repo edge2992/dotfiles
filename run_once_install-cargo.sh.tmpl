@@ -9,6 +9,11 @@ if [ -n "${CI:-}" ]; then
   exit 0
 fi
 
+{{ if eq .chezmoi.os "darwin" }}
+log "macOS detected. Rust tools are installed via Homebrew. Skipping."
+exit 0
+{{ end }}
+
 # Rust toolchain
 if command -v cargo >/dev/null 2>&1; then
   log "cargo is already installed, skipping rustup"
