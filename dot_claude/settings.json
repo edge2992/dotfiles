@@ -121,7 +121,6 @@
     "skill-creator@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true
   },
-  "preferredNotifChannel": "auto",
   "extraKnownMarketplaces": {
     "superpowers-marketplace": {
       "source": {
@@ -129,5 +128,6 @@
         "repo": "obra/superpowers-marketplace"
       }
     }
-  }
+  },
+  "preferredNotifChannel": "auto"
 }

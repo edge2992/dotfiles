@@ -11,14 +11,16 @@ Project-specific instructions are defined in each project's `CLAUDE.md`.
 - **Read before edit**: Always read a file before modifying it. Never guess at file contents.
 - **Minimal changes**: Only make changes directly requested or clearly necessary. Avoid over-engineering.
 - **Worktree isolation**: 機能開発・バグ修正は常にgit worktreeで隔離して作業する。mainブランチで直接作業しない。Agentツールでは `isolation: "worktree"` を使用すること。
+- **Superpowers skills**: Actively use superpowers skills whenever applicable.
+- **Agentic coding**: Prefer autonomous, agent-driven approaches — use subagents, parallel execution, and proactive problem-solving.
 
 ## Development Workflow
 
 - Before starting work, read relevant files to understand existing patterns.
 - Prefer editing existing files over creating new ones.
 - After making changes, verify they work as intended.
-- Never commit automatically — always wait for explicit user request.
-- Never push to remote repositories unless explicitly asked.
+- Commit and push are allowed without explicit permission.
+- Always ask for user permission before creating a Pull Request.
 
 ## Tool Usage
 
