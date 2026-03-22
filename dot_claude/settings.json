@@ -2,16 +2,11 @@
   "cleanupPeriodDays": 60,
   "includeCoAuthoredBy": false,
   "permissions": {
-    "defaultMode": "plan",
     "allow": [
       "Read(**)",
       "Read(~/.claude/**)",
       "Edit(**)",
       "Write(**.md)",
-      "Write(dot_**)",
-      "Write(private_dot_**)",
-      "Write(run_once_**)",
-      "Write(run_onchange_**)",
       "Write(.tmp/**)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
@@ -35,14 +30,6 @@
       "Bash(gh run:*)",
       "Bash(gh api:*)",
       "Bash(gh auth status:*)",
-      "Bash(chezmoi diff:*)",
-      "Bash(chezmoi apply:*)",
-      "Bash(chezmoi execute-template:*)",
-      "Bash(chezmoi data:*)",
-      "Bash(chezmoi managed:*)",
-      "Bash(chezmoi cat-config:*)",
-      "Bash(chezmoi source-path:*)",
-      "Bash(chezmoi target-path:*)",
       "Bash(ls:*)",
       "Bash(mkdir:*)",
       "Bash(mv:*)",
@@ -90,27 +77,11 @@
       "Read(id_rsa)",
       "Read(id_ed25519)",
       "Write(.env*)"
-    ]
+    ],
+    "defaultMode": "plan"
   },
   "model": "opus",
   "enableAllProjectMcpServers": true,
-  "statusLine": {
-    "type": "command",
-    "command": "python3 ~/.claude/statusline.py"
-  },
-  "enabledPlugins": {
-    "claude-code-setup@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true,
-    "code-review@claude-plugins-official": true,
-    "commit-commands@claude-plugins-official": true,
-    "context7@claude-plugins-official": true,
-    "document-skills@anthropic-agent-skills": true,
-    "github@claude-plugins-official": true,
-    "gopls-lsp@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true
-  },
-  "preferredNotifChannel": "auto",
   "hooks": {
     "Notification": [
       {
@@ -134,5 +105,29 @@
         ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "python3 ~/.claude/statusline.py"
+  },
+  "enabledPlugins": {
+    "claude-code-setup@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "document-skills@anthropic-agent-skills": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true
+  },
+  "preferredNotifChannel": "auto",
+  "extraKnownMarketplaces": {
+    "superpowers-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "obra/superpowers-marketplace"
+      }
+    }
   }
 }
