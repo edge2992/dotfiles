@@ -63,4 +63,9 @@ if ! command -v ghq >/dev/null 2>&1; then
   log "Installing ghq..."
   go install github.com/x-motemen/ghq@latest
 fi
+
+if ! command -v glow >/dev/null 2>&1; then
+  log "Installing glow..."
+  go install github.com/charmbracelet/glow@latest
+fi
 {{ end }}
