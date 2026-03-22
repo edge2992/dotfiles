@@ -4,9 +4,10 @@ Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
 
 ## Prerequisites
 
-- Git
-- curl
-- Linux (Ubuntu/Debian)
+| OS | 必要なもの |
+|----|-----------|
+| Linux (Ubuntu/Debian/Fedora/Arch) | Git, curl, sudo 権限 |
+| macOS | Git, curl (Xcode CLT で自動インストールされる) |
 
 ## Install
 
@@ -18,6 +19,32 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/edge2992
 
 - **Email** — Git の `user.email` に使用
 - **GitHub username** — Git の `user.name` に使用
+
+### インストール後
+
+インストール直後はPATHが反映されていません。新しいシェルを開くか、以下を実行してください:
+
+```bash
+source ~/.zshenv
+```
+
+### インストールフロー
+
+`chezmoi init --apply` を実行すると、以下のスクリプトが順番に実行されます:
+
+| 順序 | スクリプト | 内容 | Linux | macOS |
+|:---:|-----------|------|:-----:|:-----:|
+| 1 | `install-build-deps` | C コンパイラ、OpenSSL ヘッダ等のビルド依存 | ✓ | Xcode CLT |
+| 2 | `install-cargo` | Rust ツールチェイン + sheldon, eza, starship, atuin | ✓ | skip |
+| 3 | `install-fonts` | Nerd Fonts (UbuntuMono) | ✓ | ✓ |
+| 4 | `install-homebrew` | Homebrew + sheldon, eza, starship, atuin 等 | skip | ✓ |
+| 5 | `install-linux-packages` | Go, ripgrep, htop, ghq, memo 等 | ✓ | skip |
+| 6 | `install-nvim` | Neovim (AppImage) | ✓ | skip |
+| 7 | `install-python-tools` | pynvim, uv | ✓ | ✓ |
+| 8 | `install-volta` | Volta + Node.js, yarn | ✓ | ✓ |
+| - | `install-fzf` | fzf (内容変更時に再実行) | ✓ | ✓ |
+
+> **macOS の注意**: ステップ 1 で Xcode Command Line Tools のインストールダイアログが表示されます。完了後に `chezmoi apply` を再実行してください。
 
 ## Update
 
