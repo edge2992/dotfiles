@@ -2,22 +2,11 @@
   "hooks": {
     "Notification": [
       {
-        "matcher": "",
+        "matcher": "permission_prompt",
         "hooks": [
           {
             "type": "command",
-            "command": "notify-send -u normal -i dialog-question 'Claude Code' 'Waiting for your input' 2>/dev/null; spd-say -l ja '入力待ちです' 2>/dev/null &"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "notify-send -u low -i dialog-information 'Claude Code' 'Response complete' 2>/dev/null; spd-say -l ja '完了しました' 2>/dev/null &"
+            "command": "~/.claude/hooks/permission-notify.sh"
           }
         ]
       }
