@@ -85,12 +85,25 @@ chezmoi update
 chezmoi execute-template < dot_zshrc.tmpl
 ```
 
+## Testing
+
+```bash
+# Run all lints (JSON validation etc.)
+make lint
+
+# JSON syntax validation only
+make lint-json
+```
+
+**コミット前に必ず `make lint` を実行すること。**
+
 ## Development Workflow
 
 1. **Edit source files directly** in this repository (preferred for Claude)
-2. Run `chezmoi diff` to verify the changes look correct
-3. Run `chezmoi apply` to apply changes to the home directory
-4. Commit with Conventional Commits format
+2. Run `make lint` to validate file syntax
+3. Run `chezmoi diff` to verify the changes look correct
+4. Run `chezmoi apply` to apply changes to the home directory
+5. Commit with Conventional Commits format
 
 ## PR-Driven Development (必須)
 

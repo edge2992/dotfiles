@@ -10,6 +10,7 @@ Project-specific instructions are defined in each project's `CLAUDE.md`.
 - **Library documentation**: Always use the Context7 MCP to retrieve the latest library documentation before implementing anything library-specific.
 - **Read before edit**: Always read a file before modifying it. Never guess at file contents.
 - **Minimal changes**: Only make changes directly requested or clearly necessary. Avoid over-engineering.
+- **Worktree isolation**: 機能開発・バグ修正は常にgit worktreeで隔離して作業する。mainブランチで直接作業しない。Agentツールでは `isolation: "worktree"` を使用すること。
 
 ## Development Workflow
 
