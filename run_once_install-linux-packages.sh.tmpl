@@ -42,6 +42,12 @@ if ! command -v tmux >/dev/null 2>&1; then
   sudo apt install -y tmux
 fi
 
+# Notification sound support for Claude Code hooks
+if ! command -v paplay >/dev/null 2>&1; then
+  log "Installing pulseaudio-utils (paplay)..."
+  sudo apt install -y pulseaudio-utils
+fi
+
 if ! command -v go >/dev/null 2>&1; then
   log "go command still not found; PATH is: $PATH"
   exit 1
