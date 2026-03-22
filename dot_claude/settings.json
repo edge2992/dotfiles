@@ -2,6 +2,7 @@
   "cleanupPeriodDays": 60,
   "includeCoAuthoredBy": false,
   "permissions": {
+    "defaultMode": "plan",
     "allow": [
       "Read(**)",
       "Edit(**)",
@@ -24,6 +25,8 @@
       "Bash(git tag:*)",
       "Bash(git remote:*)",
       "Bash(git fetch:*)",
+      "Bash(git worktree:*)",
+      "Bash(git merge:*)",
       "Bash(git rev-parse:*)",
       "Bash(git show:*)",
       "Bash(gh pr:*)",
@@ -53,6 +56,7 @@
       "Bash(uniq:*)",
       "Bash(npm run:*)",
       "Bash(make:*)",
+      "Bash(shellcheck:*)",
       "WebFetch(domain:*)",
       "mcp__plugin_context7_context7__resolve-library-id",
       "mcp__plugin_context7_context7__query-docs",
@@ -76,7 +80,7 @@
   "enableAllProjectMcpServers": true,
   "statusLine": {
     "type": "command",
-    "command": "printf '%s@%s:%s' \"$(whoami)\" \"$(hostname -s)\" \"$(pwd)\" | sed 's|'\"$HOME\"'|~|'"
+    "command": "python3 ~/.claude/statusline.py"
   },
   "enabledPlugins": {
     "claude-code-setup@claude-plugins-official": true,
@@ -99,6 +103,17 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/permission-notify.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/stop-review.sh"
           }
         ]
       }
