@@ -38,6 +38,15 @@ function gpr() {
   [ -n "$pr" ] && gh pr checkout "$pr"
 }
 
+# Browse and preview Markdown files with fzf + glow
+function mdp() {
+  local dir="${1:-.}"
+  local file
+  file=$(find "$dir" -name '*.md' -not -path '*/.git/*' -not -path '*/node_modules/*' 2>/dev/null | \
+    fzf --preview 'glow -s dark -w $FZF_PREVIEW_COLUMNS {}' --preview-window=right:60%)
+  [ -n "$file" ] && glow -p "$file"
+}
+
 # Browse git stash entries with fzf
 function gst() {
   local stash
