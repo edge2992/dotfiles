@@ -17,9 +17,7 @@ case "$(uname -s)" in
     ;;
   Linux)
     notify-send -u critical "$title" "$message" 2>/dev/null || true
-    if command -v paplay >/dev/null 2>&1 && [ -f /usr/share/sounds/freedesktop/stereo/bell.oga ]; then
-      paplay /usr/share/sounds/freedesktop/stereo/bell.oga &
-    fi
+    paplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || printf '\a'
     ;;
   *)
     printf '\a' >/dev/tty 2>/dev/null || true
