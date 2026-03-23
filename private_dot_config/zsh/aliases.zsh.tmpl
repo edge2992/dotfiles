@@ -8,12 +8,12 @@ alias m='make'
 alias ma='m before-bench && sleep 5 && ((m sql-all;) & m bench) && m after-bench; '
 alias slackcat='cat'
 
+# global claude
+alias cw='claude -w'
+
 {{ if eq .chezmoi.os "linux" }}
 # ls command
 command -v eza &> /dev/null && alias ls='eza --icons --group --git --group-directories-first' || alias ls='ls --color=auto --group-directories-first -h'
-
-# global claude
-# alias claude="$HOME/.claude/local/claude"
 {{ end }}
 
 {{ if eq .chezmoi.os "darwin" }}
