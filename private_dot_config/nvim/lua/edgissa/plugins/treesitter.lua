@@ -24,11 +24,10 @@ return {
     cond = vim.fn.has("nvim-0.10") == 1,
     config = function()
       local ts = require("nvim-treesitter")
-      local installed = ts.get_installed()
 
       local to_install = {}
       for _, parser in ipairs(parsers) do
-        if not vim.list_contains(installed, parser) then
+        if not pcall(vim.treesitter.language.add, parser) then
           table.insert(to_install, parser)
         end
       end
