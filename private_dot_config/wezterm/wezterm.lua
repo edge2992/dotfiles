@@ -11,7 +11,7 @@ config.window_background_opacity = 0.95
 config.scrollback_lines = 200
 config.use_ime = true
 config.xim_im_name = "fcitx"
-config.ime_preedit_rendering = "System"
+config.ime_preedit_rendering = "Builtin"
 
 config.keys = {
   {
