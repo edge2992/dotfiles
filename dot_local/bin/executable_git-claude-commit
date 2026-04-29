@@ -95,7 +95,7 @@ if command -v claude &> /dev/null; then
         echo "chore: update" > "$TEMP_MSG"
     fi
 else
-    echo -e "${RED}✗ Claude CLI not found. Install with: npm install -g @anthropic-ai/claude-sdk${NC}"
+    echo -e "${RED}✗ Claude CLI not found. Install with: curl -fsSL https://claude.ai/install.sh | bash${NC}"
     echo -e "${YELLOW}Creating basic template...${NC}"
     echo "chore: update" > "$TEMP_MSG"
 fi

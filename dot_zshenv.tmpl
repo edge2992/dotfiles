@@ -27,5 +27,8 @@ export PATH="$HOME/go/bin:$PATH"
 # uv, uvx (Python)
 [ -f "$HOME/.local/bin/env" ] && source "$HOME/.local/bin/env"
 
+# Local binaries (Claude CLI, etc.)
+export PATH="$HOME/.local/bin:$PATH"
+
 # Cargo (Rust)
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
