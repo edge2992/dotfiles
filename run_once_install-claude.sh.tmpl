@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+log() { echo "[install] $*"; }
+
+if [ -n "${CI:-}" ]; then
+  log "CI environment detected. Skipping Claude CLI installation."
+  exit 0
+fi
+
+# Ensure ~/.local/bin is in PATH for this script
+export PATH="$HOME/.local/bin:$PATH"
+
+# Claude Code CLI (Native Install)
+if command -v claude >/dev/null 2>&1; then
+  log "Claude CLI is already installed: $(claude --version 2>/dev/null || echo 'unknown version')"
+else
+  log "Installing Claude CLI (native)..."
+  curl -fsSL https://claude.ai/install.sh | bash
+fi
