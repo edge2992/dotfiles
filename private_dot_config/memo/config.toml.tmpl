@@ -1,0 +1,10 @@
+memodir = "${HOME}/{{ index . "memo_dir" | default "Documents/memo/_posts" }}"
+editor = "nvim"
+column = 20
+width = 0
+selectcmd = "fzf"
+grepcmd = "grep -nH ${PATTERN} ${FILES}"
+memotemplate = "${HOME}/.config/memo/template.md"
+assetsdir = "."
+templatedirfile = ""
+templatebodyfile = ""
