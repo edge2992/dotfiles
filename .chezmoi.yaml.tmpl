@@ -1,5 +1,6 @@
 {{ $email := or (env "GIT_EMAIL") (promptStringOnce . "email" "What is your email address") -}}
 {{ $name := or (env "GIT_NAME") (promptStringOnce . "name" "What is your Github username") -}}
+{{ $memo_dir := promptStringOnce . "memo_dir" "Memo directory path under $HOME" "Documents/memo/_posts" -}}
 {{ $op_account := "" -}}
 {{ if env "CI" -}}
 {{   $op_account = "" -}}
@@ -12,4 +13,5 @@
 data:
   email: {{ $email | quote }}
   name: {{ $name | quote }}
+  memo_dir: {{ $memo_dir | quote }}
   op_account: {{ $op_account | quote }}
