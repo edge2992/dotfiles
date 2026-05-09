@@ -19,6 +19,12 @@ if ! command -v htop >/dev/null 2>&1; then
   sudo apt install -y htop xclip
 fi
 
+# Wayland clipboard support (required for tmux-yank on Wayland sessions)
+if ! command -v wl-copy >/dev/null 2>&1; then
+  log "Installing wl-clipboard..."
+  sudo apt install -y wl-clipboard
+fi
+
 # Install ripgrep for better grep performance (needed by Neovim)
 if ! command -v rg >/dev/null 2>&1; then
   log "Installing ripgrep..."
