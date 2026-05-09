@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Re-runs whenever dot_tmux.conf (which holds the @plugin declarations) changes.
+# tmux.conf hash: {{ include "dot_tmux.conf" | sha256sum }}
+
+log() { echo "[install] $*"; }
+
+if [ -n "${CI:-}" ]; then
+  log "CI environment detected. Skipping tmux plugin installation."
+  exit 0
+fi
+
+if ! command -v tmux >/dev/null 2>&1; then
+  log "tmux not found. Skipping plugin installation."
+  exit 0
+fi
+
+TPM_DIR="${HOME}/.tmux/plugins/tpm"
+if [ ! -x "${TPM_DIR}/bin/install_plugins" ]; then
+  log "ERROR: TPM not found at ${TPM_DIR}. .chezmoiexternal.toml should clone it before this script runs."
+  exit 1
+fi
+
+log "Installing tmux plugins via TPM..."
+"${TPM_DIR}/bin/install_plugins"
+log "tmux plugins installed."
