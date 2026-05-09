@@ -33,4 +33,5 @@ repos:
         entry: sh -c 'for f in "$@"; do chezmoi execute-template < "$f" > /dev/null || exit 1; done' --
         language: system
         files: \.tmpl$
+        exclude: ^\.chezmoi\.yaml\.tmpl$
         types: [file]
