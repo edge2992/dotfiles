@@ -1,6 +1,7 @@
 # Repository-only files (not dotfiles)
 CLAUDE.md
 README.md
+Makefile
 docs/
 .pre-commit-config.yaml
 .stylua.toml
