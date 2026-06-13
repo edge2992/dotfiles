@@ -25,6 +25,12 @@ else
 fi
 
 {{ if eq .chezmoi.os "darwin" }}
+# uv-managed Python with python3/python shims on PATH (~/.local/bin, PATH先頭).
+# Mason's PyPI installer requires python3 >= 3.10, but macOS system python is 3.9.6.
+# darwin限定: Linuxはディストロのpython3(>=3.10)とapt pynvimを使うためshadowしない。
+log "Installing uv-managed Python 3.13 with default executables..."
+uv python install --default 3.13
+
 # Dedicated venv for Neovim Python provider (Homebrew python is externally-managed)
 NVIM_PY_VENV="$HOME/.local/share/neovim-python"
 if [ ! -x "$NVIM_PY_VENV/bin/python" ]; then
