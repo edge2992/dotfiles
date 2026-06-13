@@ -46,6 +46,20 @@ source ~/.zshenv
 
 > **macOS の注意**: ステップ 1 で Xcode Command Line Tools のインストールダイアログが表示されます。完了後に `chezmoi apply` を再実行してください。
 
+### SSH (1Password SSH Agent)
+
+新規端末では、この公開リポジトリを HTTPS のまま `chezmoi init --apply` できます。SSH 鍵をローカルへ展開する必要はありません。
+
+`chezmoi init` 時に `Use 1Password SSH Agent for GitHub?` を聞かれます。`yes` を選ぶと `~/.ssh/config` の `Host github.com` に 1Password SSH Agent のソケットを指す `IdentityAgent` が設定されます（既存設定があればマージされ、重複は作りません）。`no` を選んだ場合、既存の SSH 設定には一切手を加えません。
+
+opt-in 後は、1Password デスクトップアプリで **Settings > Developer > Use the SSH Agent** を有効化し、接続を確認します:
+
+```bash
+ssh -T git@github.com
+```
+
+秘密鍵は 1Password の SSH Agent ソケット経由で利用され、ローカルのファイルへは展開されません。
+
 ## Update
 
 ```bash
