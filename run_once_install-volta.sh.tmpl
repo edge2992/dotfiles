@@ -25,9 +25,3 @@ volta install node
 volta install yarn
 volta install aicommits
 volta install ccusage
-
-# Install neovim package for Neovim Node.js support
-if ! npm list -g neovim >/dev/null 2>&1; then
-  log "Installing neovim npm package..."
-  npm install -g neovim
-fi

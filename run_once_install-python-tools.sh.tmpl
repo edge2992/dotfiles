@@ -23,3 +23,14 @@ else
   log "Installing uv..."
   curl -LsSf https://astral.sh/uv/install.sh | sh
 fi
+
+{{ if eq .chezmoi.os "darwin" }}
+# Dedicated venv for Neovim Python provider (Homebrew python is externally-managed)
+NVIM_PY_VENV="$HOME/.local/share/neovim-python"
+if [ ! -x "$NVIM_PY_VENV/bin/python" ]; then
+  log "Creating Neovim Python venv at $NVIM_PY_VENV..."
+  uv venv "$NVIM_PY_VENV"
+fi
+log "Installing pynvim into Neovim venv..."
+uv pip install --python "$NVIM_PY_VENV/bin/python" pynvim
+{{ end }}
