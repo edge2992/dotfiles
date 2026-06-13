@@ -1,0 +1,50 @@
+#!/bin/sh
+# Merge the 1Password SSH Agent socket into ~/.ssh/config under `Host github.com`.
+# chezmoi pipes the current file contents on stdin and uses our stdout as the new
+# contents. This only runs when `useOnePasswordSSHAgent` is true; otherwise the
+# target is ignored via .chezmoiignore, so existing SSH config is never touched.
+set -eu
+{{ if get . "useOnePasswordSSHAgent" -}}
+{{ if eq .chezmoi.os "darwin" -}}
+agent_line='    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"'
+{{ else -}}
+agent_line='    IdentityAgent ~/.1password/agent.sock'
+{{ end -}}
+
+# shellcheck disable=SC2016
+awk -v agent_line="$agent_line" '
+function host_has_github(line,    rest, n, parts, i) {
+  rest = line
+  sub(/^[[:space:]]*[Hh]ost[[:space:]]+/, "", rest)
+  n = split(rest, parts, /[[:space:]]+/)
+  for (i = 1; i <= n; i++) {
+    if (parts[i] == "github.com") return 1
+  }
+  return 0
+}
+BEGIN { in_gh = 0; gh_seen = 0 }
+/^[[:space:]]*[Hh]ost[[:space:]]/ {
+  if (host_has_github($0)) {
+    in_gh = 1
+    gh_seen = 1
+    print
+    print agent_line
+    next
+  }
+  in_gh = 0
+}
+/^[[:space:]]*[Mm]atch[[:space:]]/ { in_gh = 0 }
+{
+  if (in_gh && $0 ~ /^[[:space:]]*IdentityAgent[[:space:]]/) next
+  print
+}
+END {
+  if (!gh_seen) {
+    print "Host github.com"
+    print agent_line
+  }
+}
+'
+{{ else -}}
+cat
+{{ end -}}

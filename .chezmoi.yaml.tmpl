@@ -16,9 +16,18 @@
 {{ else -}}
 {{   $op_account = promptStringOnce . "op_account" "What is your 1Password account (e.g. my.1password.com, leave empty to skip)" -}}
 {{ end -}}
+{{ $useOnePasswordSSHAgent := false -}}
+{{ if env "CI" -}}
+{{   $useOnePasswordSSHAgent = false -}}
+{{ else if hasKey . "useOnePasswordSSHAgent" -}}
+{{   $useOnePasswordSSHAgent = .useOnePasswordSSHAgent -}}
+{{ else -}}
+{{   $useOnePasswordSSHAgent = promptBoolOnce . "useOnePasswordSSHAgent" "Use 1Password SSH Agent for GitHub?" false -}}
+{{ end -}}
 
 data:
   email: {{ $email | quote }}
   name: {{ $name | quote }}
   memo_dir: {{ $memo_dir | quote }}
   op_account: {{ $op_account | quote }}
+  useOnePasswordSSHAgent: {{ $useOnePasswordSSHAgent }}

@@ -23,3 +23,24 @@ else
   log "Installing uv..."
   curl -LsSf https://astral.sh/uv/install.sh | sh
 fi
+
+# uv installs to ~/.local/bin; ensure it is on PATH for the rest of this script
+# (this non-interactive shell has not sourced ~/.zshenv).
+export PATH="$HOME/.local/bin:$PATH"
+
+{{ if eq .chezmoi.os "darwin" }}
+# uv-managed Python with python3/python shims on PATH (~/.local/bin, PATH先頭).
+# Mason's PyPI installer requires python3 >= 3.10, but macOS system python is 3.9.6.
+# darwin限定: Linuxはディストロのpython3(>=3.10)とapt pynvimを使うためshadowしない。
+log "Installing uv-managed Python 3.13 with default executables..."
+uv python install --default 3.13
+
+# Dedicated venv for Neovim Python provider (Homebrew python is externally-managed)
+NVIM_PY_VENV="$HOME/.local/share/neovim-python"
+if [ ! -x "$NVIM_PY_VENV/bin/python" ]; then
+  log "Creating Neovim Python venv at $NVIM_PY_VENV..."
+  uv venv "$NVIM_PY_VENV"
+fi
+log "Installing pynvim into Neovim venv..."
+uv pip install --python "$NVIM_PY_VENV/bin/python" pynvim
+{{ end }}

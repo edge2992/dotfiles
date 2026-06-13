@@ -1,6 +1,7 @@
 # Repository-only files (not dotfiles)
 CLAUDE.md
 README.md
+Makefile
 docs/
 .pre-commit-config.yaml
 .stylua.toml
@@ -10,3 +11,8 @@ docs/
 .claude/.update.lock
 .claude/shell-snapshots/
 .claude/plugins/
+
+# 1Password SSH Agent: opt-out 時は ~/.ssh を一切管理しない（既存設定・空ディレクトリへ無影響）
+{{- if not (get . "useOnePasswordSSHAgent") }}
+.ssh
+{{- end }}
