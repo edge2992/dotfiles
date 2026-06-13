@@ -24,6 +24,10 @@ else
   curl -LsSf https://astral.sh/uv/install.sh | sh
 fi
 
+# uv installs to ~/.local/bin; ensure it is on PATH for the rest of this script
+# (this non-interactive shell has not sourced ~/.zshenv).
+export PATH="$HOME/.local/bin:$PATH"
+
 {{ if eq .chezmoi.os "darwin" }}
 # uv-managed Python with python3/python shims on PATH (~/.local/bin, PATH先頭).
 # Mason's PyPI installer requires python3 >= 3.10, but macOS system python is 3.9.6.
