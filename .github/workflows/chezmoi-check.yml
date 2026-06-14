@@ -21,7 +21,7 @@ jobs:
       - name: Run shellcheck on .sh.tmpl files
         run: |
           exit_code=0
-          for f in run_once_install-*.sh.tmpl; do
+          for f in .chezmoiscripts/run_once_install-*.sh.tmpl; do
             echo "::group::shellcheck $f"
             # Strip chezmoi template directives before running shellcheck
             sed '/^{{/d' "$f" | shellcheck -s bash -e SC1091 - || exit_code=1

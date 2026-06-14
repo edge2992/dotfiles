@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+{{ includeTemplate "install-prelude.sh" }}
+
+# macOS: Rust tools are installed via Homebrew
+if [ "$(uname -s)" = "Darwin" ]; then
+  log "macOS detected. Rust tools are installed via Homebrew. Skipping."
+  exit 0
+fi
+
+# Rust toolchain
+if command -v cargo >/dev/null 2>&1; then
+  log "cargo is already installed, skipping rustup"
+else
+  log "Installing Rust..."
+  curl https://sh.rustup.rs -sSf | sh -s -- -y
+  . "$HOME/.cargo/env"
+fi
+
+# Rust tools — entries are "name [extra cargo install args]"
+for spec in "sheldon" "eza" "starship --locked" "atuin"; do
+  # shellcheck disable=SC2086 # intentional word-split to pass extra args
+  set -- $spec
+  name="$1"
+  shift
+  if ! command -v "$name" >/dev/null 2>&1; then
+    log "Installing $name..."
+    cargo install "$name" "$@"
+  fi
+done

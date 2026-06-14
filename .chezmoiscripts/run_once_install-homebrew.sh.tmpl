@@ -1,10 +1,6 @@
-#!/bin/bash
-set -e
-
-if [ -n "${CI:-}" ]; then
-  echo "CI environment detected. Skipping Homebrew installation."
-  exit 0
-fi
+#!/usr/bin/env bash
+set -euo pipefail
+{{ includeTemplate "install-prelude.sh" }}
 
 {{ if eq .chezmoi.os "darwin" }}
 echo "Installing Homebrew and core packages for macOS"

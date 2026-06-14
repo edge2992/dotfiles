@@ -11,15 +11,11 @@ alias slackcat='cat'
 # global claude
 alias cw='claude -w'
 
-{{ if eq .chezmoi.os "linux" }}
 # ls command
-command -v eza &> /dev/null && alias ls='eza --icons --group --git --group-directories-first' || alias ls='ls --color=auto --group-directories-first -h'
-{{ end }}
+command -v eza &> /dev/null && alias ls='eza --icons --group --git --group-directories-first' || \
+  alias ls='ls --color=auto {{ if eq .chezmoi.os "linux" }}--group-directories-first {{ end }}-h'
 
 {{ if eq .chezmoi.os "darwin" }}
-# ls command
-command -v eza &> /dev/null && alias ls='eza --icons --group --git --group-directories-first' || alias ls='ls --color=auto -h'
-
 # open shortcut (consistent with Linux xdg-open)
 alias xdg-open='open'
 {{ end }}

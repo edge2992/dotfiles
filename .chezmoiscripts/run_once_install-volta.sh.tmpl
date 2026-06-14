@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
-log() { echo "[install] $*"; }
-
-if [ -n "${CI:-}" ]; then
-  log "CI environment detected. Skipping Volta/Node.js installation."
-  exit 0
-fi
+{{ includeTemplate "install-prelude.sh" }}
 
 # Volta (Node.js manager)
 if command -v volta >/dev/null 2>&1; then
