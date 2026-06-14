@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 {{ includeTemplate "install-prelude.sh" }}
 
 if [[ "${SKIP_NERD_FONTS_INSTALL:-}" == "true" ]]; then

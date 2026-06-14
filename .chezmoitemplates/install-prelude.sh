@@ -1,5 +1,3 @@
-set -euo pipefail
-
 log() { echo "[install] $*"; }
 
 if [ -n "${CI:-}" ]; then

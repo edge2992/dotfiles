@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 {{ includeTemplate "install-prelude.sh" }}
 
 # Re-runs whenever dot_tmux.conf (which holds the @plugin declarations) changes.
