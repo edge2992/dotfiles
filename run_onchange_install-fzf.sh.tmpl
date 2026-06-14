@@ -1,14 +1,7 @@
 #!/usr/bin/env bash
-set -euo pipefail
+{{ includeTemplate "install-prelude.sh" }}
 
 # fzf version: 0.70.0
-
-log() { echo "[install] $*"; }
-
-if [ -n "${CI:-}" ]; then
-  log "CI environment detected. Skipping fzf installation."
-  exit 0
-fi
 
 {{ if eq .chezmoi.os "linux" }}
 

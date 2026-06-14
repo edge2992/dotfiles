@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
-
-log() { echo "[install] $*"; }
-
-if [ -n "${CI:-}" ]; then
-  log "CI environment detected. Skipping Claude CLI installation."
-  exit 0
-fi
+{{ includeTemplate "install-prelude.sh" }}
 
 # Ensure ~/.local/bin is in PATH for this script
 export PATH="$HOME/.local/bin:$PATH"

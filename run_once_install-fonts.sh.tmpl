@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
-
-log() { echo "[install] $*"; }
-
-# Skip Install in CI environment
-if [ -n "${CI:-}" ]; then
-  log "CI environment detected. Skipping Nerd Fonts installation."
-  exit 0
-fi
+{{ includeTemplate "install-prelude.sh" }}
 
 if [[ "${SKIP_NERD_FONTS_INSTALL:-}" == "true" ]]; then
   log "Skipping Nerd Fonts installation due to SKIP_NERD_FONTS_INSTALL."
@@ -31,4 +23,3 @@ cd "$tmpdir/nerd-fonts"
 
 cd /
 rm -rf "$tmpdir"
-
