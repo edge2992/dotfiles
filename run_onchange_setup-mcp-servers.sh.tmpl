@@ -34,7 +34,7 @@ register_mcp() {
 if command -v uvx >/dev/null 2>&1; then
   register_mcp serena -- \
     uvx --from git+https://github.com/oraios/serena serena start-mcp-server \
-    --context=claude-code --project-from-cwd
+    --context=claude-code --project-from-cwd --open-web-dashboard false
 else
   log "uvx not found. Skipping serena (install-python-tools provides uv)."
 fi
