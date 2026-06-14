@@ -53,3 +53,16 @@ function gst() {
   stash=$(git stash list | fzf --preview 'echo {1} | sed "s/:$//" | xargs git stash show -p' | awk -F: '{print $1}')
   [ -n "$stash" ] && git stash show -p "$stash"
 }
+
+# One-shot question to Claude (non-interactive, uses subscription auth, no API key)
+# Usage: ask <question>   /   <command> | ask <question>
+function ask() {
+  [ $# -eq 0 ] && { echo "usage: ask <question>  (pipe stdin for context)" >&2; return 1; }
+  if [ ! -t 0 ]; then
+    local context
+    context=$(cat)
+    claude -p --model haiku -- "$@"$'\n\n---\n'"$context"
+  else
+    claude -p --model haiku -- "$@"
+  fi
+}

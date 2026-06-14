@@ -71,7 +71,8 @@
       "WebFetch(domain:*)",
       "mcp__plugin_context7_context7__resolve-library-id",
       "mcp__plugin_context7_context7__query-docs",
-      "mcp__serena"
+      "mcp__serena",
+      "mcp__playwright"
     ],
     "deny": [
       "Bash(sudo:*)",

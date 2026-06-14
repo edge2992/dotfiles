@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+log() { echo "[mcp] $*"; }
+
+if [ -n "${CI:-}" ]; then
+  log "CI environment detected. Skipping MCP server setup."
+  exit 0
+fi
+
+# Ensure runtimes are on PATH for this script
+export PATH="$HOME/.local/bin:$PATH"
+export VOLTA_HOME="${VOLTA_HOME:-$HOME/.volta}"
+export PATH="$VOLTA_HOME/bin:$PATH"
+
+if ! command -v claude >/dev/null 2>&1; then
+  log "Claude CLI not found. Skipping MCP setup (install-claude handles installation)."
+  exit 0
+fi
+
+# Register a user-scoped MCP server only if it is not already present.
+# claude mcp add writes to ~/.claude.json (stateful), so this stays idempotent.
+register_mcp() {
+  local name="$1"; shift
+  if claude mcp get "$name" >/dev/null 2>&1; then
+    log "$name already registered"
+    return 0
+  fi
+  log "Registering MCP server: $name"
+  claude mcp add --scope user "$name" "$@"
+}
+
+# serena: LSP-based semantic code navigation (requires uvx, no API key)
+if command -v uvx >/dev/null 2>&1; then
+  register_mcp serena -- \
+    uvx --from git+https://github.com/oraios/serena serena start-mcp-server \
+    --context=claude-code --project-from-cwd --open-web-dashboard false
+else
+  log "uvx not found. Skipping serena (install-python-tools provides uv)."
+fi
+
+# playwright: browser automation / UI verification (requires npx, no API key)
+if command -v npx >/dev/null 2>&1; then
+  register_mcp playwright -- npx @playwright/mcp@latest
+else
+  log "npx not found. Skipping playwright (install-volta provides node)."
+fi
