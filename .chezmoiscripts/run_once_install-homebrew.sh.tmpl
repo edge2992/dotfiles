@@ -36,4 +36,10 @@ brew install \
   tmux \
   tree-sitter-cli \
   wget
+
+# Go tools not available via Homebrew
+if ! command -v memo >/dev/null 2>&1; then
+  log "Installing memo..."
+  go install github.com/mattn/memo@latest
+fi
 {{ end }}
