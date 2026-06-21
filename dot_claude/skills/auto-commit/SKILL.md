@@ -1,35 +1,48 @@
 ---
-description: Stage-aware auto commit — analyze staged diff file by file, then commit
+description: Stage-aware auto commit — read key files in full, the rest by name, then commit
 argument-hint: [optional context]
 ---
 
-# Auto Commit (staged, file-by-file)
+# Auto Commit (staged, fast)
 
-Analyze the **staged** changes incrementally (file by file), generate a
-Conventional Commits message, and create the commit immediately. No editor
-prompt, no confirmation — this runs fully automatically.
+Analyze the **staged** changes — reading the key files in full and the rest by
+name — generate a Conventional Commits message, and create the commit
+immediately. No editor prompt, no confirmation — this runs fully automatically.
 
 This is the engine behind the `git ai` / `git aic` shell wrappers, which run
 this skill headless via `claude -p` with `--permission-mode acceptEdits` and a
 git-only `--allowedTools` allowlist — least privilege, not a full bypass.
 
+Keep tool calls to a few: one overview, a handful of targeted diffs, the style
+check, and the commit. Do **not** crawl the diff file by file — that is slow on
+large changesets and rarely changes the message.
+
 ## Instructions
 
-1. **List staged files**
+1. **Survey staged files in one shot**
    ```bash
    git diff --cached --stat
    ```
    - If there are no staged changes, print `No staged changes` and stop. Do not
      stage anything yourself — staging is the wrapper's job.
+   - This single overview lists every file with its insertion/deletion counts —
+     enough to judge which files actually need a close read.
 
-2. **Read the diff incrementally — one file at a time**
-   For each staged file, inspect its diff on its own rather than reading the
-   whole diff at once. This keeps large changesets accurate.
+2. **Read only the files that matter**
+   From the `--stat` overview, pick the files carrying the substance of the
+   change and read just those in full:
    ```bash
    git diff --cached -- <file>
    ```
-   - For a very large file, walk it hunk by hunk.
-   - For each file, note a one-line summary of *what changed and why*.
+   - Read in full the **largest few files** — rough guide: the top 3–5 by
+     changed lines, or any file over ~30 changed lines.
+   - For the rest, rely on the filename and its `--stat` insertion/deletion
+     counts — do not diff them.
+   - Skip the contents of lock/generated files (`*-lock.json`, `*.lock`,
+     minified bundles) entirely — the filename is enough.
+   - If the whole changeset is small (few files, low line count), just read it
+     all; the goal is to avoid a long file-by-file crawl on big changesets, not
+     to withhold context when it is cheap.
 
 3. **Check commit style**
    ```bash
