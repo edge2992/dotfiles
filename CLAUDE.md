@@ -35,6 +35,20 @@ Configured in `.pre-commit-config.yaml`: check-toml, check-yaml, end-of-file-fix
 
 Never bypass with `--no-verify` — investigate and fix failures.
 
+### Local Lint Hook (Claude Code)
+
+A Claude Code `PostToolUse` hook lints/formats each file right after Claude
+edits it — so shellcheck (`.sh`), stylua (nvim `.lua`), template, TOML, YAML
+checks surface immediately instead of waiting for `git commit`.
+
+- Config: `.claude/settings.json` → `.claude/hooks/precommit-lint.sh`
+- Mechanism: runs `pre-commit run --files <edited-file>`, reusing
+  `.pre-commit-config.yaml` as the single source of truth (same gate as CI)
+- `gitleaks` is skipped (`SKIP=gitleaks`) for speed; secrets are still caught
+  at real commit time and in CI
+- Failures are fed back to Claude (exit 2) for immediate fixing
+- Requires `pre-commit` installed locally; non-matching files are a no-op
+
 ## Workflow
 
 1. Edit source files directly in this repo
