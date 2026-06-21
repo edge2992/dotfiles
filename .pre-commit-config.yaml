@@ -30,7 +30,7 @@ repos:
     hooks:
       - id: chezmoi-template-check
         name: chezmoi template validation
-        entry: sh -c 'for f in "$@"; do chezmoi execute-template < "$f" > /dev/null || exit 1; done' --
+        entry: sh -c 'for f in "$@"; do chezmoi execute-template --source . < "$f" > /dev/null || exit 1; done' --
         language: system
         files: \.tmpl$
         exclude: ^\.chezmoi\.yaml\.tmpl$
