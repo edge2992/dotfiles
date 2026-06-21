@@ -35,6 +35,20 @@ Configured in `.pre-commit-config.yaml`: check-toml, check-yaml, end-of-file-fix
 
 Never bypass with `--no-verify` — investigate and fix failures.
 
+### Local Lint Hook (Claude Code)
+
+A Claude Code `PostToolUse` hook lints/formats each file right after Claude
+edits it — so shellcheck (`.sh`), stylua (nvim `.lua`), template, TOML, YAML
+checks surface immediately instead of waiting for `git commit`.
+
+- Config: `.claude/settings.json` → `.claude/hooks/precommit-lint.sh`
+- Mechanism: runs `pre-commit run --files <edited-file>`, reusing
+  `.pre-commit-config.yaml` as the single source of truth (same gate as CI)
+- `gitleaks` is skipped (`SKIP=gitleaks`) for speed; secrets are still caught
+  at real commit time and in CI
+- Failures are fed back to Claude (exit 2) for immediate fixing
+- Requires `pre-commit` installed locally; non-matching files are a no-op
+
 ## Workflow
 
 1. Edit source files directly in this repo
@@ -51,6 +65,11 @@ All changes go through PRs. Never commit directly to main.
 4. Self-review with code-reviewer agent before submitting
 5. `gh pr checks <PR#>` — all CI must pass. Fix failures, never use `--admin` to bypass
 6. Merge after review + CI pass
+
+**Standing rule:** after opening a PR, always verify CI is green
+(`gh pr checks <PR#> --watch`) and then merge it — no need to ask again once
+the checks pass. Never merge with failing or pending checks; fix failures
+instead of bypassing them.
 
 ### Parallel Work Rules
 - Use `isolation: "worktree"` for concurrent agents
