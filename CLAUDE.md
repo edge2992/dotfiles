@@ -66,6 +66,11 @@ All changes go through PRs. Never commit directly to main.
 5. `gh pr checks <PR#>` — all CI must pass. Fix failures, never use `--admin` to bypass
 6. Merge after review + CI pass
 
+**Standing rule:** after opening a PR, always verify CI is green
+(`gh pr checks <PR#> --watch`) and then merge it — no need to ask again once
+the checks pass. Never merge with failing or pending checks; fix failures
+instead of bypassing them.
+
 ### Parallel Work Rules
 - Use `isolation: "worktree"` for concurrent agents
 - Never parallelize issues that touch the same files
