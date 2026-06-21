@@ -43,8 +43,14 @@ Never bypass with `--no-verify` — investigate and fix failures.
 ## Workflow
 
 1. Edit source files directly in this repo
-2. `make lint` → `chezmoi diff` → `chezmoi apply`
+2. `make lint` → `chezmoi diff` (preview only — do **not** `chezmoi apply` yet)
 3. Commit and create PR
+4. **After the PR is merged**, run `chezmoi apply` to sync changes to this machine
+
+**Standing rule:** Never `chezmoi apply` before a PR is merged. Verify changes
+during review with `chezmoi diff` (use `--source <worktree>` to preview from a
+feature worktree). Apply only after merge, so the live machine always reflects
+merged, reviewed state.
 
 ## PR-Driven Development (Required)
 
@@ -76,4 +82,5 @@ instead of bypassing them.
 
 - `.tmpl` files contain Go template syntax — preserve `{{ }}` blocks
 - `run_once_` scripts run only once; to re-run, delete state in `.chezmoistate.boltdb`
-- After editing `dot_claude/`, run `chezmoi apply` to sync to `~/.claude/`
+- Editing `dot_claude/` only changes the source; it reaches `~/.claude/` via
+  `chezmoi apply`, which runs **after the PR is merged** (see Workflow above)

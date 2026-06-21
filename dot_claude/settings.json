@@ -71,8 +71,6 @@
       "Bash(uname:*)",
       "WebFetch(domain:*)",
       "WebSearch",
-      "mcp__obsidian__vault_list",
-      "mcp__obsidian__vault_read",
       "mcp__plugin_context7_context7__query-docs",
       "mcp__plugin_context7_context7__resolve-library-id",
       "mcp__serena",
@@ -117,6 +115,17 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/stop-review.sh"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/worklog.sh"
           }
         ]
       }

@@ -32,3 +32,8 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # Cargo (Rust)
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+# Claude Code work-log output dir (consumed by ~/.claude/hooks/worklog.sh).
+# Only set when the Obsidian vault exists; the hook no-ops if this is unset,
+# keeping ~/.claude portable across machines without the vault.
+[ -d "$HOME/Documents/ob_edgissa" ] && export CLAUDE_WORKLOG_DIR="$HOME/Documents/ob_edgissa/claude/worklog"
