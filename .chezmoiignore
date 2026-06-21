@@ -7,7 +7,9 @@ docs/
 .stylua.toml
 
 # Claude Code auto-generated / transient files
-.claude/skills/
+# NOTE: .claude/skills/ is NOT ignored — authored skills (auto-commit, commit,
+# consult, …) live there and must be deployed. chezmoi only manages files
+# present in the source, so runtime-generated skills are left untouched.
 .claude/.update.lock
 .claude/shell-snapshots/
 .claude/plugins/
