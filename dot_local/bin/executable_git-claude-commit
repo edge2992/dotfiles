@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-# Claude-powered git commit with nvim editing
-# Usage: git-claude-commit-v2 [additional context]
+# Claude-powered git commit — delegates to the /auto-commit skill.
+# Reads the staged diff file by file, writes a Conventional Commits
+# message, and commits automatically (no editor, no confirmation).
+# Usage: git-claude-commit [additional context]
 
-set -e
+set -euo pipefail
 
 # Colors
 RED='\033[0;31m'
@@ -11,142 +13,52 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Check if there are changes to commit
-if ! git diff --cached --quiet 2>/dev/null; then
-    :
-elif ! git diff --quiet 2>/dev/null; then
-    echo -e "${YELLOW}⚡ No staged changes. Staging all changes...${NC}"
-    git add -A
-else
-    echo -e "${RED}✗ No changes to commit${NC}"
-    exit 1
-fi
-
-# Get git information
-DIFF=$(git diff --cached)
-DIFF_STAT=$(git diff --cached --stat)
-
-if [ -z "$DIFF" ]; then
-    echo -e "${RED}✗ No staged changes${NC}"
-    exit 1
-fi
-
-RECENT_COMMITS=$(git log -5 --pretty=format:"%s" 2>/dev/null || echo "")
-FILES_COUNT=$(echo "$DIFF_STAT" | tail -1 | grep -oE '[0-9]+ file' | grep -oE '[0-9]+')
-
-# Create temporary files
-TEMP_MSG=$(mktemp /tmp/git-commit-msg.XXXXXX)
-TEMP_PROMPT=$(mktemp /tmp/claude-prompt.XXXXXX)
-
-cleanup() {
-    rm -f "$TEMP_MSG" "$TEMP_PROMPT"
-}
-trap cleanup EXIT
-
-# Display summary
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}📝 Commit Summary${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${YELLOW}Changed files:${NC} ${FILES_COUNT}"
-echo ""
-echo "$DIFF_STAT"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo ""
-
-# Create prompt for Claude
-cat > "$TEMP_PROMPT" << 'EOF'
-Analyze the following git diff and generate a commit message following Conventional Commits format.
-
-Requirements:
-- Format: <type>(<scope>): <subject>
-- Types: feat, fix, docs, style, refactor, perf, test, chore
-- Subject: imperative mood, no period, max 50 chars
-- Add body (optional) only if changes need explanation
-- Analyze the actual code changes, not just file names
-- Use Japanese if the code/comments are primarily in Japanese
-- Output ONLY the commit message (no markdown, no explanation)
-
-Recent commits for style reference:
-EOF
-
-echo "$RECENT_COMMITS" >> "$TEMP_PROMPT"
-
-if [ -n "$1" ]; then
-    echo "" >> "$TEMP_PROMPT"
-    echo "Additional context from user: $*" >> "$TEMP_PROMPT"
-fi
-
-cat >> "$TEMP_PROMPT" << 'EOF'
-
-Git diff:
-EOF
-
-echo "$DIFF" >> "$TEMP_PROMPT"
-
-# Generate commit message with Claude
-echo -e "${GREEN}🤖 Generating commit message with Claude...${NC}"
-
-if command -v claude &> /dev/null; then
-    # Use Claude CLI with Haiku model for speed
-    if claude --model haiku < "$TEMP_PROMPT" > "$TEMP_MSG" 2>/dev/null; then
-        echo -e "${GREEN}✓ AI-generated message created${NC}"
+# Require staged changes. Staging is intentionally left to the caller:
+# `git ai` commits what is staged; `git aic` stages everything first.
+if git diff --cached --quiet 2>/dev/null; then
+    if git diff --quiet 2>/dev/null; then
+        echo -e "${RED}✗ No changes to commit${NC}"
     else
-        echo -e "${YELLOW}⚠ Claude CLI failed, creating template...${NC}"
-        echo "chore: update" > "$TEMP_MSG"
+        echo -e "${RED}✗ No staged changes. Stage first, or use 'git aic' to stage all.${NC}"
     fi
-else
-    echo -e "${RED}✗ Claude CLI not found. Install with: curl -fsSL https://claude.ai/install.sh | bash${NC}"
-    echo -e "${YELLOW}Creating basic template...${NC}"
-    echo "chore: update" > "$TEMP_MSG"
-fi
-
-# Add helpful comments
-echo "" >> "$TEMP_MSG"
-echo "# ──────────────────────────────────────────────────────────" >> "$TEMP_MSG"
-echo "# Edit the commit message above as needed" >> "$TEMP_MSG"
-echo "# Lines starting with '#' will be ignored" >> "$TEMP_MSG"
-echo "# ──────────────────────────────────────────────────────────" >> "$TEMP_MSG"
-echo "#" >> "$TEMP_MSG"
-echo "# Conventional Commits: <type>(<scope>): <subject>" >> "$TEMP_MSG"
-echo "#" >> "$TEMP_MSG"
-echo "# Types: feat, fix, docs, style, refactor, perf, test, chore" >> "$TEMP_MSG"
-echo "#" >> "$TEMP_MSG"
-echo "# Recent commits:" >> "$TEMP_MSG"
-echo "$RECENT_COMMITS" | sed 's/^/# /' >> "$TEMP_MSG"
-echo "#" >> "$TEMP_MSG"
-echo "# Changes to be committed:" >> "$TEMP_MSG"
-echo "$DIFF_STAT" | sed 's/^/# /' >> "$TEMP_MSG"
-
-# Open in nvim
-echo ""
-echo -e "${GREEN}Opening nvim to edit commit message...${NC}"
-sleep 1
-
-"${EDITOR:-nvim}" "$TEMP_MSG"
-
-# Extract final message
-FINAL_MSG=$(grep -v '^#' "$TEMP_MSG" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed '/^$/d')
-
-if [ -z "$FINAL_MSG" ]; then
-    echo -e "${RED}✗ Commit message is empty. Aborting.${NC}"
     exit 1
 fi
 
-# Show final message
-echo ""
+# The /auto-commit skill drives the commit, so the Claude CLI is required.
+if ! command -v claude &> /dev/null; then
+    echo -e "${RED}✗ Claude CLI not found. Install: curl -fsSL https://claude.ai/install.sh | bash${NC}"
+    exit 1
+fi
+
+# Show what will be committed.
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}Final commit message:${NC}"
+echo -e "${BLUE}📝 Staged changes${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo "$FINAL_MSG"
+git diff --cached --stat
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-# Create commit
-git commit -F - << COMMIT_EOF
-$FINAL_MSG
-COMMIT_EOF
+# Delegate to /auto-commit. acceptEdits overrides the plan defaultMode so the
+# headless run can act without prompts, while --allowedTools restricts it to the
+# git commands the skill needs (least privilege, not a full bypass). Haiku keeps
+# it fast.
+echo -e "${GREEN}🤖 Analyzing diff and committing with Claude...${NC}"
+
+PROMPT="/auto-commit${*:+ $*}"
+
+if ! claude -p "$PROMPT" \
+    --model haiku \
+    --permission-mode acceptEdits \
+    --allowedTools \
+        "Bash(git diff:*)" \
+        "Bash(git log:*)" \
+        "Bash(git status:*)" \
+        "Bash(git commit:*)"; then
+    echo -e "${RED}✗ Claude failed. Commit aborted.${NC}" >&2
+    exit 1
+fi
 
 echo ""
-echo -e "${GREEN}✓ Commit created successfully${NC}"
+echo -e "${GREEN}✓ Done${NC}"
 git log -1 --pretty=format:"  %C(yellow)%h%Creset %s %C(blue)(%cr)%Creset"
 echo ""
