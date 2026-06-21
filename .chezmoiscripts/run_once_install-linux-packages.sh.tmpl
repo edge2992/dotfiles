@@ -68,4 +68,9 @@ if ! command -v glow >/dev/null 2>&1; then
   log "Installing glow..."
   go install github.com/charmbracelet/glow@latest
 fi
+
+if ! command -v dw >/dev/null 2>&1; then
+  log "Installing dw..."
+  go install github.com/edge2992/dw@latest
+fi
 {{ end }}

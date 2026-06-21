@@ -20,6 +20,9 @@ command -v eza &> /dev/null && alias ls='eza --icons --group --git --group-direc
 alias xdg-open='open'
 {{ end }}
 
+# discussion alias
+command -v dw &> /dev/null && eval "$(dw init zsh)"
+
 # git worktree aliases
 alias gwt='git worktree list'
 alias gwta='git worktree add'
