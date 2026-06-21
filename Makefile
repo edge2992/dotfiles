@@ -1,6 +1,22 @@
-.PHONY: lint lint-json
+.PHONY: lint lint-json nvim-check
 
 lint: lint-json
+
+NVIM_SRC := private_dot_config/nvim
+STYLUA := $(shell command -v stylua 2>/dev/null || echo $(HOME)/.local/share/nvim/mason/bin/stylua)
+
+nvim-check:
+	@echo "==> stylua format check"
+	@if [ -x "$(STYLUA)" ]; then \
+		"$(STYLUA)" --check $(NVIM_SRC); \
+	else \
+		echo "  stylua binary not found; falling back to pre-commit"; \
+		pre-commit run stylua --files $(NVIM_SRC)/init.lua $$(find $(NVIM_SRC)/lua -name '*.lua'); \
+	fi
+	@echo "==> headless syntax + core load check"
+	@NVIM_SRC="$(CURDIR)/$(NVIM_SRC)" nvim --headless --clean \
+		--cmd "set rtp^=$(CURDIR)/$(NVIM_SRC)" \
+		+"luafile scripts/nvim-check.lua" +qa
 
 lint-json:
 	@echo "Validating JSON files..."

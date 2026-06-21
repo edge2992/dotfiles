@@ -27,7 +27,11 @@ Never rename chezmoi source files without understanding the naming convention im
 ```bash
 make lint          # Run all lints — required before committing
 make lint-json     # JSON syntax only
+make nvim-check    # Verify Neovim Lua config (stylua + headless load)
 ```
+
+When changing Neovim config, follow the verification flow in
+`private_dot_config/nvim/CLAUDE.md`.
 
 ## Pre-commit Hooks
 
