@@ -11,6 +11,7 @@
       "Read(~/.claude/**)",
       "Edit(**)",
       "Write(**.md)",
+      "Write(/tmp/**)",
       "Write(.tmp/**)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
@@ -87,10 +88,7 @@
       "Read(id_ed25519)",
       "Write(.env*)"
     ],
-    "ask": [
-      "Bash(gh pr create:*)",
-      "Bash(gh pr merge:*)"
-    ],
+    "ask": ["Bash(gh pr create:*)", "Bash(gh pr merge:*)"],
     "defaultMode": "plan"
   },
   "model": "opus",
