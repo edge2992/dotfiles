@@ -9,8 +9,9 @@ Analyze the **staged** changes incrementally (file by file), generate a
 Conventional Commits message, and create the commit immediately. No editor
 prompt, no confirmation — this runs fully automatically.
 
-This is the engine behind the `git ai` / `git aic` shell wrappers, which call:
-`claude -p "/auto-commit $*" --model haiku --permission-mode bypassPermissions`.
+This is the engine behind the `git ai` / `git aic` shell wrappers, which run
+this skill headless via `claude -p` with `--permission-mode acceptEdits` and a
+git-only `--allowedTools` allowlist — least privilege, not a full bypass.
 
 ## Instructions
 
@@ -53,7 +54,7 @@ This is the engine behind the `git ai` / `git aic` shell wrappers, which call:
      scopes are `zsh`, `nvim`, `tmux`, `git`, `claude`, `atuin`, `fonts`,
      `install`
 
-5. **Commit immediately**
+5. **Commit immediately** — write the closing `EOF` at column 0 when you run it:
    ```bash
    git commit -F - <<'EOF'
    <type>(<scope>): <subject>
