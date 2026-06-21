@@ -20,4 +20,3 @@ keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer
 
 -- copy to clipboard
 keymap.set("v", "<C-c>", [["+y]])
-

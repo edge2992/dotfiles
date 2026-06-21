@@ -11,14 +11,11 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup(
-  {
-    {import = "edgissa.plugins"},
-    {import = "edgissa.plugins.lsp"}
+require("lazy").setup({
+  { import = "edgissa.plugins" },
+  { import = "edgissa.plugins.lsp" },
+}, {
+  rocks = {
+    enabled = false, -- Disable luarocks support to avoid warnings
   },
-  {
-    rocks = {
-      enabled = false, -- Disable luarocks support to avoid warnings
-    }
-  }
-)
+})
