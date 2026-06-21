@@ -9,6 +9,11 @@
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/precommit-lint.sh",
             "statusMessage": "Running pre-commit linters..."
+          },
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/nvim-verify.sh",
+            "statusMessage": "Verifying Neovim config loads..."
           }
         ]
       }
