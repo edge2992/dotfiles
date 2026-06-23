@@ -159,5 +159,6 @@
   },
   "language": "japanese",
   "preferredNotifChannel": "auto",
-  "editorMode": "vim"
+  "editorMode": "vim",
+  "tui": "fullscreen"
 }
