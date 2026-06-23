@@ -12,12 +12,30 @@ docs/
 .stylua.toml
 
 # Claude Code auto-generated / transient files
-# NOTE: .claude/skills/ is NOT ignored — authored skills (auto-commit, commit,
-# consult, …) live there and must be deployed. chezmoi only manages files
-# present in the source, so runtime-generated skills are left untouched.
+# NOTE: .claude/skills/ and .claude/agents/ are NOT ignored — authored skills
+# (auto-commit, commit, consult, …) and agents live there and must be deployed.
+# chezmoi only manages files present in the source, so runtime-generated entries
+# are left untouched. The patterns below are a safety net: they keep local-only
+# generated noise from ever being picked up by `chezmoi add ~/.claude/...`, so
+# the chezmoi-claude-sync workflow always sees a clean, intentional diff.
 .claude/.update.lock
+.claude/.last-cleanup
+.claude/.last-update-result.json
 .claude/shell-snapshots/
 .claude/plugins/
+.claude/history.jsonl
+.claude/mcp-needs-auth-cache.json
+.claude/paste-cache/
+.claude/session-env/
+.claude/file-history/
+.claude/usage-data/
+.claude/projects/
+.claude/tasks/
+.claude/plans/
+.claude/backups/
+.claude/downloads/
+.claude/cache/
+**/.DS_Store
 
 # 1Password SSH Agent: opt-out 時は ~/.ssh を一切管理しない（既存設定・空ディレクトリへ無影響）
 {{- if not (get . "useOnePasswordSSHAgent") }}
