@@ -2,8 +2,11 @@
 # NOTE: .chezmoiignore patterns match the TARGET path (not gitignore-style), so
 # a bare `CLAUDE.md` only ignores the repo root. Use `**/CLAUDE.md` to keep
 # nested authoring docs (e.g. private_dot_config/nvim/CLAUDE.md) repo-only.
+# Exception: `.claude/CLAUDE.md` is the deployable global Claude instructions
+# (dot_claude/CLAUDE.md), so re-include it with a negation below.
 CLAUDE.md
 **/CLAUDE.md
+!.claude/CLAUDE.md
 README.md
 Makefile
 scripts/
