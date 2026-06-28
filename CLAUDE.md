@@ -52,6 +52,12 @@ during review with `chezmoi diff` (use `--source <worktree>` to preview from a
 feature worktree). Apply only after merge, so the live machine always reflects
 merged, reviewed state.
 
+**Standing rule:** Once a PR is merged, run the apply step yourself — do not
+hand it back to the user. Fast-forward `main` (`git pull --ff-only`), confirm
+with `chezmoi diff -- <changed paths>`, then `chezmoi apply -- <changed paths>`
+scoped to the files this PR touched (so unrelated live drift is never swept in),
+and verify `chezmoi diff` is empty afterward.
+
 ## PR-Driven Development (Required)
 
 All changes go through PRs. Never commit directly to main.
