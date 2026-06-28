@@ -1,0 +1,46 @@
+# zsh 起動Tipデータ
+# 形式: category|trigger|description
+#   category : zsh / git / tool
+#   trigger  : コマンドや alias（実在するものだけ）
+#   description : 日本語1行説明
+# 区切りは「最初の2つの | だけ」。description 内の | はそのまま扱われる
+#   （例: `cmd | ask 質問` のようにパイプを含めてよい）。
+# '#' 始まりの行と空行は無視される。末尾空白は入れない。
+# メンテは Claude skill `zsh-tips` から追記するのが楽（手動追記も可）。
+
+# --- zsh: このリポジトリの alias / 関数 ---
+zsh|gb|git ブランチを fzf で選んで switch（プレビューに log graph）
+zsh|glog|git log を fzf で閲覧し、選んだコミットハッシュを出力
+zsh|gpr|gh の PR 一覧を fzf で選んで checkout
+zsh|gst|git stash を fzf で選んで差分プレビュー
+zsh|mdp|Markdown を fzf+glow でプレビューしながら閲覧（mdp [dir]）
+zsh|sshf|~/.ssh/config の Host を fzf で選んで ssh 接続
+zsh|ask|claude -p をワンショット呼び出し。`cmd | ask 質問` で文脈も渡せる
+zsh|g|ghq 管理リポジトリを fzf で選んで cd（g）
+zsh|vlast|カレントで最後のファイルを nvim で開く（vlast）
+zsh|cw|claude -w のエイリアス。作業ディレクトリ指定で起動
+zsh|vim|vim は nvim にエイリアスされている
+zsh|gwt|git worktree 一覧（gwt = git worktree list）
+zsh|gwta|worktree を追加（gwta <path> [branch]）。並行作業の起点
+zsh|gwtr|worktree を削除（gwtr <path>）。作業後の片付けに
+zsh|ma|isucon 用ベンチ一括（before-bench→bench→after-bench）
+
+# --- git / gh: ワークフロー ---
+git|git worktree|機能ごとに worktree を分ければ main を汚さず並行作業できる
+git|gh pr checks|`gh pr checks <PR#> --watch` で CI のグリーンを待てる
+git|gh pr create|`gh pr create` の本文に `Closes #XX` で Issue を自動クローズ
+git|git switch|ブランチ切替は checkout より switch が安全で明示的
+git|git restore|ファイルの変更取り消しは `git restore <file>`（checkout より明確）
+git|git stash -u|`-u` を付けると untracked ファイルも stash に含められる
+git|git commit --amend|直前コミットの修正は amend。push 前なら気軽に使える
+
+# --- tool: 便利ツールの機能紹介 ---
+tool|fzf|Ctrl-R で履歴、Ctrl-T でファイル、`**<Tab>` で補完を fzf 化
+tool|atuin|シェル履歴を SQLite で横断検索。Ctrl-R が強力になる
+tool|eza|ls は eza に置換済み。`--git` で git 状態、`--icons` でアイコン表示
+tool|starship|プロンプトは starship 製。git/言語バージョンを自動表示
+tool|ghq|`ghq get <repo>` で整理された場所に clone。`g` で素早く移動
+tool|direnv|ディレクトリ毎に環境変数を自動ロード。`.envrc` を許可するだけ
+tool|glow|Markdown をターミナルで綺麗に表示。`glow <file>` か mdp で
+tool|chezmoi|`chezmoi diff` で適用前プレビュー、`chezmoi apply` で反映
+tool|chezmoi edit|`chezmoi edit <file>` でソースを直接編集（apply は別途）
