@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+{{ includeTemplate "install-prelude.sh" }}
+
+{{ if eq .chezmoi.os "darwin" }}
+# Keep Homebrew current by upgrading on `chezmoi apply`, throttled so it runs
+# at most once per INTERVAL_DAYS (apply can run frequently after each merge).
+INTERVAL_DAYS=7
+STAMP="${XDG_CACHE_HOME:-$HOME/.cache}/chezmoi/brew-upgrade.stamp"
+
+# Do nothing if brew isn't installed yet (run_once_install-homebrew handles setup).
+if ! command -v brew >/dev/null 2>&1; then
+  if [ -f /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  else
+    log "Homebrew not found; skipping upgrade."
+    exit 0
+  fi
+fi
+
+# Throttle: skip if the last run was less than INTERVAL_DAYS ago.
+now=$(date +%s)
+if [ -f "$STAMP" ]; then
+  last=$(stat -f %m "$STAMP" 2>/dev/null || echo 0)
+  age=$((now - last))
+  if [ "$age" -lt $((INTERVAL_DAYS * 86400)) ]; then
+    log "Homebrew upgraded $((age / 86400))d ago (< ${INTERVAL_DAYS}d); skipping."
+    exit 0
+  fi
+fi
+
+log "Upgrading Homebrew (throttle: ${INTERVAL_DAYS}d)..."
+ok=1
+brew update     || { log "WARNING: brew update failed"; ok=0; }
+brew upgrade    || { log "WARNING: brew upgrade failed"; ok=0; }
+brew cleanup    || { log "WARNING: brew cleanup failed"; ok=0; }
+brew autoremove || { log "WARNING: brew autoremove failed"; ok=0; }
+
+# Stamp regardless of outcome so a broken formula can't force a retry every apply.
+mkdir -p "$(dirname "$STAMP")"
+touch "$STAMP"
+
+if [ "$ok" -eq 1 ]; then
+  log "Homebrew upgrade complete."
+else
+  log "Homebrew upgrade finished with warnings."
+fi
+{{ end }}
