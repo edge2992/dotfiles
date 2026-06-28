@@ -1,0 +1,26 @@
+## Atuin — managed by chezmoi. Docs: https://docs.atuin.sh/configuration/config/
+
+# Enter は即実行 / Tab は編集してから実行
+enter_accept = true
+
+# 検索UIを広く・情報密に
+inline_height = 25      # 0=全画面。25行に抑えて軽く
+style = "compact"       # 余白を削った密なレイアウト
+show_preview = true     # 選択中コマンドの全文プレビュー(長い/複数行コマンド向け)
+
+# デフォルト検索モード: fuzzy(タイポ許容)。TUI内 Ctrl-S でその場切替
+search_mode = "fuzzy"
+
+# デフォルトのフィルタ範囲: global(全ホスト・全ディレクトリ)。TUI内 Ctrl-R で循環
+filter_mode = "global"
+
+# Up矢印で開いたときだけ「現在のディレクトリ」に絞る = 文脈履歴の入口
+filter_mode_shell_up_key_binding = "directory"
+
+[sync]
+records = true          # sync v2
+
+[stats]
+# `atuin stats` がサブコマンド単位で集計できるようにする(よく使うコマンド発見用)
+common_prefix = ["sudo"]
+common_subcommands = ["cargo", "git", "go", "kubectl", "docker", "npm", "pnpm", "brew"]
