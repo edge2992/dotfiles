@@ -30,7 +30,11 @@ tip() {
   local desc="${rest#*|}"
 
   local color="${_TIP_COLORS[$category]:-white}"
-  print -P "%F{yellow}💡 tip%f %F{${color}}(${category})%f %F{green}${trigger}%f — ${desc}"
+  # 色装飾(制御下の文字列)だけプロンプト展開し、description は生で出す。
+  # starship が PROMPT_SUBST を有効化するため、print -P だと desc 内の
+  # `...` や $() がコマンドとして実行されてしまう（それを防ぐ）。
+  local fmt="%F{yellow}💡 tip%f %F{${color}}(${category})%f %F{green}${trigger}%f"
+  print -r -- "${(%)fmt} — ${desc}"
 }
 
 # インタラクティブシェルの起動時に1件表示する
