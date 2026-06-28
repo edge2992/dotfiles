@@ -32,17 +32,25 @@ sdkman_rosetta2_compatible=false
 EOF
 
 # Load the `sdk` shell function into this script's shell.
+# SDKMAN's init script and `sdk` functions are not nounset-safe, so disable
+# `set -u` from here on (errexit/pipefail stay on for real failures).
+set +u
 # shellcheck disable=SC1091
 source "$SDKMAN_DIR/bin/sdkman-init.sh"
 
-# Resolve the latest Amazon Corretto identifier. Corretto ships LTS-only
-# (8/11/17/21/25...), so the highest `-amzn` candidate is the latest LTS.
-# `|| true`: under `set -o pipefail`, an empty grep result (exit 1) would abort
-# the assignment before the explicit empty-check below; keep it a soft failure.
-java_id="$(sdk list java | awk -F'|' '{gsub(/[[:space:]]/,"",$NF); print $NF}' | grep -E '^[0-9].*-amzn$' | sort -V | tail -n1 || true)"
+# Resolve the latest Amazon Corretto LTS identifier. Corretto publishes both
+# LTS and non-LTS feature releases (e.g. 25 is LTS, 26 is not), so filter to the
+# modern LTS cadence -- Java 21, 25, 29, 33, ... (every 4th major from 21) -- and
+# take the highest. `|| true`: under `set -o pipefail` an empty result (grep/awk
+# exit 1) would abort the assignment before the empty-check below; keep it soft.
+java_id="$(sdk list java \
+  | awk -F'|' '{gsub(/[[:space:]]/,"",$NF); print $NF}' \
+  | grep -E '^[0-9].*-amzn$' \
+  | awk -F. '{ m = $1 + 0; if (m >= 21 && (m - 21) % 4 == 0) print }' \
+  | sort -V | tail -n1 || true)"
 
 if [ -z "$java_id" ]; then
-  log "ERROR: no Corretto (-amzn) candidate found in 'sdk list java'"
+  log "ERROR: no Corretto (-amzn) LTS candidate found in 'sdk list java'"
   exit 1
 fi
 
