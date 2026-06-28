@@ -21,6 +21,9 @@ export PATH="$VOLTA_HOME/bin:$PATH"
 export PATH="/usr/local/go/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 
+# SDKMAN (Java/JVM manager); init is sourced in zsh/plugins.zsh
+export SDKMAN_DIR="$HOME/.sdkman"
+
 # Atuin (shell history)
 [ -f "$HOME/.atuin/bin/env" ] && . "$HOME/.atuin/bin/env"
 

@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+set -euo pipefail
+{{ includeTemplate "install-prelude.sh" }}
+
+# SDKMAN! (Java/JVM toolchain manager)
+export SDKMAN_DIR="$HOME/.sdkman"
+
+if [ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]; then
+  log "SDKMAN is already installed"
+else
+  log "Installing SDKMAN..."
+  # rcupdate=false: do not let the installer append init lines to managed
+  # rc files (~/.zshrc etc.); shell init is wired up in plugins.zsh instead.
+  curl -s "https://get.sdkman.io?rcupdate=false" | bash
+fi
+
+# Make SDKMAN non-interactive for this script and for shell startup.
+# etc/config is not chezmoi-managed, so rewriting it here is safe and avoids
+# the BSD/GNU `sed -i` portability trap.
+cat > "$SDKMAN_DIR/etc/config" <<'EOF'
+sdkman_auto_answer=true
+sdkman_auto_complete=true
+sdkman_auto_env=false
+sdkman_auto_selfupdate=false
+sdkman_selfupdate_feature=false
+sdkman_colour_enable=false
+sdkman_curl_connect_timeout=7
+sdkman_curl_max_time=10
+sdkman_debug_mode=false
+sdkman_insecure_ssl=false
+sdkman_rosetta2_compatible=false
+EOF
+
+# Load the `sdk` shell function into this script's shell.
+# shellcheck disable=SC1091
+source "$SDKMAN_DIR/bin/sdkman-init.sh"
+
+# Resolve the latest Amazon Corretto identifier. Corretto ships LTS-only
+# (8/11/17/21/25...), so the highest `-amzn` candidate is the latest LTS.
+# `|| true`: under `set -o pipefail`, an empty grep result (exit 1) would abort
+# the assignment before the explicit empty-check below; keep it a soft failure.
+java_id="$(sdk list java | awk -F'|' '{gsub(/[[:space:]]/,"",$NF); print $NF}' | grep -E '^[0-9].*-amzn$' | sort -V | tail -n1 || true)"
+
+if [ -z "$java_id" ]; then
+  log "ERROR: no Corretto (-amzn) candidate found in 'sdk list java'"
+  exit 1
+fi
+
+# Install (idempotent) and set as the default Java.
+if [ ! -d "$SDKMAN_DIR/candidates/java/$java_id" ]; then
+  log "Installing Java $java_id (Amazon Corretto, latest LTS)..."
+  sdk install java "$java_id"
+else
+  log "Java $java_id is already installed"
+fi
+
+sdk default java "$java_id"
+log "Java default set to $java_id"
