@@ -1,7 +1,10 @@
 # Global Guidelines
 
+Project-specific instructions are in each project's `CLAUDE.md`.
+
 ## Rules
 
+- **Language**: Think in English. Respond in Japanese.
 - **Library docs**: Use Context7 MCP before implementing anything library-specific.
 - **Worktree isolation**: Always use git worktree for feature work and bug fixes. Never work directly on main. Use `isolation: "worktree"` with the Agent tool.
 - **Agentic coding**: Prefer autonomous, agent-driven approaches — subagents, parallel execution, proactive problem-solving.
@@ -13,6 +16,12 @@
 - Offload research, exploration, and parallel analysis to subagents
 - For complex problems, throw more compute at it via subagents
 - One tack per subagent for focused execution
+- Default to delegating: don't hold exploration, research, or cross-cutting
+  analysis in the main context — hand it to a subagent
+- Route broad, multi-area investigations to the `research-coordinator` agent
+- Tell every child to return conclusions only (no raw logs) to protect main context
+- Run independent tasks in parallel; keep nested subagents shallow and wide
+  (don't waste the depth-5 nesting limit on tall chains)
 
 ## Verification Before Done
 
