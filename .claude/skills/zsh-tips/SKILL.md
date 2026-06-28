@@ -27,7 +27,19 @@ category|trigger|description
 - `description`: 日本語1行の簡潔な説明
 - 区切りは**最初の2つの `|` だけ**。`description` 内に `|` を含めてよい
   （例: `zsh|ask|claude -p をワンショット。\`cmd | ask 質問\` で文脈も渡せる`）
+- `description` には `` ` `` / `<...>` / `$()` / `%` などの記号を**そのまま書いてよい**。
+  表示は `print -r --` で生出力されるため、コマンド実行もパースもされず文字として出る。
+  むしろ `` `glow <file>` `` のようなコード例を含めるのが推奨される。
 - `#` 始まりの行と空行は無視される
+
+### 表示ロジックの前提（この skill では触らないが、壊さないために知っておく）
+
+`tips.zsh` は **色装飾だけ** `${(%)fmt}` でプロンプト展開し、`description` は
+`print -r --` で**生出力**する。これを `print -P "...${desc}..."` に戻してはいけない:
+starship が `PROMPT_SUBST` を有効化しているため、description 内の `` `...` `` や
+`$()` が**コマンドとして実行されてしまう**（`` `.envrc` `` → `command not found`、
+`` `glow <file>` `` → `parse error near '>'`）。実際に起きて #101 で修正済み。
+だから上記の「記号をそのまま書いてよい」が成立する。
 
 ## ワークフロー
 
@@ -71,11 +83,24 @@ grep -vE '^[[:space:]]*(#|$)' tips.txt | awk -F'|' 'NF<3{print "BAD:",$0}'
 grep -vE '^[[:space:]]*(#|$)' tips.txt | awk -F'|' '{print $2}' | sort | uniq -d
 ```
 
-両方とも出力が空なら健全。可能なら実表示も確認:
+両方とも出力が空なら健全。さらに**実環境(starship=PROMPT_SUBST 有効)を再現して
+全 Tip を表示**し、`command not found` / `parse error` が出ないことを必ず確認する
+（`PROMPT_SUBST` を付けないテストは #101 級の回帰を見逃すので不可）:
 
 ```bash
-zsh -c 'source private_dot_config/zsh/tips.zsh; tip private_dot_config/zsh/tips.txt'
+zsh -c '
+  emulate -L zsh; setopt prompt_subst          # starship 相当
+  source private_dot_config/zsh/tips.zsh
+  for e in "${(@f)$(grep -vE "^[[:space:]]*(#|\$)" -- private_dot_config/zsh/tips.txt)}"; do
+    c="${e%%|*}"; r="${e#*|}"; t="${r%%|*}"; d="${r#*|}"
+    fmt="%F{yellow}💡 tip%f %F{${_TIP_COLORS[$c]:-white}}($c)%f %F{green}$t%f"
+    print -r -- "${(%)fmt} — $d"
+  done
+'
 ```
+
+全行がエラーなく表示され、`` ` `` や `<...>` が文字として出ていれば健全。
+途中で `command not found` / `parse error` が出たら表示ロジックが壊れている。
 
 ### 5. chezmoi フローを守る
 
