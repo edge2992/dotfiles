@@ -18,6 +18,8 @@ zsh|sshf|~/.ssh/config の Host を fzf で選んで ssh 接続
 zsh|ask|claude -p をワンショット呼び出し。`cmd | ask 質問` で文脈も渡せる
 zsh|g|ghq 管理リポジトリを fzf で選んで cd（g）
 zsh|vlast|カレントで最後のファイルを nvim で開く（vlast）
+zsh|fv|ファイルを fzf で曖昧検索してそのまま nvim で開く（fv [query]）
+zsh|fcd|ディレクトリ階層を fzf で曖昧検索して cd（fcd [dir]）
 zsh|cw|claude -w のエイリアス。作業ディレクトリ指定で起動
 zsh|vim|vim は nvim にエイリアスされている
 zsh|gwt|git worktree 一覧（gwt = git worktree list）

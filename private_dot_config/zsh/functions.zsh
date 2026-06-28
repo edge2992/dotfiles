@@ -54,6 +54,33 @@ function gst() {
   [ -n "$stash" ] && git stash show -p "$stash"
 }
 
+# Fuzzy-find a file and open it in nvim (fv [query])
+function fv() {
+  local file preview
+  if (( $+commands[bat] )); then
+    preview='bat --color=always --style=numbers --line-range :200 {}'
+  else
+    preview='cat {}'
+  fi
+  if (( $+commands[fd] )); then
+    file=$(fd --type f --hidden --exclude .git | fzf --query="$1" --preview "$preview")
+  else
+    file=$(find . -type f -not -path '*/.git/*' 2>/dev/null | fzf --query="$1" --preview "$preview")
+  fi
+  [ -n "$file" ] && nvim "$file"
+}
+
+# Fuzzy-find a directory under the tree and cd into it (fcd [dir])
+function fcd() {
+  local dir
+  if (( $+commands[fd] )); then
+    dir=$(fd --type d --hidden --exclude .git . "${1:-.}" | fzf --preview 'ls -la {}')
+  else
+    dir=$(find "${1:-.}" -type d -not -path '*/.git/*' 2>/dev/null | fzf --preview 'ls -la {}')
+  fi
+  [ -n "$dir" ] && cd "$dir"
+}
+
 # One-shot question to Claude (non-interactive, uses subscription auth, no API key)
 # Usage: ask <question>   /   <command> | ask <question>
 function ask() {
