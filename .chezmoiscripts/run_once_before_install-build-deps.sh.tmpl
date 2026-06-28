@@ -10,23 +10,23 @@ if [ -f /etc/os-release ]; then
   case "${ID:-}" in
     ubuntu|debian|pop|linuxmint)
       sudo apt update
-      sudo apt install -y build-essential libssl-dev pkg-config cmake
+      sudo apt install -y build-essential libssl-dev pkg-config cmake zip unzip
       ;;
     fedora)
       sudo dnf groupinstall -y "Development Tools"
-      sudo dnf install -y openssl-devel pkg-config cmake
+      sudo dnf install -y openssl-devel pkg-config cmake zip unzip
       ;;
     rhel|centos|rocky|alma)
       sudo dnf groupinstall -y "Development Tools"
-      sudo dnf install -y openssl-devel pkg-config cmake
+      sudo dnf install -y openssl-devel pkg-config cmake zip unzip
       ;;
     arch|manjaro|endeavouros)
-      sudo pacman -Syu --noconfirm --needed base-devel openssl pkg-config cmake
+      sudo pacman -Syu --noconfirm --needed base-devel openssl pkg-config cmake zip unzip
       ;;
     # opensuse-leap, opensuse-tumbleweed, etc.
     opensuse*|sles)
       sudo zypper install -y -t pattern devel_basis
-      sudo zypper install -y libopenssl-devel pkg-config cmake
+      sudo zypper install -y libopenssl-devel pkg-config cmake zip unzip
       ;;
     *)
       log "WARNING: Unsupported distro '${ID:-unknown}'. Install a C compiler, OpenSSL dev headers, pkg-config, and cmake manually."
