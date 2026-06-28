@@ -88,3 +88,4 @@ chezmoi update --init
 - **[Neovim Guide](docs/neovim.md)** — プラグイン一覧、各プラグインの役割と使い方
 - **[Keybindings](docs/keybindings.md)** — Neovim / Tmux / Zsh のキーバインド一覧
 - **[Troubleshooting](docs/troubleshooting.md)** — よくある問題と解決方法
+- **[Claude Code グローバル設定](docs/claude-global-config.md)** — `dot_claude/` で管理する Claude の設定・スキル・エージェント・フックの概要
