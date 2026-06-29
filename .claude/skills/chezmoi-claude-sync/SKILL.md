@@ -58,6 +58,33 @@ untracked files for the user's awareness (e.g. a hand-written
 `agents/foo.md`), but do not `chezmoi add` them unless the user explicitly
 asks to start managing that file.
 
+**JSON configs are noisy under raw `chezmoi diff`.** Claude Code rewrites
+`settings.json` and reorders its keys, so `chezmoi diff` shows large
+reorder/reformat hunks that are *not* real content changes. To see the true
+semantic delta, compare the rendered source against the live file with sorted
+keys:
+
+```bash
+diff <(chezmoi cat ~/.claude/settings.json | jq -S .) \
+     <(jq -S . ~/.claude/settings.json)
+```
+
+`chezmoi cat` renders the source (templates included), and `jq -S` sorts keys,
+so the only lines that survive are genuine additions/removals. Use this to drive
+classification; treat the raw-diff reordering as DISCARD noise that `chezmoi
+apply` will normalize after merge.
+
+**Know whether the source is a template.** Resolve it once per path:
+
+```bash
+chezmoi source-path ~/.claude/settings.json   # → …/dot_claude/settings.json.tmpl
+```
+
+A `.tmpl` suffix means the source contains Go-template logic (e.g.
+`settings.json.tmpl` guards its `env` block with
+`{{- if hasKey . "bedrock_base_url" }}`). This changes how you ADOPT — see
+step 5.
+
 ### 3. Examine each diff and classify
 
 Read every hunk in `chezmoi diff ~/.claude` and sort each change into one of:
@@ -88,9 +115,17 @@ ask if something is ambiguous enough that guessing wrong would be costly.
 
 After confirmation, act under `$SRC`:
 
-- **ADOPT** → `chezmoi re-add <path>` (updates the source from the live target
-  for already-managed files). `re-add` will not introduce new files, which keeps
-  scope honest.
+- **ADOPT (non-template source)** → `chezmoi re-add <path>` (updates the source
+  from the live target for already-managed files). `re-add` will not introduce
+  new files, which keeps scope honest.
+- **ADOPT (`.tmpl` source)** → **never `chezmoi re-add`.** `re-add` overwrites the
+  source with the *rendered* output, destroying the `{{ }}` template logic (e.g.
+  it would collapse `settings.json.tmpl`'s bedrock `{{- if … }}` branch into
+  whatever this machine happened to render). Instead hand-edit the source
+  `.tmpl` (e.g. `$SRC/dot_claude/settings.json.tmpl`) to add *only* the adopted
+  change, leaving every `{{ }}` block untouched — exactly like the PARTIAL case
+  below. The normalized `diff <(chezmoi cat …) <(jq -S …)` from step 2 tells you
+  precisely which line(s) to add.
 - **PARTIAL** → do *not* `re-add` the whole file. Open the source file
   (e.g. `$SRC/dot_claude/settings.json`) and hand-edit it so it contains the
   ADOPT hunks and *omits* the DISCARD hunks. This is the conflict resolution —
@@ -108,9 +143,15 @@ After confirmation, act under `$SRC`:
   reflects exactly the intended changes and nothing else (no noise files crept
   in; the expanded `.chezmoiignore` should prevent that).
 - `chezmoi diff ~/.claude` again — the remaining diff should be only the DISCARD
-  items you deliberately left, or empty.
-- Run `make lint` (use `make lint-json` if you touched `settings.json`) from
-  `$SRC` so the change passes the same checks CI will run.
+  items you deliberately left, or the cosmetic key-reorder noise (which `chezmoi
+  apply` normalizes after merge); the normalized `diff <(chezmoi cat …) <(jq -S …)`
+  should now show no genuine content delta.
+- If you hand-edited a `.tmpl`, run `make lint-tmpl` (or
+  `scripts/check-json-tmpl.sh`) from `$SRC` to prove the template still renders
+  to valid JSON on *both* branches (default and bedrock) — a stray comma is easy
+  to introduce and `chezmoi diff` alone will not catch it.
+- Run `make lint` (which now runs `lint-json` + `lint-tmpl`) from `$SRC` so the
+  change passes the same checks CI will run.
 
 ### 7. Ship it (PR-driven)
 
