@@ -156,6 +156,18 @@
   },
   "env": {
     "CLAUDE_CODE_ENABLE_AUTO_MODE": "1"
+    {{- if hasKey . "bedrock_base_url" }},
+    "ANTHROPIC_BEDROCK_BASE_URL": "{{ .bedrock_base_url }}",
+    "AWS_BEARER_TOKEN_BEDROCK": "{{ .bedrock_token }}",
+    "CLAUDE_CODE_USE_BEDROCK": "1",
+    "CLAUDE_CODE_SKIP_BEDROCK_AUTH": "1",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_METRICS_EXPORTER": "otlp",
+    "OTEL_LOGS_EXPORTER": "otlp",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "{{ .otel_endpoint }}",
+    "OTEL_EXPORTER_OTLP_HEADERS": "Authorization={{ .bedrock_token }}"
+    {{- end }}
   },
   "language": "japanese",
   "preferredNotifChannel": "auto",

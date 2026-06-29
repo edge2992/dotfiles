@@ -12,8 +12,9 @@ fi
 
 TPM_DIR="${HOME}/.tmux/plugins/tpm"
 if [ ! -x "${TPM_DIR}/bin/install_plugins" ]; then
-  log "ERROR: TPM not found at ${TPM_DIR}. .chezmoiexternal.toml should clone it before this script runs."
-  exit 1
+  log "TPM not found at ${TPM_DIR}. Cloning..."
+  mkdir -p "${HOME}/.tmux/plugins"
+  git clone --depth=1 https://github.com/tmux-plugins/tpm.git "${TPM_DIR}"
 fi
 
 log "Installing tmux plugins via TPM..."
