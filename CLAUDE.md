@@ -28,6 +28,7 @@ Never rename chezmoi source files without understanding the naming convention im
 ```bash
 make lint          # Run all lints — required before committing
 make lint-json     # JSON syntax only
+make lint-tmpl     # Render *.json.tmpl and validate the output is valid JSON
 make nvim-check    # Verify Neovim Lua config (stylua + headless load)
 ```
 
@@ -36,7 +37,7 @@ When changing Neovim config, follow the verification flow in
 
 ## Pre-commit Hooks
 
-Configured in `.pre-commit-config.yaml`: check-toml, check-yaml, end-of-file-fixer, trailing-whitespace, shellcheck, stylua, gitleaks, chezmoi-template-check.
+Configured in `.pre-commit-config.yaml`: check-toml, check-yaml, end-of-file-fixer, trailing-whitespace, shellcheck, stylua, gitleaks, chezmoi-template-check, json-tmpl-validate.
 
 Never bypass with `--no-verify` — investigate and fix failures.
 
