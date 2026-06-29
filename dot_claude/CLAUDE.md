@@ -9,6 +9,8 @@ Project-specific instructions are in each project's `CLAUDE.md`.
 - **Worktree isolation**: Always use git worktree for feature work and bug fixes. Never work directly on main. Use `isolation: "worktree"` with the Agent tool.
 - **Agentic coding**: Prefer autonomous, agent-driven approaches — subagents, parallel execution, proactive problem-solving.
 - **PRs**: Commit and push to feature branches without asking. Create PRs without asking, too.
+- **AWS resources**: When viewing or querying AWS resources, always use the `mcp__aws-mcp__aws___call_aws` MCP tool.
+- **Python scripts**: Always use `uv` to run Python scripts (`uv run script.py`). Use `uv` for package management instead of `pip`/`python`.
 
 ## Subagent Strategy
 
