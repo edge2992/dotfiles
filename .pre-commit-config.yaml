@@ -35,3 +35,9 @@ repos:
         files: \.tmpl$
         exclude: ^\.chezmoi\.yaml\.tmpl$
         types: [file]
+      - id: json-tmpl-validate
+        name: validate rendered JSON templates
+        entry: scripts/check-json-tmpl.sh
+        language: system
+        files: \.json\.tmpl$
+        pass_filenames: false

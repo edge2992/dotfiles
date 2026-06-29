@@ -1,6 +1,6 @@
-.PHONY: lint lint-json nvim-check
+.PHONY: lint lint-json lint-tmpl nvim-check
 
-lint: lint-json
+lint: lint-json lint-tmpl
 
 NVIM_SRC := private_dot_config/nvim
 STYLUA := $(shell command -v stylua 2>/dev/null || echo $(HOME)/.local/share/nvim/mason/bin/stylua)
@@ -30,3 +30,6 @@ lint-json:
 		fi; \
 	done; \
 	[ $$fail -eq 0 ] && echo "All JSON files valid." || (echo "JSON validation failed." && exit 1)
+
+lint-tmpl:
+	@scripts/check-json-tmpl.sh
