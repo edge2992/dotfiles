@@ -20,6 +20,7 @@ config.automatically_reload_config = true
 if is_macos then
   -- macOS 専用。Linux では無視されるため OS でガードしておく
   config.macos_window_background_blur = 20
+  config.native_macos_fullscreen_mode = true -- safe area を考慮した native fullscreen を使用
 end
 
 -- IME（Linux: fcitx）。既存設定を保持
