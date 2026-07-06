@@ -62,4 +62,55 @@ for _, k in ipairs(font_keys) do
   table.insert(config.keys, k)
 end
 
+-- 全画面時だけ背景写真を敷く（native fullscreen で背面が黒潰れする問題への対処）
+-- macOS 限定。Linux の全画面は 0.85 透過でデスクトップが透けるため挙動を変えない。
+if is_macos then
+  local BG_DIR = wezterm.config_dir .. "/backgrounds"
+
+  -- backgrounds/ 内の画像を日付で 1 枚選ぶ
+  -- （1 枚しか無ければ常にそれ／画像を足せば自動で日替わり）
+  local function pick_daily_background()
+    local ok, entries = pcall(wezterm.read_dir, BG_DIR)
+    if not ok or not entries then
+      return nil
+    end
+    local images = {}
+    for _, path in ipairs(entries) do
+      if path:match("%.jpe?g$") or path:match("%.png$") then
+        table.insert(images, path)
+      end
+    end
+    if #images == 0 then
+      return nil
+    end
+    table.sort(images) -- 決定的に並べる
+    local seed = tonumber(os.date("%Y%j")) or 0 -- 年 + 通算日 → 日替わり
+    return images[(seed % #images) + 1]
+  end
+
+  local function apply_fullscreen_bg(window)
+    if window:get_dimensions().is_full_screen then
+      local img = pick_daily_background()
+      if img then
+        window:set_config_overrides({
+          window_background_image = img,
+          -- しっかり暗く（可読性優先）。brightness は 0.05〜0.10 で微調整可
+          window_background_image_hsb = { brightness = 0.07, saturation = 1.0, hue = 1.0 },
+          window_background_opacity = 1.0, -- 全画面では不透明にして写真をそのまま見せる
+        })
+        return
+      end
+    end
+    -- 非全画面 or 画像なし: 既定（0.85 透過 + blur）へ戻す
+    window:set_config_overrides({})
+  end
+
+  wezterm.on("window-resized", function(window, _pane)
+    apply_fullscreen_bg(window)
+  end)
+  wezterm.on("window-config-reloaded", function(window, _pane)
+    apply_fullscreen_bg(window)
+  end)
+end
+
 return config
