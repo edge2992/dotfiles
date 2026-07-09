@@ -93,3 +93,10 @@ function ask() {
     claude -p --model haiku -- "$@"
   fi
 }
+
+# Draft a blog post with memo (bare `memo` captures into the Obsidian inbox)
+# MEMODIR is the only setting memo honours from the environment.
+function bmemo() {
+  [ -z "$OBSIDIAN_VAULT" ] && { echo "bmemo: OBSIDIAN_VAULT is not set" >&2; return 1; }
+  MEMODIR="$OBSIDIAN_VAULT/20_tech/blog/_posts" command memo "$@"
+}
