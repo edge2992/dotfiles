@@ -29,9 +29,11 @@ config.xim_im_name = "fcitx"
 config.ime_preedit_rendering = "Builtin"
 
 -- Keybinds
--- 方針: pane/window/copy 等の tmux 的操作は WezTerm に置かない。
--- ここで定義するのは「IME トグルを通すための既定無効化」と
--- 「外部モニター対策のフォントサイズ調整」のみ。
+-- 方針: pane/tab 等の tmux 的操作は WezTerm に置かない。
+-- ここで定義するのは「IME トグルを通すための既定無効化」「外部モニター対策の
+-- フォントサイズ調整」、および「複数ディスプレイに広げた WezTerm ウィンドウ間の
+-- フォーカス切替」のみ。ウィンドウ間切替は tmux の管轄外（tmux は1ウィンドウ内の
+-- pane/window しか扱えない）なので、この方針と矛盾しない。
 config.keys = {
   -- Ctrl+Space を端末（fcitx 等）へ通すため既定割当を無効化（既存維持）
   { key = " ", mods = "CTRL", action = act.DisableDefaultAssignment },
@@ -59,6 +61,25 @@ else
   }
 end
 for _, k in ipairs(font_keys) do
+  table.insert(config.keys, k)
+end
+
+-- ウィンドウフォーカス切替（複数ディスプレイに広げた WezTerm ウィンドウ間）
+-- macOS: Cmd(SUPER) / Linux: Ctrl+Shift（フォントサイズ調整と同じ修飾キー方針）
+-- ] で次のウィンドウへ、[ で前のウィンドウへ（端まで来たら反対側へ折り返す）
+local window_keys
+if is_macos then
+  window_keys = {
+    { key = "]", mods = "SUPER", action = act.ActivateWindowRelative(1) },
+    { key = "[", mods = "SUPER", action = act.ActivateWindowRelative(-1) },
+  }
+else
+  window_keys = {
+    { key = "]", mods = "CTRL|SHIFT", action = act.ActivateWindowRelative(1) },
+    { key = "[", mods = "CTRL|SHIFT", action = act.ActivateWindowRelative(-1) },
+  }
+end
+for _, k in ipairs(window_keys) do
   table.insert(config.keys, k)
 end
 
