@@ -7,6 +7,9 @@
   },
   "permissions": {
     "allow": [
+      "Glob",
+      "Grep",
+      "Read",
       "Read(**)",
       "Read(~/.claude/**)",
       "Edit(**)",
@@ -71,30 +74,45 @@
       "Bash(uname:*)",
       "WebFetch(domain:*)",
       "WebSearch",
-      "mcp__plugin_context7_context7__query-docs",
-      "mcp__plugin_context7_context7__resolve-library-id",
-      "mcp__serena",
-      "mcp__playwright",
       "mcp__aws-docs__read_documentation",
       "mcp__aws-docs__read_sections",
       "mcp__aws-docs__recommend",
       "mcp__aws-docs__search_documentation",
+      "mcp__aws-knowledge-mcp-server__aws___get_regional_availability",
+      "mcp__aws-knowledge-mcp-server__aws___list_regions",
+      "mcp__aws-knowledge-mcp-server__aws___read_documentation",
+      "mcp__aws-knowledge-mcp-server__aws___recommend",
+      "mcp__aws-knowledge-mcp-server__aws___search_documentation",
       "mcp__aws-mcp__aws___call_aws",
       "mcp__aws-mcp__aws___recommend",
       "mcp__aws-mcp__aws___search_documentation",
       "mcp__aws-mcp__aws___suggest_aws_commands",
-      "mcp__aws-knowledge-mcp-server__aws___search_documentation",
-      "mcp__aws-knowledge-mcp-server__aws___read_documentation",
-      "mcp__aws-knowledge-mcp-server__aws___recommend",
-      "mcp__aws-knowledge-mcp-server__aws___list_regions",
-      "mcp__aws-knowledge-mcp-server__aws___get_regional_availability"
+      "mcp__datadog-mcp__aggregate_spans",
+      "mcp__datadog-mcp__analyze_datadog_logs",
+      "mcp__datadog-mcp__get_datadog_metric_context",
+      "mcp__datadog-mcp__get_datadog_trace",
+      "mcp__datadog-mcp__list_datadog_skills",
+      "mcp__datadog-mcp__load_datadog_skill",
+      "mcp__datadog-mcp__search_datadog_hosts",
+      "mcp__datadog-mcp__search_datadog_logs",
+      "mcp__datadog-mcp__search_datadog_metrics",
+      "mcp__datadog-mcp__search_datadog_service_dependencies",
+      "mcp__datadog-mcp__search_datadog_services",
+      "mcp__datadog-mcp__search_datadog_spans",
+      "mcp__mcp-atlassian__confluence_get_attachments",
+      "mcp__mcp-atlassian__confluence_get_page",
+      "mcp__mcp-atlassian__confluence_get_page_children",
+      "mcp__mcp-atlassian__confluence_search",
+      "mcp__playwright",
+      "mcp__plugin_context7_context7__query-docs",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__serena"
     ],
     "deny": [
       "Bash(sudo:*)",
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
       "Bash(git reset --hard:*)",
-      "Bash(git rebase:*)",
       "Bash(chezmoi destroy:*)",
       "Bash(chezmoi purge:*)",
       "Read(.env*)",
@@ -102,7 +120,7 @@
       "Read(id_ed25519)",
       "Write(.env*)"
     ],
-    "ask": ["Bash(gh pr create:*)", "Bash(gh pr merge:*)"],
+    "ask": ["Bash(gh pr merge:*)"],
     "defaultMode": "plan"
   },
   "model": "opus[1m]",
@@ -142,17 +160,6 @@
           }
         ]
       }
-    ],
-    "PermissionRequest": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "ccgate claude"
-          }
-        ]
-      }
     ]
   },
   "statusLine": {
@@ -180,19 +187,6 @@
   },
   "env": {
     "CLAUDE_CODE_ENABLE_AUTO_MODE": "1"
-    {{- if hasKey . "bedrock_base_url" }},
-    "ANTHROPIC_BEDROCK_BASE_URL": "{{ .bedrock_base_url }}",
-    "AWS_BEARER_TOKEN_BEDROCK": "{{ .bedrock_token }}",
-    "CLAUDE_CODE_USE_BEDROCK": "1",
-    "CLAUDE_CODE_SKIP_BEDROCK_AUTH": "1",
-    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
-    "OTEL_METRICS_EXPORTER": "otlp",
-    "OTEL_LOGS_EXPORTER": "otlp",
-    "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
-    "OTEL_EXPORTER_OTLP_ENDPOINT": "{{ .otel_endpoint }}",
-    "OTEL_EXPORTER_OTLP_HEADERS": "Authorization={{ .bedrock_token }}",
-    "CCGATE_OPENAI_API_KEY": "{{ .bedrock_token }}"
-    {{- end }}
   },
   "language": "japanese",
   "preferredNotifChannel": "auto",

@@ -1,0 +1,38 @@
+#!/bin/sh
+# chezmoi modify script — generates ~/.claude/settings.json
+# stdin (current file contents) is intentionally ignored; always rebuild from base.
+
+RESULT='{{ includeTemplate "claude-settings-base.json" . }}'
+
+{{- if hasKey . "bedrock_base_url" }}
+RESULT=$(printf '%s' "$RESULT" | jq \
+  --arg url '{{ .bedrock_base_url }}' \
+  --arg token '{{ .bedrock_token }}' \
+  --arg otel '{{ .otel_endpoint }}' \
+  '.env |= . + {
+    "ANTHROPIC_BEDROCK_BASE_URL": $url,
+    "AWS_BEARER_TOKEN_BEDROCK": $token,
+    "CLAUDE_CODE_USE_BEDROCK": "1",
+    "CLAUDE_CODE_SKIP_BEDROCK_AUTH": "1",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_METRICS_EXPORTER": "otlp",
+    "OTEL_LOGS_EXPORTER": "otlp",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": $otel,
+    "OTEL_EXPORTER_OTLP_HEADERS": ("Authorization=" + $token)
+  }')
+{{- end }}
+
+{{- if hasKey . "extra_marketplace_url" }}
+RESULT=$(printf '%s' "$RESULT" | jq \
+  --argjson plugins '{{ .extra_plugins | toJson }}' \
+  --arg name '{{ .extra_marketplace_name }}' \
+  --arg url '{{ .extra_marketplace_url }}' \
+  '.enabledPlugins += ($plugins | map({key: ., value: true}) | from_entries) |
+   .extraKnownMarketplaces[$name] = {
+     "source": {"source": "git", "url": $url},
+     "autoUpdate": true
+   }')
+{{- end }}
+
+printf '%s\n' "$RESULT"
