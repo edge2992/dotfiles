@@ -1,6 +1,6 @@
 ---
 description: Analyze Claude Code worklog metrics over a period and propose concrete environment improvements (allowlist entries, CLAUDE.md rules, new skills)
-argument-hint: [period, e.g. 7d or 2026-07-01..2026-07-07 (default: last 7 days)]
+argument-hint: [period, default last 7 days]
 ---
 
 # retro — Claude 使い方の振り返り
