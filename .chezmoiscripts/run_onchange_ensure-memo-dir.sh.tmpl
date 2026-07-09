@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+{{ includeTemplate "install-prelude.sh" }}
+
+# Re-runs whenever the memo_dir prompt answer changes.
+# memo_dir: {{ index . "memo_dir" | default "Documents/ob_edgissa/00_inbox/personal" }}
+
+MEMO_DIR="${HOME}/{{ index . "memo_dir" | default "Documents/ob_edgissa/00_inbox/personal" }}"
+PARENT_DIR="$(dirname "${MEMO_DIR}")"
+
+# `memo new` writes with os.Create and never creates its memodir, so a missing
+# directory makes the very first capture fail. Create it here, but only when the
+# parent already exists: on a machine without the Obsidian vault this must stay a
+# no-op rather than leave behind an empty vault skeleton for Obsidian to sync.
+if [ ! -d "${PARENT_DIR}" ]; then
+  log "Parent ${PARENT_DIR} not found. Skipping memo directory creation."
+  exit 0
+fi
+
+if [ ! -d "${MEMO_DIR}" ]; then
+  log "Creating memo directory ${MEMO_DIR}"
+  mkdir -p "${MEMO_DIR}"
+fi
