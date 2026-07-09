@@ -217,5 +217,6 @@
     "mode": "hold"
   },
   "voiceEnabled": true,
-  "skipWorkflowUsageWarning": true
+  "skipWorkflowUsageWarning": true,
+  "skipDangerousModePermissionPrompt": true
 }
