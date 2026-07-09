@@ -7,9 +7,10 @@
 # This script renders each template with deterministic, machine-independent
 # data and parses the result with python's json module.
 #
-# settings.json.tmpl additionally has a `{{ if hasKey . "bedrock_base_url" }}`
-# branch, so it is rendered twice: once without bedrock data (default branch)
-# and once with mock bedrock data (the comma-heavy conditional branch).
+# executable_modify_*.json.tmpl files are chezmoi modify scripts — they
+# render to shell scripts that are executed to produce JSON. These are
+# validated separately with render_modify() using three data profiles:
+# default (no extras), bedrock-only, and work (extra marketplace + plugins).
 set -euo pipefail
 
 cd "$(git rev-parse --show-toplevel)"
@@ -22,13 +23,22 @@ trap 'rm -rf "$tmpdir"' EXIT
 empty_cfg="$tmpdir/empty.toml"
 printf '[data]\n' >"$empty_cfg"
 
-# Mock bedrock data -> exercises the hasKey branch in settings.json.tmpl.
+# Mock bedrock data -> exercises the hasKey bedrock_base_url branch.
 bedrock_cfg="$tmpdir/bedrock.toml"
 cat >"$bedrock_cfg" <<'EOF'
 [data]
 bedrock_base_url = "https://example.invalid/bedrock"
 bedrock_token = "test-token"
 otel_endpoint = "https://example.invalid/otel"
+EOF
+
+# Mock work data -> exercises the extra_marketplace_url branch.
+work_cfg="$tmpdir/work.toml"
+cat >"$work_cfg" <<'EOF'
+[data]
+extra_plugins = ["plugin-a@test-marketplace", "plugin-b@test-marketplace"]
+extra_marketplace_name = "test-marketplace"
+extra_marketplace_url = "https://example.invalid/marketplace.git"
 EOF
 
 # render <config> <template> <label>
@@ -47,14 +57,43 @@ render() {
   echo "  OK: $tmpl ($label)"
 }
 
+# render_modify <config> <template> <label>
+# For modify scripts: render the template to a shell script, execute it,
+# then validate the output is valid JSON.
+render_modify() {
+  local cfg="$1" tmpl="$2" label="$3" out script_out
+  if ! out="$(chezmoi execute-template --config "$cfg" --source . <"$tmpl" 2>&1)"; then
+    echo "  FAIL: $tmpl ($label) — template did not render:" >&2
+    printf '%s\n' "$out" >&2
+    return 1
+  fi
+  if ! script_out="$(printf '%s' "$out" | sh 2>&1)"; then
+    echo "  FAIL: $tmpl ($label) — script execution failed:" >&2
+    printf '%s\n' "$script_out" >&2
+    return 1
+  fi
+  if ! printf '%s' "$script_out" | python3 -c 'import json,sys; json.load(sys.stdin)' 2>/dev/null; then
+    echo "  FAIL: $tmpl ($label) — output is not valid JSON:" >&2
+    printf '%s\n' "$script_out" >&2
+    return 1
+  fi
+  echo "  OK: $tmpl ($label)"
+}
+
 echo "Validating rendered JSON templates..."
 fail=0
+
+# Validate regular *.json.tmpl files (rendered output must be valid JSON directly)
 while IFS= read -r tmpl; do
   render "$empty_cfg" "$tmpl" "default" || fail=1
-  if [ "$(basename "$tmpl")" = "settings.json.tmpl" ]; then
-    render "$bedrock_cfg" "$tmpl" "bedrock" || fail=1
-  fi
-done < <(find . -name '*.json.tmpl' -not -path './.git/*' | sort)
+done < <(find . -name '*.json.tmpl' -not -name 'executable_modify_*' -not -path './.git/*' | sort)
+
+# Validate modify scripts (rendered output is a shell script; execute it, then validate JSON)
+while IFS= read -r tmpl; do
+  render_modify "$empty_cfg"   "$tmpl" "default" || fail=1
+  render_modify "$bedrock_cfg" "$tmpl" "bedrock"  || fail=1
+  render_modify "$work_cfg"    "$tmpl" "work"     || fail=1
+done < <(find . -name 'executable_modify_*.json.tmpl' -not -path './.git/*' | sort)
 
 if [ "$fail" -eq 0 ]; then
   echo "All rendered JSON templates valid."
