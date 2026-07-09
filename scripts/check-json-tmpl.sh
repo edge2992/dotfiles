@@ -7,7 +7,7 @@
 # This script renders each template with deterministic, machine-independent
 # data and parses the result with python's json module.
 #
-# executable_modify_*.json.tmpl files are chezmoi modify scripts — they
+# modify_*.json.tmpl files are chezmoi modify scripts — they
 # render to shell scripts that are executed to produce JSON. These are
 # validated separately with render_modify() using three data profiles:
 # default (no extras), bedrock-only, and work (extra marketplace + plugins).
@@ -32,13 +32,14 @@ bedrock_token = "test-token"
 otel_endpoint = "https://example.invalid/otel"
 EOF
 
-# Mock work data -> exercises the extra_marketplace_url branch.
+# Mock work data -> exercises the extra_marketplace_url and ccgate_openai_api_key branches.
 work_cfg="$tmpdir/work.toml"
 cat >"$work_cfg" <<'EOF'
 [data]
 extra_plugins = ["plugin-a@test-marketplace", "plugin-b@test-marketplace"]
 extra_marketplace_name = "test-marketplace"
 extra_marketplace_url = "https://example.invalid/marketplace.git"
+ccgate_openai_api_key = "test-ccgate-key"
 EOF
 
 # render <config> <template> <label>
@@ -86,14 +87,14 @@ fail=0
 # Validate regular *.json.tmpl files (rendered output must be valid JSON directly)
 while IFS= read -r tmpl; do
   render "$empty_cfg" "$tmpl" "default" || fail=1
-done < <(find . -name '*.json.tmpl' -not -name 'executable_modify_*' -not -path './.git/*' | sort)
+done < <(find . -name '*.json.tmpl' -not -name 'modify_*' -not -path './.git/*' -not -path './.claude/worktrees/*' | sort)
 
 # Validate modify scripts (rendered output is a shell script; execute it, then validate JSON)
 while IFS= read -r tmpl; do
   render_modify "$empty_cfg"   "$tmpl" "default" || fail=1
   render_modify "$bedrock_cfg" "$tmpl" "bedrock"  || fail=1
   render_modify "$work_cfg"    "$tmpl" "work"     || fail=1
-done < <(find . -name 'executable_modify_*.json.tmpl' -not -path './.git/*' | sort)
+done < <(find . -name 'modify_*.json.tmpl' -not -path './.git/*' -not -path './.claude/worktrees/*' | sort)
 
 if [ "$fail" -eq 0 ]; then
   echo "All rendered JSON templates valid."
