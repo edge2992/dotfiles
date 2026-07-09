@@ -1,0 +1,7 @@
+# claude-inbox was replaced by the tmux-claude-session-manager TPM plugin.
+# Removing its source files alone does not delete them from $HOME on apply
+# (chezmoi never deletes previously-applied files unless listed here) —
+# without these entries, the stale binary and hook script would linger
+# forever on already-applied machines.
+.local/bin/claude-inbox
+.claude/hooks/claude-inbox-hook.sh
