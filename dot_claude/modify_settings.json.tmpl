@@ -20,7 +20,8 @@ RESULT=$(printf '%s' "$RESULT" | jq \
     "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
     "OTEL_EXPORTER_OTLP_ENDPOINT": $otel,
     "OTEL_EXPORTER_OTLP_HEADERS": ("Authorization=" + $token)
-  }')
+  } |
+  .hooks.PermissionRequest = [{"matcher": "", "hooks": [{"type": "command", "command": "ccgate claude"}]}]')
 {{- end }}
 
 {{- if hasKey . "extra_marketplace_url" }}
