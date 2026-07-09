@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+{{ includeTemplate "install-prelude.sh" }}
+
+# go install で管理する Go ツール（run_once_ 実行済みマシンへの追加対応）
+if ! command -v ccgate >/dev/null 2>&1; then
+  log "Installing ccgate..."
+  go install github.com/tak848/ccgate@latest
+fi

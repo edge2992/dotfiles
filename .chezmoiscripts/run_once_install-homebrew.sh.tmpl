@@ -46,4 +46,9 @@ if ! command -v memo >/dev/null 2>&1; then
   log "Installing memo..."
   go install github.com/mattn/memo@latest
 fi
+
+if ! command -v ccgate >/dev/null 2>&1; then
+  log "Installing ccgate..."
+  go install github.com/tak848/ccgate@latest
+fi
 {{ end }}

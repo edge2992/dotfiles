@@ -142,6 +142,17 @@
           }
         ]
       }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ccgate claude"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -179,7 +190,8 @@
     "OTEL_LOGS_EXPORTER": "otlp",
     "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
     "OTEL_EXPORTER_OTLP_ENDPOINT": "{{ .otel_endpoint }}",
-    "OTEL_EXPORTER_OTLP_HEADERS": "Authorization={{ .bedrock_token }}"
+    "OTEL_EXPORTER_OTLP_HEADERS": "Authorization={{ .bedrock_token }}",
+    "CCGATE_OPENAI_API_KEY": "{{ .bedrock_token }}"
     {{- end }}
   },
   "language": "japanese",
