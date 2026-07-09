@@ -1,6 +1,6 @@
 ---
 description: Morning planning — gather Jira assignments, recent worklog and Slack mentions, then propose today's prioritized task list
-argument-hint: [optional context, e.g. 今日は障害対応を優先したい]
+argument-hint: [optional context]
 ---
 
 # kickoff — 朝のタスク見定め
