@@ -23,12 +23,6 @@ RESULT=$(printf '%s' "$RESULT" | jq \
   }')
 {{- end }}
 
-{{- if hasKey . "ccgate_openai_api_key" }}
-RESULT=$(printf '%s' "$RESULT" | jq \
-  --arg key '{{ .ccgate_openai_api_key }}' \
-  '.env.CCGATE_OPENAI_API_KEY = $key')
-{{- end }}
-
 {{- if hasKey . "extra_marketplace_url" }}
 RESULT=$(printf '%s' "$RESULT" | jq \
   --argjson plugins '{{ .extra_plugins | toJson }}' \
