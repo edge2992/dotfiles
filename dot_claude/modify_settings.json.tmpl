@@ -1,39 +1,41 @@
 #!/bin/sh
 # chezmoi modify script — generates ~/.claude/settings.json
-# stdin (current file contents) is intentionally ignored; always rebuild from base.
+# stdin (current file contents) is intentionally ignored; always rebuild from
+# the base template, then merge the private overlay repo if one is present.
+#
+# Overlay contract: $OVERLAY_DIR/overlay.jsonnet must be a jsonnet function
+#   function(base, data) base + { ... }
+# where `base` is the rendered claude-settings-base.json and `data` is the
+# machine-local chezmoi [data] table (secrets stay out of any repo).
+set -eu
 
-RESULT='{{ includeTemplate "claude-settings-base.json" . }}'
+OVERLAY_DIR='{{ get . "claude_overlay_dir" | default (joinPath .chezmoi.homeDir ".config/claude-overlay") }}'
+OVERLAY="$OVERLAY_DIR/overlay.jsonnet"
 
-{{- if hasKey . "bedrock_base_url" }}
-RESULT=$(printf '%s' "$RESULT" | jq \
-  --arg url '{{ .bedrock_base_url }}' \
-  --arg token '{{ .bedrock_token }}' \
-  --arg otel '{{ .otel_endpoint }}' \
-  '.env |= . + {
-    "ANTHROPIC_BEDROCK_BASE_URL": $url,
-    "AWS_BEARER_TOKEN_BEDROCK": $token,
-    "CLAUDE_CODE_USE_BEDROCK": "1",
-    "CLAUDE_CODE_SKIP_BEDROCK_AUTH": "1",
-    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
-    "OTEL_METRICS_EXPORTER": "otlp",
-    "OTEL_LOGS_EXPORTER": "otlp",
-    "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
-    "OTEL_EXPORTER_OTLP_ENDPOINT": $otel,
-    "OTEL_EXPORTER_OTLP_HEADERS": ("Authorization=" + $token)
-  } |
-  .hooks.PermissionRequest = [{"matcher": "", "hooks": [{"type": "command", "command": "ccgate claude"}]}]')
-{{- end }}
+TMP=$(mktemp -d)
+trap 'rm -rf "$TMP"' EXIT
 
-{{- if hasKey . "extra_marketplace_url" }}
-RESULT=$(printf '%s' "$RESULT" | jq \
-  --argjson plugins '{{ .extra_plugins | toJson }}' \
-  --arg name '{{ .extra_marketplace_name }}' \
-  --arg url '{{ .extra_marketplace_url }}' \
-  '.enabledPlugins += ($plugins | map({key: ., value: true}) | from_entries) |
-   .extraKnownMarketplaces[$name] = {
-     "source": {"source": "git", "url": $url},
-     "autoUpdate": true
-   }')
-{{- end }}
+# Quoted heredocs: no shell expansion, so quotes/dollars in the JSON are safe.
+cat >"$TMP/base.json" <<'CHEZMOI_BASE_EOF'
+{{ includeTemplate "claude-settings-base.json" . }}
+CHEZMOI_BASE_EOF
 
-printf '%s\n' "$RESULT"
+if [ ! -f "$OVERLAY" ]; then
+  cat "$TMP/base.json"
+  exit 0
+fi
+
+if ! command -v jsonnet >/dev/null 2>&1; then
+  echo "modify_settings: $OVERLAY exists but jsonnet is not installed" >&2
+  echo "  fix: go install github.com/google/go-jsonnet/cmd/jsonnet@latest" >&2
+  exit 1
+fi
+
+cat >"$TMP/data.json" <<'CHEZMOI_DATA_EOF'
+{{ omit . "chezmoi" | toJson }}
+CHEZMOI_DATA_EOF
+
+jsonnet -J "$OVERLAY_DIR" \
+  --tla-code-file base="$TMP/base.json" \
+  --tla-code-file data="$TMP/data.json" \
+  "$OVERLAY"
