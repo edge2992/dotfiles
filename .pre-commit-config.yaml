@@ -41,3 +41,9 @@ repos:
         language: system
         files: \.json\.tmpl$
         pass_filenames: false
+      - id: merge-patch-test
+        name: settings merge-patch unit tests
+        entry: scripts/test-merge-patch.sh
+        language: system
+        files: (settings-merge-patch\.jq|executable_settings-sync\.sh|test-merge-patch\.sh)$
+        pass_filenames: false

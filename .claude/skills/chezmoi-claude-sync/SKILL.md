@@ -34,9 +34,9 @@ plain template. The source is `dot_claude/modify_settings.json.tmpl`, which:
 
 1. Starts from `.chezmoitemplates/claude-settings-base.json` (the universal
    settings — models, hooks, permissions, env vars that apply on every machine).
-2. Conditionally injects work-specific env vars (Bedrock endpoint, OTEL config)
-   when the chezmoi data keys `bedrock_base_url` / `otel_endpoint` are present
-   in `~/.config/chezmoi/chezmoi.toml`.
+2. If a company overlay is present (see the contract below), merges it on top
+   with jsonnet. Machines without the overlay get the base verbatim, so the
+   public repo carries no company-specific keys at all.
 
 **Key consequence:** `chezmoi source-path ~/.claude/settings.json` returns
 `…/dot_claude/modify_settings.json.tmpl`. This is the modify **script** — do
@@ -44,9 +44,25 @@ NOT `chezmoi re-add` it. The actual settings content lives in
 `.chezmoitemplates/claude-settings-base.json`. That is the file you edit to
 adopt universal settings changes.
 
-**Note on ccgate:** `dot_claude/ccgate.jsonnet` is no longer chezmoi-managed
-(forgotten in PR #124). Do not attempt to re-add or manage it. It is
-work-specific and manually deployed outside chezmoi.
+**Note on ccgate:** ccgate config (`~/.claude/ccgate.jsonnet`) is
+company-scope and belongs to the company overlay repo, not chezmoi. Do not
+attempt to re-add or manage it here.
+
+### Company overlay contract
+
+- Entry point: `$OVERLAY_DIR/overlay.jsonnet`, where `$OVERLAY_DIR` defaults
+  to `~/.config/claude-overlay` (a private company repo cloned there;
+  overridable via the chezmoi data key `claude_overlay_dir`).
+- Signature: `function(base, data) base + { ... }` — `base` is the rendered
+  `claude-settings-base.json`, `data` is the machine-local chezmoi `[data]`
+  table from `~/.config/chezmoi/chezmoi.toml`. Secrets (e.g. `bedrock_token`)
+  stay in `[data]` and reach the overlay through the `data` argument, never
+  living in any repo.
+- The overlay is evaluated with `-J $OVERLAY_DIR`, so it may split logic into
+  `*.libsonnet` helper files inside the company repo.
+- Company skills/hooks/agents are still delivered via the plugin marketplace
+  mechanism — the overlay simply adds `enabledPlugins+:` /
+  `extraKnownMarketplaces+:` entries.
 
 ## PostToolUse auto-sync
 
@@ -55,10 +71,16 @@ whenever Claude writes or edits `~/.claude/settings.json` directly. The hook:
 
 1. Computes a semantic diff (sorted-key jq) between the chezmoi-rendered source
    and the live file.
-2. If there is a real change, strips the modify-script-managed env vars
-   (Bedrock, OTEL, CCGATE) and writes the result to
+2. If there is a real change, computes a reverse merge patch —
+   `mergePatch(base, diff(rendered, live))` — and writes the result to
    `$(chezmoi source-path)/.chezmoitemplates/claude-settings-base.json`.
-3. Prints `settings-sync: updated claude-settings-base.json (chezmoi diff pending)`.
+   Overlay-managed values are identical in `rendered` and `live`, so they
+   never enter the patch and never leak into the base — the hook needs no
+   knowledge of any company key names.
+3. Prints `settings-sync: updated claude-settings-base.json (chezmoi diff pending)`,
+   or a `base updated but overlay interaction detected` warning when an edit
+   touched a value the overlay also manages (e.g. a shared array) — exactly
+   the case this skill then reconciles by hand.
 
 **This means drift in settings.json may already be reconciled.** Before
 classifying a settings.json change as ADOPT in step 3 below, check:
@@ -196,7 +218,7 @@ After confirmation, act under `$SRC`:
   should now show no genuine content delta.
 - If you hand-edited a `.tmpl` or `claude-settings-base.json`, run `make lint-tmpl`
   (or `scripts/check-json-tmpl.sh`) from `$SRC` to prove the template still
-  renders to valid JSON on *both* branches (default and bedrock) — a stray comma
+  renders to valid JSON on *both* profiles (default and overlay) — a stray comma
   is easy to introduce and `chezmoi diff` alone will not catch it.
 - Run `make lint` (which now runs `lint-json` + `lint-tmpl`) from `$SRC` so the
   change passes the same checks CI will run.
@@ -217,4 +239,5 @@ PR is merged and `chezmoi apply` is run — which is the normal, reviewed path.
   of inventing work.
 - Keep commits granular (per skill / per concern) so any single change is easy to
   revert later via the source's git history.
-- `dot_claude/ccgate.jsonnet` is no longer chezmoi-managed. Do not re-add it.
+- `ccgate.jsonnet` is company-scope (it belongs in the company overlay repo)
+  and is never chezmoi-managed. Do not re-add it.

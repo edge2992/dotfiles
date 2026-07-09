@@ -1,6 +1,6 @@
-.PHONY: lint lint-json lint-tmpl nvim-check
+.PHONY: lint lint-json lint-tmpl lint-merge-patch nvim-check
 
-lint: lint-json lint-tmpl
+lint: lint-json lint-tmpl lint-merge-patch
 
 NVIM_SRC := private_dot_config/nvim
 STYLUA := $(shell command -v stylua 2>/dev/null || echo $(HOME)/.local/share/nvim/mason/bin/stylua)
@@ -33,3 +33,6 @@ lint-json:
 
 lint-tmpl:
 	@scripts/check-json-tmpl.sh
+
+lint-merge-patch:
+	@scripts/test-merge-patch.sh

@@ -7,3 +7,8 @@ if ! command -v ccgate >/dev/null 2>&1; then
   log "Installing ccgate..."
   go install github.com/tak848/ccgate@latest
 fi
+
+if ! command -v jsonnet >/dev/null 2>&1; then
+  log "Installing jsonnet..."
+  go install github.com/google/go-jsonnet/cmd/jsonnet@latest
+fi

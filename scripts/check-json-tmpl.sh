@@ -7,10 +7,14 @@
 # This script renders each template with deterministic, machine-independent
 # data and parses the result with python's json module.
 #
-# modify_*.json.tmpl files are chezmoi modify scripts — they
-# render to shell scripts that are executed to produce JSON. These are
-# validated separately with render_modify() using three data profiles:
-# default (no extras), bedrock-only, and work (extra marketplace + plugins).
+# modify_*.json.tmpl files are chezmoi modify scripts — they render to shell
+# scripts that are executed to produce JSON. These are validated separately
+# with render_modify() under two data profiles:
+#   default — no overlay present: output must equal the base JSON verbatim
+#   overlay — a fixture overlay.jsonnet is present: output must contain the
+#             jsonnet-merged result, including a shell-hostile secret passed
+#             through the heredoc path (requires jsonnet; SKIPped when not
+#             installed locally, FAILs in CI)
 set -euo pipefail
 
 cd "$(git rev-parse --show-toplevel)"
@@ -23,24 +27,28 @@ trap 'rm -rf "$tmpdir"' EXIT
 empty_cfg="$tmpdir/empty.toml"
 printf '[data]\n' >"$empty_cfg"
 
-# Mock bedrock data -> exercises the hasKey bedrock_base_url branch.
-bedrock_cfg="$tmpdir/bedrock.toml"
-cat >"$bedrock_cfg" <<'EOF'
+# Modify-script profiles. claude_overlay_dir must be pinned in every profile
+# so a real ~/.config/claude-overlay on the developer's machine can never
+# leak into the check.
+mkdir -p "$tmpdir/no-overlay" "$tmpdir/overlay"
+cp scripts/fixtures/test-overlay.jsonnet "$tmpdir/overlay/overlay.jsonnet"
+
+default_cfg="$tmpdir/default.toml"
+cat >"$default_cfg" <<EOF
 [data]
-bedrock_base_url = "https://example.invalid/bedrock"
-bedrock_token = "test-token"
-otel_endpoint = "https://example.invalid/otel"
+claude_overlay_dir = "$tmpdir/no-overlay"
 EOF
 
-# Mock work data -> exercises the extra_marketplace_url and ccgate_openai_api_key branches.
-work_cfg="$tmpdir/work.toml"
-cat >"$work_cfg" <<'EOF'
+# test_secret deliberately contains shell-hostile characters to prove the
+# heredoc escaping in the modify script end-to-end.
+overlay_cfg="$tmpdir/overlay.toml"
+cat >"$overlay_cfg" <<EOF
 [data]
-extra_plugins = ["plugin-a@test-marketplace", "plugin-b@test-marketplace"]
-extra_marketplace_name = "test-marketplace"
-extra_marketplace_url = "https://example.invalid/marketplace.git"
-ccgate_openai_api_key = "test-ccgate-key"
+claude_overlay_dir = "$tmpdir/overlay"
+test_secret = "s3cr3t'with\"quotes and \$vars"
 EOF
+# shellcheck disable=SC2016  # the literal $vars is the point of the test
+expected_secret='s3cr3t'\''with"quotes and $vars'
 
 # render <config> <template> <label>
 render() {
@@ -60,9 +68,12 @@ render() {
 
 # render_modify <config> <template> <label>
 # For modify scripts: render the template to a shell script, execute it,
-# then validate the output is valid JSON.
+# then validate the output is valid JSON. On success the produced JSON is
+# left in RENDER_MODIFY_OUT for profile-specific assertions.
+RENDER_MODIFY_OUT=""
 render_modify() {
   local cfg="$1" tmpl="$2" label="$3" out script_out
+  RENDER_MODIFY_OUT=""
   if ! out="$(chezmoi execute-template --config "$cfg" --source . <"$tmpl" 2>&1)"; then
     echo "  FAIL: $tmpl ($label) — template did not render:" >&2
     printf '%s\n' "$out" >&2
@@ -78,6 +89,7 @@ render_modify() {
     printf '%s\n' "$script_out" >&2
     return 1
   fi
+  RENDER_MODIFY_OUT="$script_out"
   echo "  OK: $tmpl ($label)"
 }
 
@@ -90,10 +102,47 @@ while IFS= read -r tmpl; do
 done < <(find . -name '*.json.tmpl' -not -name 'modify_*' -not -path './.git/*' -not -path './.claude/worktrees/*' | sort)
 
 # Validate modify scripts (rendered output is a shell script; execute it, then validate JSON)
+settings_tmpl="./dot_claude/modify_settings.json.tmpl"
 while IFS= read -r tmpl; do
-  render_modify "$empty_cfg"   "$tmpl" "default" || fail=1
-  render_modify "$bedrock_cfg" "$tmpl" "bedrock"  || fail=1
-  render_modify "$work_cfg"    "$tmpl" "work"     || fail=1
+  # default profile: no overlay -> the base must pass through untouched
+  if render_modify "$default_cfg" "$tmpl" "default"; then
+    if [ "$tmpl" = "$settings_tmpl" ]; then
+      if diff <(printf '%s' "$RENDER_MODIFY_OUT" | jq -S .) \
+              <(chezmoi execute-template --config "$default_cfg" --source . \
+                  <.chezmoitemplates/claude-settings-base.json | jq -S .) >/dev/null; then
+        echo "  OK: $tmpl (default output == base)"
+      else
+        echo "  FAIL: $tmpl (default) — output differs from claude-settings-base.json" >&2
+        fail=1
+      fi
+    fi
+  else
+    fail=1
+  fi
+
+  # overlay profile: fixture overlay present -> jsonnet merge must apply
+  if ! command -v jsonnet >/dev/null 2>&1; then
+    if [ "${CI:-}" = "true" ]; then
+      echo "  FAIL: $tmpl (overlay) — jsonnet is not installed in CI" >&2
+      fail=1
+    else
+      echo "  SKIP: $tmpl (overlay) — jsonnet not installed"
+    fi
+    continue
+  fi
+  if render_modify "$overlay_cfg" "$tmpl" "overlay"; then
+    if [ "$tmpl" = "$settings_tmpl" ]; then
+      got_secret="$(printf '%s' "$RENDER_MODIFY_OUT" | jq -r '.env.TEST_OVERLAY')"
+      if [ "$got_secret" = "$expected_secret" ]; then
+        echo "  OK: $tmpl (overlay merge + escaping)"
+      else
+        echo "  FAIL: $tmpl (overlay) — env.TEST_OVERLAY mismatch: got '$got_secret'" >&2
+        fail=1
+      fi
+    fi
+  else
+    fail=1
+  fi
 done < <(find . -name 'modify_*.json.tmpl' -not -path './.git/*' -not -path './.claude/worktrees/*' | sort)
 
 if [ "$fail" -eq 0 ]; then

@@ -32,6 +32,16 @@ jobs:
           sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply --exclude=scripts -S .
           echo "$PWD/bin" >> "$GITHUB_PATH"
 
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Install jsonnet (required by the json-tmpl-validate hook)
+        run: |
+          go install github.com/google/go-jsonnet/cmd/jsonnet@latest
+          echo "$HOME/go/bin" >> "$GITHUB_PATH"
+
       - name: Run pre-commit (formatting + lint gate)
         uses: pre-commit/action@v3.0.1
 
