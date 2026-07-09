@@ -128,6 +128,26 @@
   "effortLevel": "high",
   "enableAllProjectMcpServers": true,
   "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write(~/.claude/settings.json)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/settings-sync.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit(~/.claude/settings.json)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/settings-sync.sh"
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "matcher": "permission_prompt",
