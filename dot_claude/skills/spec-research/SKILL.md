@@ -20,8 +20,8 @@ source, cross-check the findings, and produce a structured report whose
 2. **Source availability check**
    - Determine which sources are usable in this session (check the defined
      tool list, or ToolSearch for deferred ones):
-     - Confluence: `mcp__mcp-atlassian__confluence_search`, `confluence_get_page`
-     - Jira: `mcp__mcp-atlassian__jira_search`, `jira_get_issue`
+     - Confluence: `mcp__mcp-atlassian__confluence_search`, `mcp__mcp-atlassian__confluence_get_page`
+     - Jira: `mcp__mcp-atlassian__jira_search`, `mcp__mcp-atlassian__jira_get_issue`
      - Code: local repositories (via `research-coordinator` / Explore agents)
      - AWS: `mcp__aws-mcp__aws___call_aws` — only when infrastructure is in scope
      - Datadog: `mcp__datadog-mcp__*` — only when runtime behavior or service
