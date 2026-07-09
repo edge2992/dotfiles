@@ -1,6 +1,6 @@
 ---
 description: Summarize recent work from the worklog and post it to the personal Slack times channel after explicit confirmation
-argument-hint: [optional note or date, e.g. "リリース作業がメイン" or 2026-07-09]
+argument-hint: [optional note or date]
 ---
 
 # times — 作業ログを times に流す
