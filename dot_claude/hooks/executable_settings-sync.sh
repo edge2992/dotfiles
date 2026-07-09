@@ -70,27 +70,19 @@ BASE_PATH="$SRC/$BASE_TEMPLATE"
 # `rendered` is the full base+overlay render, so overlay-managed values are
 # identical in rendered and live, never enter the patch, and never leak into
 # the base — without this script knowing any overlay key names. Only genuine
-# user edits (additions, changes, deletions) propagate. Objects recurse;
-# scalars and arrays replace atomically; a null in the patch deletes the key.
+# user edits (additions, changes, deletions) propagate. The filter lives in
+# settings-merge-patch.jq (unit-tested by scripts/test-merge-patch.sh).
+MERGE_FILTER="$(dirname "$0")/settings-merge-patch.jq"
+if [ ! -f "$MERGE_FILTER" ]; then
+  printf 'settings-sync: %s not found, skipping\n' "$MERGE_FILTER"
+  exit 0
+fi
+
 NEW_BASE=$(jq -n \
   --slurpfile base_a "$BASE_PATH" \
   --argjson rendered "$RENDERED" \
-  --slurpfile live_a "$SETTINGS" '
-  def diff($a; $b):
-    if ($a | type) == "object" and ($b | type) == "object" then
-      reduce ((($a | keys) + ($b | keys)) | unique[]) as $k ({};
-        if ($a | has($k)) and (($b | has($k)) | not) then . + {($k): null}
-        elif ($a | has($k)) | not                    then . + {($k): $b[$k]}
-        elif $a[$k] == $b[$k]                        then .
-        else . + {($k): diff($a[$k]; $b[$k])} end)
-    else $b end;
-  def apply($t; $p):
-    if ($p | type) == "object" then
-      reduce ($p | keys[]) as $k (if ($t | type) == "object" then $t else {} end;
-        if $p[$k] == null then del(.[$k]) else .[$k] = apply(.[$k]; $p[$k]) end)
-    else $p end;
-  apply($base_a[0]; diff($rendered; $live_a[0]))
-') || {
+  --slurpfile live_a "$SETTINGS" \
+  -f "$MERGE_FILTER") || {
   printf 'settings-sync: failed to compute base update, skipping\n'
   exit 0
 }

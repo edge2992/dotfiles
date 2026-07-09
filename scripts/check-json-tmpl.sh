@@ -108,7 +108,8 @@ while IFS= read -r tmpl; do
   if render_modify "$default_cfg" "$tmpl" "default"; then
     if [ "$tmpl" = "$settings_tmpl" ]; then
       if diff <(printf '%s' "$RENDER_MODIFY_OUT" | jq -S .) \
-              <(jq -S . .chezmoitemplates/claude-settings-base.json) >/dev/null; then
+              <(chezmoi execute-template --config "$default_cfg" --source . \
+                  <.chezmoitemplates/claude-settings-base.json | jq -S .) >/dev/null; then
         echo "  OK: $tmpl (default output == base)"
       else
         echo "  FAIL: $tmpl (default) — output differs from claude-settings-base.json" >&2
