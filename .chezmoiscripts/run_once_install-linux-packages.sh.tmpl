@@ -73,4 +73,9 @@ if ! command -v dw >/dev/null 2>&1; then
   log "Installing dw..."
   go install github.com/edge2992/dw@latest
 fi
+
+if ! command -v ccgate >/dev/null 2>&1; then
+  log "Installing ccgate..."
+  go install github.com/tak848/ccgate@latest
+fi
 {{ end }}
