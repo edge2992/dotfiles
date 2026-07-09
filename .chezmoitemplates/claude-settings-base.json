@@ -157,6 +157,15 @@
             "command": "~/.claude/hooks/permission-notify.sh"
           }
         ]
+      },
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/claude-inbox-hook.sh"
+          }
+        ]
       }
     ],
     "Stop": [
@@ -168,6 +177,15 @@
             "command": "~/.claude/hooks/stop-review.sh"
           }
         ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/claude-inbox-hook.sh"
+          }
+        ]
       }
     ],
     "SessionEnd": [
@@ -177,6 +195,26 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/worklog.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/claude-inbox-hook.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/claude-inbox-hook.sh"
           }
         ]
       }
