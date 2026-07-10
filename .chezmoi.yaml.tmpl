@@ -24,6 +24,14 @@
 {{ else -}}
 {{   $useOnePasswordSSHAgent = promptBoolOnce . "useOnePasswordSSHAgent" "Use 1Password SSH Agent for GitHub?" false -}}
 {{ end -}}
+{{ $bedrock_token := "" -}}
+{{ if env "CI" -}}
+{{   $bedrock_token = "" -}}
+{{ else if hasKey . "bedrock_token" -}}
+{{   $bedrock_token = .bedrock_token -}}
+{{ else -}}
+{{   $bedrock_token = promptStringOnce . "bedrock_token" "Bedrock API token for Claude Code (leave empty to skip)" -}}
+{{ end -}}
 
 data:
   email: {{ $email | quote }}
@@ -31,3 +39,4 @@ data:
   memo_dir: {{ $memo_dir | quote }}
   op_account: {{ $op_account | quote }}
   useOnePasswordSSHAgent: {{ $useOnePasswordSSHAgent }}
+  bedrock_token: {{ $bedrock_token | quote }}
