@@ -20,6 +20,16 @@ if [ -f /etc/os-release ]; then
       sudo dnf groupinstall -y "Development Tools"
       sudo dnf install -y openssl-devel pkg-config cmake zip unzip
       ;;
+    amzn)
+      # Amazon Linux 2023 uses dnf; Amazon Linux 2 uses yum
+      if command -v dnf >/dev/null 2>&1; then
+        sudo dnf groupinstall -y "Development Tools"
+        sudo dnf install -y openssl-devel pkg-config cmake zip unzip
+      else
+        sudo yum groupinstall -y "Development Tools"
+        sudo yum install -y openssl-devel pkg-config cmake zip unzip
+      fi
+      ;;
     arch|manjaro|endeavouros)
       sudo pacman -Syu --noconfirm --needed base-devel openssl pkg-config cmake zip unzip
       ;;
