@@ -9,6 +9,29 @@ local is_macos = wezterm.target_triple:find("darwin") ~= nil
 config.font = wezterm.font("UDEV Gothic NF")
 config.font_size = 12.0
 
+-- ディスプレイ解像度ごとのフォントサイズ上書き
+-- 2K(WQHD) 外部モニターの全画面では 12pt が小さすぎるため少し拡大する。
+-- キーは wezterm.gui.screens().active が返す物理ピクセルの "幅x高さ"。
+-- 表にない解像度（内蔵 Retina 等）は config.font_size のまま。
+local FONT_SIZE_BY_RESOLUTION = {
+  ["2560x1440"] = 14.0, -- 2K / WQHD 外部モニター
+}
+
+local function font_size_for_active_screen()
+  -- 注意: screens().active は「入力フォーカスのある画面」。複数モニタに複数ウィンドウを
+  -- 開いていると、フォーカス外のウィンドウにはフォーカス側画面のサイズが適用されうる
+  -- （通常の単一ウィンドウ運用では問題にならない既知の制約）
+  -- mux server など GUI の無いコンテキストでは wezterm.gui が使えないため pcall で保護
+  local ok, screens = pcall(function()
+    return wezterm.gui.screens()
+  end)
+  if not ok or not screens or not screens.active then
+    return nil
+  end
+  local key = string.format("%dx%d", screens.active.width, screens.active.height)
+  return FONT_SIZE_BY_RESOLUTION[key]
+end
+
 -- Appearance
 config.color_scheme = "Tokyo Night"
 config.term = "xterm-256color"
@@ -83,55 +106,73 @@ for _, k in ipairs(window_keys) do
   table.insert(config.keys, k)
 end
 
--- 全画面時だけ背景写真を敷く（native fullscreen で背面が黒潰れする問題への対処）
--- macOS 限定。Linux の全画面は 0.85 透過でデスクトップが透けるため挙動を変えない。
-if is_macos then
-  local BG_DIR = wezterm.config_dir .. "/backgrounds"
+-- ウィンドウ状態に応じた動的設定（config overrides）
+-- - フォントサイズ: アクティブディスプレイの解像度で切替（全 OS）
+-- - 背景写真: 全画面時だけ敷く（macOS 限定。native fullscreen で背面が黒潰れする
+--   問題への対処。Linux の全画面は 0.85 透過でデスクトップが透けるため挙動を変えない）
+local BG_DIR = wezterm.config_dir .. "/backgrounds"
 
-  -- backgrounds/ 内の画像を日付で 1 枚選ぶ
-  -- （1 枚しか無ければ常にそれ／画像を足せば自動で日替わり）
-  local function pick_daily_background()
-    local ok, entries = pcall(wezterm.read_dir, BG_DIR)
-    if not ok or not entries then
-      return nil
-    end
-    local images = {}
-    for _, path in ipairs(entries) do
-      if path:match("%.jpe?g$") or path:match("%.png$") then
-        table.insert(images, path)
-      end
-    end
-    if #images == 0 then
-      return nil
-    end
-    table.sort(images) -- 決定的に並べる
-    local seed = tonumber(os.date("%Y%j")) or 0 -- 年 + 通算日 → 日替わり
-    return images[(seed % #images) + 1]
+-- backgrounds/ 内の画像を日付で 1 枚選ぶ
+-- （1 枚しか無ければ常にそれ／画像を足せば自動で日替わり）
+local function pick_daily_background()
+  local ok, entries = pcall(wezterm.read_dir, BG_DIR)
+  if not ok or not entries then
+    return nil
   end
-
-  local function apply_fullscreen_bg(window)
-    if window:get_dimensions().is_full_screen then
-      local img = pick_daily_background()
-      if img then
-        window:set_config_overrides({
-          window_background_image = img,
-          -- しっかり暗く（可読性優先）。brightness は 0.05〜0.10 で微調整可
-          window_background_image_hsb = { brightness = 0.07, saturation = 1.0, hue = 1.0 },
-          window_background_opacity = 1.0, -- 全画面では不透明にして写真をそのまま見せる
-        })
-        return
-      end
+  local images = {}
+  for _, path in ipairs(entries) do
+    if path:match("%.jpe?g$") or path:match("%.png$") then
+      table.insert(images, path)
     end
-    -- 非全画面 or 画像なし: 既定（0.85 透過 + blur）へ戻す
-    window:set_config_overrides({})
   end
-
-  wezterm.on("window-resized", function(window, _pane)
-    apply_fullscreen_bg(window)
-  end)
-  wezterm.on("window-config-reloaded", function(window, _pane)
-    apply_fullscreen_bg(window)
-  end)
+  if #images == 0 then
+    return nil
+  end
+  table.sort(images) -- 決定的に並べる
+  local seed = tonumber(os.date("%Y%j")) or 0 -- 年 + 通算日 → 日替わり
+  return images[(seed % #images) + 1]
 end
+
+local function compute_overrides(window)
+  local overrides = {}
+
+  local size = font_size_for_active_screen()
+  if size then
+    overrides.font_size = size
+  end
+
+  if is_macos and window:get_dimensions().is_full_screen then
+    local img = pick_daily_background()
+    if img then
+      overrides.window_background_image = img
+      -- しっかり暗く（可読性優先）。brightness は 0.05〜0.10 で微調整可
+      overrides.window_background_image_hsb = { brightness = 0.07, saturation = 1.0, hue = 1.0 }
+      overrides.window_background_opacity = 1.0 -- 全画面では不透明にして写真をそのまま見せる
+    end
+  end
+
+  return overrides
+end
+
+local function apply_overrides(window)
+  local current = window:get_config_overrides() or {}
+  local new = compute_overrides(window)
+  -- 変化が無いときは set_config_overrides を呼ばない
+  -- （window-config-reloaded が再発火して無限ループになるのを防ぐ）。
+  -- 前提: hsb / opacity は image の有無に連動する定数なので代表キー比較で足りる。
+  -- hsb 等を独立に変化させる変更を入れる場合は、この比較にそのキーも追加すること
+  -- （テーブルの参照比較は毎回不一致→無限ループになるためフィールド単位で比較する）。
+  if current.font_size == new.font_size and current.window_background_image == new.window_background_image then
+    return
+  end
+  window:set_config_overrides(new)
+end
+
+wezterm.on("window-resized", function(window, _pane)
+  apply_overrides(window)
+end)
+wezterm.on("window-config-reloaded", function(window, _pane)
+  apply_overrides(window)
+end)
 
 return config
