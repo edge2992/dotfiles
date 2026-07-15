@@ -13,9 +13,9 @@
       "Read(**)",
       "Read(~/.claude/**)",
       "Edit(**)",
-      "Write(**.md)",
-      "Write(/tmp/**)",
-      "Write(.tmp/**)",
+      "Edit(**.md)",
+      "Edit(/tmp/**)",
+      "Edit(.tmp/**)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git status:*)",
@@ -131,7 +131,7 @@
       "Read(.env*)",
       "Read(id_rsa)",
       "Read(id_ed25519)",
-      "Write(.env*)"
+      "Edit(.env*)"
     ],
     "ask": ["Bash(gh pr merge:*)"],
     "defaultMode": "plan"
