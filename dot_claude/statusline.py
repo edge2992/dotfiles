@@ -38,6 +38,17 @@ def fmt(label, pct):
     p = round(pct)
     return f'{DIM}{label}{R} {gradient(pct)}{braille_bar(pct)}{R} {p}%'
 
+def fmt_plain(label, value):
+    return f'{DIM}{label}{R} {value}'
+
+def fmt_count(n):
+    if n < 1000:
+        return str(n)
+    elif n < 1000000:
+        return f'{n / 1000:.1f}k'
+    else:
+        return f'{n / 1000000:.1f}M'
+
 model = data.get('model', {}).get('display_name', 'Claude')
 parts = [model]
 
@@ -52,5 +63,14 @@ if five is not None:
 week = data.get('rate_limits', {}).get('seven_day', {}).get('used_percentage')
 if week is not None:
     parts.append(fmt('7d', week))
+
+input_tokens = data.get('context_window', {}).get('total_input_tokens')
+output_tokens = data.get('context_window', {}).get('total_output_tokens')
+if input_tokens is not None and output_tokens is not None:
+    parts.append(fmt_plain('tok', fmt_count(input_tokens + output_tokens)))
+
+cost = data.get('cost', {}).get('total_cost_usd')
+if cost is not None:
+    parts.append(fmt_plain('cost', f'${cost:.4f}'))
 
 print(f' {DIM}│{R} '.join(parts), end='')
