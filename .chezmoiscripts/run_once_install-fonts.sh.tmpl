@@ -14,13 +14,23 @@ if ls "${font_dir}"/UbuntuMono*.ttf >/dev/null 2>&1; then
   exit 0
 fi
 
+# nerd-fonts version: v3.4.0
+NERD_FONTS_VERSION="v3.4.0"
+
 log "Installing UbuntuMono Nerd Font..."
 tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
 
-git clone --branch=master --depth=1 https://github.com/ryanoasis/nerd-fonts.git "$tmpdir/nerd-fonts"
-cd "$tmpdir/nerd-fonts"
+curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/download/${NERD_FONTS_VERSION}/UbuntuMono.tar.xz" \
+  -o "$tmpdir/UbuntuMono.tar.xz"
+tar -xf "$tmpdir/UbuntuMono.tar.xz" -C "$tmpdir"
 
-./install.sh UbuntuMono
+for font in "$tmpdir"/*.ttf; do
+  install -Dm644 "$font" "${font_dir}/$(basename "$font")"
+done
 
-cd /
-rm -rf "$tmpdir"
+if command -v fc-cache >/dev/null 2>&1; then
+  fc-cache -f "${font_dir}"
+fi
+
+log "UbuntuMono Nerd Font installed"
