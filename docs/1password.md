@@ -115,6 +115,46 @@ chezmoi apply
 - シークレットの値はターゲットファイルに展開されるため、ターゲットファイル自体は Git 管理外（`~/.env` など）にしてください。
 - テンプレートソースファイル（`.tmpl`）にはシークレットの値ではなく **参照のみ** が含まれるため、安全にコミットできます。
 
+## SSH エージェントの承認とロック（Claude Code などの非対話ツール向け）
+
+`~/.ssh/config` の `Host github.com` は 1Password SSH エージェント（`IdentityAgent`）を経由するため、
+`git push` などの SSH 接続には 1Password の承認（Touch ID / アプリ承認）が必要です。
+Claude Code のような非対話ツールは承認プロンプトに応答できないため、承認が切れた状態で
+push すると**応答待ちでハング**します。
+
+### 仕組み
+
+- 鍵の使用要求ごとに 1Password が承認プロンプトを表示する。承認は**アプリケーション単位**で
+  記憶されるため、ターミナルから一度承認すれば、同じターミナル配下で動くツール（Claude Code 含む）は
+  記憶が切れるまで再承認不要
+- 承認の記憶期間（Remember key approval）は 3 択:
+  - **Until 1Password locks**（デフォルト）— ロックの度に承認が消える。**ハングの主因**
+  - **Until 1Password quits** — アプリを終了するまで承認を記憶
+  - **For a set amount of time**（4/12/24 時間）— ロックしても承認自体は維持
+- ただし 1Password が**ロック中**は承認が残っていても鍵にアクセスできず、エージェントは
+  解錠プロンプトを出して**応答があるまでブロック**する（エラーにならず、SSH クライアント側からは
+  ハングに見える）。そのため自動ロックの緩和もセットで必要
+
+### 推奨設定（1Password アプリの GUI 設定・chezmoi 管理外）
+
+※ 表記はバージョンにより多少異なる
+
+1. **Settings → Developer**（SSH Agent）: Remember key approval を
+   **Until 1Password quits**（または For a set amount of time: 24 hours）に変更。
+   デフォルトの Until 1Password locks のままにしない
+2. **Settings → Security**（Auto-lock）: アイドル時の自動ロック時間を長め（例: 8 時間）にし、
+   スリープ・画面ロック時に 1Password をロックする設定をオフにする
+
+> **トレードオフ**: 離席中も 1Password が解錠されたままになる。macOS 側の画面ロック
+> （スリープ/スクリーンセーバーでの即時ロック）を必ず併用すること。
+
+### 残る制約
+
+- 再起動や明示的なロックの後は、初回のみターミナルからの承認・解錠が必要。長時間の作業セッションの
+  前に `ssh -T git@github.com` を一度実行しておくと確実
+- それも許容できない場合は、GitHub 向け git 操作を HTTPS + `gh auth git-credential` に
+  切り替える選択肢がある（秘密鍵をディスクに置かずに非対話 push が可能）
+
 ## 参考リンク
 
 - [chezmoi - 1Password](https://www.chezmoi.io/user-guide/password-managers/1password/)
