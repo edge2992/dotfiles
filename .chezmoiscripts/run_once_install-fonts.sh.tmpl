@@ -8,7 +8,11 @@ if [[ "${SKIP_NERD_FONTS_INSTALL:-}" == "true" ]]; then
 fi
 
 # Check if UbuntuMono Nerd Font is already installed
+{{ if eq .chezmoi.os "darwin" -}}
+font_dir="${HOME}/Library/Fonts"
+{{ else -}}
 font_dir="${HOME}/.local/share/fonts"
+{{ end -}}
 if ls "${font_dir}"/UbuntuMono*.ttf >/dev/null 2>&1; then
   log "UbuntuMono Nerd Font is already installed, skipping"
   exit 0
@@ -25,8 +29,10 @@ curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/download/${NERD_FON
   -o "$tmpdir/UbuntuMono.tar.xz"
 tar -xf "$tmpdir/UbuntuMono.tar.xz" -C "$tmpdir"
 
+# BSD install (macOS) has no -D, so create the target dir explicitly
+mkdir -p "${font_dir}"
 for font in "$tmpdir"/*.ttf; do
-  install -Dm644 "$font" "${font_dir}/$(basename "$font")"
+  install -m 644 "$font" "${font_dir}/"
 done
 
 if command -v fc-cache >/dev/null 2>&1; then
