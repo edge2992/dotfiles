@@ -141,6 +141,20 @@
   "effortLevel": "high",
   "enableAllProjectMcpServers": true,
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/hooks/gh-pr-autoapprove.py",
+            "if": "Bash(gh pr:*)",
+            "timeout": 10,
+            "statusMessage": "Checking gh pr auto-approve"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write(~/.claude/settings.json)",
