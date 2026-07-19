@@ -38,6 +38,8 @@ config.term = "xterm-256color"
 config.window_decorations = "RESIZE"
 config.enable_tab_bar = false
 config.window_background_opacity = 0.85
+-- 背景色付きセル(nvim の CursorLine 等)も同じ透明度で描画し、浮きを防ぐ
+config.text_background_opacity = 0.85
 config.scrollback_lines = 200
 config.automatically_reload_config = true
 if is_macos then
