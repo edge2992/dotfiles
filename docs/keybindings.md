@@ -156,4 +156,4 @@ Telescope ウィンドウ内:
 | `Ctrl+R` | コマンド履歴検索 (Atuin) |
 | `g` | ghq + fzf でリポジトリ移動 |
 | `vim` | nvim のエイリアス |
-| `sshf` | fzf で SSH ホストを選択して接続 |
+| `sshf` | fzf で SSH ホストを選択して接続（ホスト名に `dev`/`stg`/`prod` を含む場合、接続中はペイン背景を紫/緑/赤に着色） |
