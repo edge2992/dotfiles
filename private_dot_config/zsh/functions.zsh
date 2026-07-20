@@ -1,3 +1,44 @@
+# Environment tint for sshf: colour the pane background while connected, so a
+# prod shell never looks like a dev shell. wezterm's text_background_opacity
+# keeps these translucent, so they read as a tint over the desktop/photo
+# rather than an opaque block — keep them dark and low-saturation.
+typeset -gA SSHF_ENV_COLORS=(
+  prod '#3d1b1b'
+  stg  '#16301f'
+  dev  '#2d1b3d'
+)
+
+# Classify a host name into prod / stg / dev. Most dangerous wins, so a host
+# like "stg-to-prod-sync" is treated as prod. "stg" also covers stgqa/stg-qa.
+function _sshf_env_for_host() {
+  case "${1:l}" in
+    *prod*) print -r -- prod ;;
+    *stg*) print -r -- stg ;;
+    *dev*) print -r -- dev ;;
+  esac
+}
+
+# Tint only the pane running ssh. Inside tmux that means pane-scoped options
+# (tmux swallows raw OSC unless allow-passthrough is on, and window-style would
+# repaint every pane in the window); bare wezterm falls back to OSC 11.
+function _sshf_tint_on() {
+  if [[ -n "$TMUX" && -n "$TMUX_PANE" ]]; then
+    tmux set-option -p -t "$TMUX_PANE" window-style "bg=$1"
+    tmux set-option -p -t "$TMUX_PANE" window-active-style "bg=$1"
+  else
+    printf '\e]11;%s\a' "$1"
+  fi
+}
+
+function _sshf_tint_off() {
+  if [[ -n "$TMUX" && -n "$TMUX_PANE" ]]; then
+    tmux set-option -p -u -t "$TMUX_PANE" window-style
+    tmux set-option -p -u -t "$TMUX_PANE" window-active-style
+  else
+    printf '\e]111\a'
+  fi
+}
+
 # SSH shortcut with fzf
 function sshf() {
   # Listing Host and HostName from ~/.ssh/config and selecting with fzf
@@ -11,7 +52,15 @@ function sshf() {
 
   # If a selection was made, initiate SSH connection
   if [ -n "$selection" ]; then
-    ssh "$@""$selection"
+    local sshf_env
+    sshf_env=$(_sshf_env_for_host "$selection")
+    [[ -n "$sshf_env" ]] && _sshf_tint_on "$SSHF_ENV_COLORS[$sshf_env]"
+    # `always` also runs on interrupt, so Ctrl-C never leaves the pane tinted.
+    {
+      ssh "$@""$selection"
+    } always {
+      [[ -n "$sshf_env" ]] && _sshf_tint_off
+    }
   fi
 }
 
