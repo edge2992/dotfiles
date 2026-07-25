@@ -24,6 +24,14 @@
 {{ else -}}
 {{   $useOnePasswordSSHAgent = promptBoolOnce . "useOnePasswordSSHAgent" "Use 1Password SSH Agent for GitHub?" false -}}
 {{ end -}}
+{{ $install_fonts := false -}}
+{{ if env "CI" -}}
+{{   $install_fonts = false -}}
+{{ else if hasKey . "install_fonts" -}}
+{{   $install_fonts = .install_fonts -}}
+{{ else -}}
+{{   $install_fonts = promptBoolOnce . "install_fonts" "Install Nerd Fonts (UbuntuMono)?" false -}}
+{{ end -}}
 {{ $bedrock_token := "" -}}
 {{ if env "CI" -}}
 {{   $bedrock_token = "" -}}
@@ -39,4 +47,5 @@ data:
   memo_dir: {{ $memo_dir | quote }}
   op_account: {{ $op_account | quote }}
   useOnePasswordSSHAgent: {{ $useOnePasswordSSHAgent }}
+  install_fonts: {{ $install_fonts }}
   bedrock_token: {{ $bedrock_token | quote }}

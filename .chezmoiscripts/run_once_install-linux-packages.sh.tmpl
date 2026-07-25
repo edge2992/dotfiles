@@ -1,51 +1,59 @@
 #!/usr/bin/env bash
 set -euo pipefail
 {{ includeTemplate "install-prelude.sh" }}
+{{ includeTemplate "pkg-install.sh" }}
 
 {{ if eq .chezmoi.os "linux" }}
 log "Installing system packages and Go tools"
 
-sudo apt update
-
-# Utility tools
+# Desktop / nice-to-have tools: best-effort so that missing packages on
+# headless server distros (e.g. Amazon Linux) do not abort chezmoi apply.
 if ! command -v htop >/dev/null 2>&1; then
-  log "Installing utility tools..."
-  sudo apt install -y htop xclip
+  pkg_install optional htop
+fi
+
+if ! command -v xclip >/dev/null 2>&1; then
+  pkg_install optional xclip
 fi
 
 # Wayland clipboard support (required for tmux-yank on Wayland sessions)
 if ! command -v wl-copy >/dev/null 2>&1; then
-  log "Installing wl-clipboard..."
-  sudo apt install -y wl-clipboard
+  pkg_install optional wl-clipboard
 fi
 
-# Install ripgrep for better grep performance (needed by Neovim)
+# ripgrep for better grep performance (needed by Neovim)
 if ! command -v rg >/dev/null 2>&1; then
-  log "Installing ripgrep..."
-  sudo apt install -y ripgrep
+  pkg_install optional ripgrep
+fi
+
+if ! command -v tmux >/dev/null 2>&1; then
+  pkg_install optional tmux
+fi
+
+# Notification sound support for Claude Code hooks
+if ! command -v paplay >/dev/null 2>&1; then
+  pkg_install optional pulseaudio-utils
 fi
 
 if ! command -v go >/dev/null 2>&1; then
   log "Installing Go..."
   GO_VERSION="1.22.4"
-  wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
-  sudo tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
-  rm go${GO_VERSION}.linux-amd64.tar.gz
+  case "$(uname -m)" in
+    x86_64) GO_ARCH="amd64" ;;
+    aarch64) GO_ARCH="arm64" ;;
+    *)
+      log "Unsupported architecture for Go: $(uname -m)"
+      exit 1
+      ;;
+  esac
+  go_tarball=$(mktemp)
+  curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" -o "$go_tarball"
+  $SUDO tar -C /usr/local -xzf "$go_tarball"
+  rm -f "$go_tarball"
 
   if [ -d /usr/local/go/bin ]; then
     export PATH="/usr/local/go/bin:$PATH"
   fi
-fi
-
-if ! command -v tmux >/dev/null 2>&1; then
-  log "Installing tmux..."
-  sudo apt install -y tmux
-fi
-
-# Notification sound support for Claude Code hooks
-if ! command -v paplay >/dev/null 2>&1; then
-  log "Installing pulseaudio-utils (paplay)..."
-  sudo apt install -y pulseaudio-utils
 fi
 
 if ! command -v go >/dev/null 2>&1; then
@@ -53,34 +61,40 @@ if ! command -v go >/dev/null 2>&1; then
   exit 1
 fi
 
-# Go tools (after Go installation)
-if ! command -v memo >/dev/null 2>&1; then
-  log "Installing memo..."
-  go install github.com/mattn/memo@latest
-fi
+# Building Go tools compiles from source and can take minutes;
+# CI smoke tests skip it via CHEZMOI_SKIP_GO_TOOLS.
+if [ -n "${CHEZMOI_SKIP_GO_TOOLS:-}" ]; then
+  log "CHEZMOI_SKIP_GO_TOOLS is set. Skipping Go tool installation."
+else
+  # Go tools (after Go installation)
+  if ! command -v memo >/dev/null 2>&1; then
+    log "Installing memo..."
+    go install github.com/mattn/memo@latest
+  fi
 
-if ! command -v ghq >/dev/null 2>&1; then
-  log "Installing ghq..."
-  go install github.com/x-motemen/ghq@latest
-fi
+  if ! command -v ghq >/dev/null 2>&1; then
+    log "Installing ghq..."
+    go install github.com/x-motemen/ghq@latest
+  fi
 
-if ! command -v glow >/dev/null 2>&1; then
-  log "Installing glow..."
-  go install github.com/charmbracelet/glow@latest
-fi
+  if ! command -v glow >/dev/null 2>&1; then
+    log "Installing glow..."
+    go install github.com/charmbracelet/glow@latest
+  fi
 
-if ! command -v dw >/dev/null 2>&1; then
-  log "Installing dw..."
-  go install github.com/edge2992/dw@latest
-fi
+  if ! command -v dw >/dev/null 2>&1; then
+    log "Installing dw..."
+    go install github.com/edge2992/dw@latest
+  fi
 
-if ! command -v ccgate >/dev/null 2>&1; then
-  log "Installing ccgate..."
-  go install github.com/tak848/ccgate@latest
-fi
+  if ! command -v ccgate >/dev/null 2>&1; then
+    log "Installing ccgate..."
+    go install github.com/tak848/ccgate@latest
+  fi
 
-if ! command -v jsonnet >/dev/null 2>&1; then
-  log "Installing jsonnet..."
-  go install github.com/google/go-jsonnet/cmd/jsonnet@latest
+  if ! command -v jsonnet >/dev/null 2>&1; then
+    log "Installing jsonnet..."
+    go install github.com/google/go-jsonnet/cmd/jsonnet@latest
+  fi
 fi
 {{ end }}
