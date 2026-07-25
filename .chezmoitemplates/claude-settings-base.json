@@ -240,6 +240,8 @@
   },
   "language": "japanese",
   "preferredNotifChannel": "auto",
+  "agentPushNotifEnabled": true,
+  "inputNeededNotifEnabled": true,
   "editorMode": "vim",
   "tui": "fullscreen",
   "voice": {
