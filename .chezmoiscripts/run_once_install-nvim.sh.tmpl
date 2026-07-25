@@ -21,8 +21,8 @@ esac
 curl -L -O "https://github.com/neovim/neovim/releases/latest/download/${appimage}"
 chmod +x "${appimage}"
 ./"${appimage}" --appimage-extract
-sudo mv squashfs-root /opt/nvim
-sudo ln -sf /opt/nvim/AppRun /usr/local/bin/nvim
+$SUDO mv squashfs-root /opt/nvim
+$SUDO ln -sf /opt/nvim/AppRun /usr/local/bin/nvim
 rm "${appimage}"
 
 {{ end }}

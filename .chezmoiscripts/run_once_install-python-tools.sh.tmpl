@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 {{ includeTemplate "install-prelude.sh" }}
+{{ includeTemplate "pkg-install.sh" }}
 
 {{ if eq .chezmoi.os "linux" }}
-# Install pynvim for Neovim Python support via apt
+# Neovim Python provider: try the distro package first (Debian family:
+# python3-pynvim, RPM family: python3-neovim); fall back to a uv venv below.
 if ! python3 -c "import pynvim" 2>/dev/null; then
-  log "Installing python3-pynvim for Neovim..."
-  sudo apt install -y python3-pynvim
+  log "Installing pynvim distro package for Neovim..."
+  pkg_install optional python3-pynvim python3-neovim
 fi
 {{ end }}
 
@@ -25,7 +27,7 @@ export PATH="$HOME/.local/bin:$PATH"
 {{ if eq .chezmoi.os "darwin" }}
 # uv-managed Python with python3/python shims on PATH (~/.local/bin, PATH先頭).
 # Mason's PyPI installer requires python3 >= 3.10, but macOS system python is 3.9.6.
-# darwin限定: Linuxはディストロのpython3(>=3.10)とapt pynvimを使うためshadowしない。
+# darwin限定: Linuxはディストロのpython3(>=3.10)を優先し、shadowしない。
 log "Installing uv-managed Python 3.13 with default executables..."
 uv python install --default 3.13
 
@@ -37,4 +39,17 @@ if [ ! -x "$NVIM_PY_VENV/bin/python" ]; then
 fi
 log "Installing pynvim into Neovim venv..."
 uv pip install --python "$NVIM_PY_VENV/bin/python" pynvim
+{{ else }}
+# Linux fallback: when no distro package provides pynvim (e.g. Amazon Linux),
+# give Neovim a dedicated uv-managed venv instead. nvim already prefers
+# ~/.local/share/neovim-python/bin/python when it exists (core/options.lua).
+if ! python3 -c "import pynvim" 2>/dev/null; then
+  NVIM_PY_VENV="$HOME/.local/share/neovim-python"
+  if [ ! -x "$NVIM_PY_VENV/bin/python" ]; then
+    log "Creating Neovim Python venv at $NVIM_PY_VENV..."
+    uv venv --python 3.13 "$NVIM_PY_VENV"
+  fi
+  log "Installing pynvim into Neovim venv..."
+  uv pip install --python "$NVIM_PY_VENV/bin/python" pynvim
+fi
 {{ end }}
