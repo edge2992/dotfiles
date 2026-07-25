@@ -2,6 +2,17 @@
 set -euo pipefail
 {{ includeTemplate "install-prelude.sh" }}
 
+# Fonts are opt-in (chezmoi prompt "install_fonts", default false).
+# "index" tolerates configs generated before the key existed.
+install_fonts=false
+{{ if index . "install_fonts" }}
+install_fonts=true
+{{ end }}
+if [[ "$install_fonts" != "true" ]]; then
+  log "Nerd Fonts installation is disabled (install_fonts=false). Skipping."
+  exit 0
+fi
+
 if [[ "${SKIP_NERD_FONTS_INSTALL:-}" == "true" ]]; then
   log "Skipping Nerd Fonts installation due to SKIP_NERD_FONTS_INSTALL."
   exit 0
