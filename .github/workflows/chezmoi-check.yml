@@ -111,6 +111,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
+          # The runner-mounted workspace is owned by a different uid
+          git config --global --add safe.directory "$PWD"
           git init .
           git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git fetch --depth 1 origin "$GITHUB_REF"
