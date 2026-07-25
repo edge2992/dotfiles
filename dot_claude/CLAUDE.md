@@ -14,6 +14,11 @@ Project-specific instructions are in each project's `CLAUDE.md`.
 
 ## Subagent Strategy
 
+- **Model cost control**: NEVER let a subagent inherit the main session's model
+  (e.g. Fable). Always set `model` explicitly on every Agent/Workflow call:
+  research & web search → `"sonnet"` (or `"haiku"` for simple lookups),
+  mechanical tasks → `"haiku"`, implementation → per-repo policy.
+  The expensive main model is for orchestration, review, and synthesis only.
 - Use subagents liberally to keep main context window clean
 - Offload research, exploration, and parallel analysis to subagents
 - For complex problems, throw more compute at it via subagents
