@@ -12,28 +12,31 @@ payload="$(cat)"
 title="Claude Code"
 message="Permission required"
 session_id=""
+cwd=""
 
 if command -v jq >/dev/null 2>&1; then
   title="$(printf '%s' "$payload" | jq -r '.title // "Claude Code"' 2>/dev/null)" || title="Claude Code"
   message="$(printf '%s' "$payload" | jq -r '.message // "Permission required"' 2>/dev/null)" || message="Permission required"
   session_id="$(printf '%s' "$payload" | jq -r '.session_id // ""' 2>/dev/null)" || session_id=""
+  cwd="$(printf '%s' "$payload" | jq -r '.cwd // ""' 2>/dev/null)" || cwd=""
 elif command -v python3 >/dev/null 2>&1; then
   session_id="$(printf '%s' "$payload" \
     | python3 -c 'import json,sys; print(json.load(sys.stdin).get("session_id",""))' 2>/dev/null)" || session_id=""
+  cwd="$(printf '%s' "$payload" \
+    | python3 -c 'import json,sys; print(json.load(sys.stdin).get("cwd",""))' 2>/dev/null)" || cwd=""
 fi
 
-case "$(uname -s)" in
-  Darwin)
-    osascript -e "display notification \"$message\" with title \"$title\" sound name \"Glass\""
-    ;;
-  Linux)
-    notify-send -u critical "$title" "$message" 2>/dev/null || true
-    paplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || printf '\a'
-    ;;
-  *)
-    printf '\a' >/dev/tty 2>/dev/null || true
-    ;;
-esac
+# Desktop toast (click restores the tmux pane) + optional ntfy mobile push.
+# The ntfy body stays the generic permission message — never tool arguments.
+lib="$(dirname "${BASH_SOURCE[0]}")/lib/notify-common.sh"
+if [ -r "$lib" ]; then
+  # shellcheck source=lib/notify-common.sh
+  . "$lib"
+  project="$(project_name "$cwd")"
+  target="$(tmux_target)" || target=""
+  notify_local "$title — $project" "$message" "$target"
+  notify_ntfy "$title — $project" "$message" "urgent" "warning"
+fi
 
 # Per-session prompt counter: append = atomic-enough increment, count = lines.
 # Kept after the notification so counter/GC I/O never delays the alert.

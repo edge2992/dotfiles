@@ -1,0 +1,23 @@
+{{- /* Rendered to ~/.config/claude-notify/config (0600) and sourced by
+       dot_claude/hooks/lib/notify-common.sh. Secret values live only in
+       ~/.config/chezmoi/chezmoi.yaml (outside this repo); every key is
+       hasKey-guarded so the template also renders with no data (CI). */ -}}
+{{- $topic := "" -}}
+{{- if hasKey . "ntfy_topic" }}{{ $topic = .ntfy_topic }}{{ end -}}
+{{- $server := "https://ntfy.sh" -}}
+{{- if hasKey . "ntfy_server" }}{{ $server = .ntfy_server }}{{ end -}}
+{{- $minSec := "20" -}}
+{{- if hasKey . "stop_notify_min_seconds" }}{{ $minSec = .stop_notify_min_seconds }}{{ end -}}
+{{- /* shellquote: single-quote for shell sourcing — Go's `quote` leaves
+       $ and backticks live, which would execute on `. config`. */ -}}
+# Managed by chezmoi (private_dot_config/claude-notify/private_config.tmpl).
+# Sourced as shell by ~/.claude/hooks/lib/notify-common.sh.
+{{ if $topic -}}
+NTFY_TOPIC={{ $topic | replace "'" "'\\''" | squote }}
+{{ else -}}
+# Mobile push disabled. To enable: add ntfy_topic (random string, e.g.
+# `openssl rand -hex 16`) to ~/.config/chezmoi/chezmoi.yaml, `chezmoi apply`.
+NTFY_TOPIC=''
+{{ end -}}
+NTFY_SERVER={{ $server | replace "'" "'\\''" | squote }}
+STOP_NOTIFY_MIN_SECONDS={{ $minSec | replace "'" "'\\''" | squote }}

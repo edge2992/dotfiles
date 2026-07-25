@@ -175,13 +175,26 @@
         ]
       }
     ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/turn-start-record.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "matcher": "permission_prompt",
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/permission-notify.sh"
+            "command": "~/.claude/hooks/permission-notify.sh",
+            "timeout": 10
           }
         ]
       }
@@ -193,6 +206,11 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/stop-review.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/stop-notify.sh",
+            "timeout": 10
           }
         ]
       }

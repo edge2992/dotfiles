@@ -40,6 +40,14 @@
 {{ else -}}
 {{   $bedrock_token = promptStringOnce . "bedrock_token" "Bedrock API token for Claude Code (leave empty to skip)" -}}
 {{ end -}}
+{{ $ntfy_topic := "" -}}
+{{ if env "CI" -}}
+{{   $ntfy_topic = "" -}}
+{{ else if hasKey . "ntfy_topic" -}}
+{{   $ntfy_topic = .ntfy_topic -}}
+{{ else -}}
+{{   $ntfy_topic = promptStringOnce . "ntfy_topic" "ntfy.sh topic for Claude Code mobile push (random string, leave empty to skip)" -}}
+{{ end -}}
 
 data:
   email: {{ $email | quote }}
@@ -49,3 +57,4 @@ data:
   useOnePasswordSSHAgent: {{ $useOnePasswordSSHAgent }}
   install_fonts: {{ $install_fonts }}
   bedrock_token: {{ $bedrock_token | quote }}
+  ntfy_topic: {{ $ntfy_topic | quote }}
