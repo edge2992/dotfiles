@@ -6,7 +6,8 @@ Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
 
 | OS | 必要なもの |
 |----|-----------|
-| Linux (Ubuntu/Debian/Fedora/Arch) | Git, curl, sudo 権限 |
+| Linux (Ubuntu/Debian/Fedora/Amazon Linux 2023/Arch) | Git, curl, sudo 権限 |
+| Amazon Linux 2 (EOL済み・ベストエフォート) | 同上。ミラー消滅や古い glibc により一部ツールが入らない場合あり |
 | macOS | Git, curl (Xcode CLT で自動インストールされる) |
 
 ## Install
@@ -19,6 +20,7 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/edge2992
 
 - **Email** — Git の `user.email` に使用
 - **GitHub username** — Git の `user.name` に使用
+- **Install Nerd Fonts** — UbuntuMono Nerd Font を入れるか (デフォルト: No)
 
 ### インストール後
 
