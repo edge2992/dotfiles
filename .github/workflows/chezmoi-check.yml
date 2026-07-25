@@ -55,13 +55,103 @@ jobs:
       - name: Run shellcheck on .sh.tmpl files
         run: |
           exit_code=0
-          for f in .chezmoiscripts/run_once_install-*.sh.tmpl; do
+          for f in .chezmoiscripts/*.sh.tmpl; do
             echo "::group::shellcheck $f"
-            # Strip chezmoi template directives before running shellcheck
-            sed '/^{{/d' "$f" | shellcheck -s bash -e SC1091 - || exit_code=1
+            # Strip chezmoi template directives (whole-line and inline)
+            # before running shellcheck
+            sed -E 's/\{\{[^}]*\}\}//g; /^[[:space:]]*$/d' "$f" | shellcheck -s bash -e SC1091 - || exit_code=1
             echo "::endgroup::"
           done
           exit "$exit_code"
+
+  # Actually executes the provisioning scripts (package installs, Go, uv,
+  # fzf) inside real distro containers. Heavyweight installers (go install,
+  # cargo, volta, sdkman) stay out of scope to keep this fast (~3 min).
+  install-scripts:
+    name: install-scripts (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ubuntu-24.04
+            image: ubuntu:24.04
+          - name: amazonlinux-2023
+            image: amazonlinux:2023
+          - name: amazonlinux-2
+            image: amazonlinux:2
+            # AL2 is past EOL (2026-06-30): best-effort only, mirrors may
+            # disappear for reasons outside this repo's control.
+            continue-on-error: true
+    continue-on-error: ${{ matrix.continue-on-error || false }}
+    container:
+      image: ${{ matrix.image }}
+    env:
+      GIT_EMAIL: "ci@example.com"
+      GIT_NAME: "CI"
+      CHEZMOI_FORCE_SCRIPTS: "1"
+      CHEZMOI_SKIP_GO_TOOLS: "1"
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - name: Install base tooling
+        run: |
+          if command -v apt-get >/dev/null 2>&1; then
+            apt-get update
+            apt-get install -y --no-install-recommends git curl ca-certificates tar gzip xz-utils
+          elif command -v dnf >/dev/null 2>&1; then
+            dnf install -y --allowerasing git curl ca-certificates tar gzip xz
+          else
+            yum install -y git curl ca-certificates tar gzip xz
+          fi
+
+      # actions/checkout requires node20 (glibc >= 2.28), which amazonlinux:2
+      # cannot run; clone manually so every matrix leg uses the same path.
+      - name: Check out repository
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          git init .
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth 1 origin "$GITHUB_REF"
+          git checkout FETCH_HEAD
+
+      - name: Install chezmoi
+        run: sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
+
+      - name: chezmoi init and apply dotfiles
+        run: chezmoi init --apply --exclude=scripts -S .
+
+      - name: Run install scripts
+        run: |
+          set -eu
+          for f in \
+            .chezmoiscripts/run_once_before_install-build-deps.sh.tmpl \
+            .chezmoiscripts/run_once_install-linux-packages.sh.tmpl \
+            .chezmoiscripts/run_once_install-python-tools.sh.tmpl \
+            .chezmoiscripts/run_onchange_install-fzf.sh.tmpl \
+          ; do
+            echo "::group::$f"
+            chezmoi execute-template -S . < "$f" > /tmp/install-script.sh
+            bash /tmp/install-script.sh
+            echo "::endgroup::"
+          done
+
+      - name: Verify installed tools
+        run: |
+          set -eu
+          export PATH="/usr/local/go/bin:$HOME/.local/bin:$PATH"
+          go version
+          fzf --version
+          uv --version
+          command -v gcc >/dev/null || command -v cc >/dev/null
+          for opt in htop rg tmux; do
+            if command -v "$opt" >/dev/null 2>&1; then
+              echo "OK (optional): $opt"
+            else
+              echo "SKIPPED (optional): $opt"
+            fi
+          done
 
   chezmoi-apply:
     runs-on: ubuntu-latest
