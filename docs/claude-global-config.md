@@ -63,9 +63,17 @@ dot_claude/
 
 | イベント | スクリプト | 役割 |
 | --- | --- | --- |
-| `Notification`（permission_prompt） | `permission-notify.sh` | 権限プロンプト時に通知 |
+| `UserPromptSubmit` | `turn-start-record.sh` | ターン開始時刻を記録（Stop 通知の閾値判定用） |
+| `Notification`（permission_prompt） | `permission-notify.sh` | 権限プロンプト時に通知（プロジェクト名表示・クリックで tmux ペインへ復帰・ntfy 送信） |
 | `Stop` | `stop-review.sh` | 応答終了時に未コミット変更などをレビュー喚起 |
+| `Stop` | `stop-notify.sh` | 一定時間以上かかったターンの完了をデスクトップ + ntfy へ通知 |
 | `SessionEnd` | `worklog.sh` | セッション終了時に作業ログを記録 |
+
+補助ファイル: `hooks/lib/notify-common.sh`（通知共通ヘルパー。
+`~/.config/claude-notify/config` から `NTFY_TOPIC` 等を読む）、
+`hooks/focus-restore.sh`（terminal-notifier のクリックから tmux
+switch-client + WezTerm activate でフォーカス復帰）。ntfy の topic は
+`chezmoi init` 時の `ntfy_topic` プロンプトで設定（空ならモバイル通知は無効）。
 
 ### Agents（`dot_claude/agents/`）
 
