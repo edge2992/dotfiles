@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Pattern 5: Braille dots - dotted progress bar using braille characters"""
-import json, sys
+import json, os, subprocess, sys
 if sys.platform == 'win32':
     sys.stdout.reconfigure(encoding='utf-8')
 
@@ -41,6 +41,26 @@ def fmt(label, pct):
 def fmt_plain(label, value):
     return f'{DIM}{label}{R} {value}'
 
+def git_output(cwd, *args):
+    try:
+        r = subprocess.run(
+            ('git', *args), cwd=cwd, timeout=1,
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return r.stdout.strip() if r.returncode == 0 else None
+
+def git_branch(cwd):
+    """cwd のブランチ名。detached HEAD は短縮 SHA、git 管理外は None。"""
+    if not cwd or not os.path.isdir(cwd):
+        return None
+    name = git_output(cwd, 'symbolic-ref', '--quiet', '--short', 'HEAD')
+    if name:
+        return name if len(name) <= 30 else name[:29] + '…'
+    sha = git_output(cwd, 'rev-parse', '--short', 'HEAD')
+    return f'@{sha}' if sha else None
+
 def fmt_count(n):
     if n < 1000:
         return str(n)
@@ -51,6 +71,10 @@ def fmt_count(n):
 
 model = data.get('model', {}).get('display_name', 'Claude')
 parts = [model]
+
+branch = git_branch(data.get('workspace', {}).get('current_dir') or data.get('cwd'))
+if branch:
+    parts.append(fmt_plain('git', branch))
 
 ctx = data.get('context_window', {}).get('used_percentage')
 if ctx is not None:
