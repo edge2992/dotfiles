@@ -11,6 +11,13 @@
 満たさない場合は何も出力せず、通常の承認プロンプトにフォールバックする（fail-safe）。
 会社マシンにも同じ設定が配布されるが、会社リポジトリは owner 判定で弾かれるため
 挙動は変わらない。owner は CLAUDE_PR_AUTOAPPROVE_OWNERS（カンマ区切り）で上書き可。
+
+重要: gh pr create / gh pr merge を settings.json の permissions.ask にも allow にも
+入れないこと。Claude Code は deny -> ask -> allow の順に評価し、hook の返す "allow" は
+ask ルールを上書きできないため、ask に入っているとこの hook は無効化されて毎回
+プロンプトが出る（実際 ask に入れていて機能していなかった）。allow に入れると今度は
+owner 判定を素通りして会社リポジトリでも自動承認されてしまう。制御はこの hook 一本に
+寄せる。https://code.claude.com/docs/en/permissions
 """
 
 import json
