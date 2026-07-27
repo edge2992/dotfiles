@@ -133,7 +133,6 @@
       "Read(id_ed25519)",
       "Edit(.env*)"
     ],
-    "ask": ["Bash(gh pr merge:*)"],
     "defaultMode": "plan"
   },
   "model": "claude-fable-5[1m]",
