@@ -39,8 +39,3 @@ docs/
 .claude/downloads/
 .claude/cache/
 **/.DS_Store
-
-# 1Password SSH Agent: opt-out 時は ~/.ssh を一切管理しない（既存設定・空ディレクトリへ無影響）
-{{- if not (get . "useOnePasswordSSHAgent") }}
-.ssh
-{{- end }}

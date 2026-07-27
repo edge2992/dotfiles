@@ -1,8 +1,13 @@
 #!/bin/sh
-# Merge the 1Password SSH Agent socket into ~/.ssh/config under `Host github.com`.
-# chezmoi pipes the current file contents on stdin and uses our stdout as the new
-# contents. This only runs when `useOnePasswordSSHAgent` is true; otherwise the
-# target is ignored via .chezmoiignore, so existing SSH config is never touched.
+# Merge or clean the 1Password SSH Agent `IdentityAgent` line under
+# `Host github.com` in ~/.ssh/config. chezmoi pipes the current file contents
+# on stdin and uses our stdout as the new contents.
+# - useOnePasswordSSHAgent=true: ensure the IdentityAgent line is present so
+#   GitHub SSH goes through the 1Password Agent.
+# - useOnePasswordSSHAgent=false (default): strip any IdentityAgent line from
+#   the github.com block so SSH falls back to the local ~/.ssh/id_ed25519 key
+#   via default key discovery (no approval-prompt hangs for non-interactive
+#   tools like Claude Code). Other hosts/lines are passed through untouched.
 set -eu
 {{ if get . "useOnePasswordSSHAgent" -}}
 {{ if eq .chezmoi.os "darwin" -}}
@@ -46,5 +51,22 @@ END {
 }
 '
 {{ else -}}
-cat
+awk '
+function host_has_github(line,    rest, n, parts, i) {
+  rest = line
+  sub(/^[[:space:]]*[Hh]ost[[:space:]]+/, "", rest)
+  n = split(rest, parts, /[[:space:]]+/)
+  for (i = 1; i <= n; i++) {
+    if (parts[i] == "github.com") return 1
+  }
+  return 0
+}
+BEGIN { in_gh = 0 }
+/^[[:space:]]*[Hh]ost[[:space:]]/ { in_gh = host_has_github($0) }
+/^[[:space:]]*[Mm]atch[[:space:]]/ { in_gh = 0 }
+{
+  if (in_gh && $0 ~ /^[[:space:]]*IdentityAgent[[:space:]]/) next
+  print
+}
+'
 {{ end -}}

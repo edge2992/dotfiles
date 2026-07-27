@@ -1,9 +1,13 @@
-{{ if get . "useOnePasswordSSHAgent" -}}
 #!/bin/sh
-# One-time notice after `chezmoi apply` when the 1Password SSH Agent is opted in.
-# Renders to nothing (and is not run) when useOnePasswordSSHAgent is false.
+# One-time notice after `chezmoi apply` guiding GitHub SSH setup.
+# - useOnePasswordSSHAgent=false (default): recommends the local
+#   ~/.ssh/id_ed25519 key, which avoids approval-prompt hangs in
+#   non-interactive tools like Claude Code. See docs/1password.md.
+# - useOnePasswordSSHAgent=true: keeps the existing 1Password SSH Agent
+#   guidance (approval + auto-lock runbook).
 set -eu
 
+{{ if get . "useOnePasswordSSHAgent" -}}
 {{ if eq .chezmoi.os "darwin" -}}
 sock="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 {{ else -}}
@@ -26,4 +30,16 @@ fi
 echo "    Recommended for non-interactive tools (e.g. Claude Code) — see docs/1password.md:"
 echo "        - Settings > Developer > SSH Agent: 'Remember key approval' -> 'Until 1Password quits'"
 echo "        - Settings > Security > Auto-lock: extend idle timeout, disable lock-on-sleep"
+{{ else -}}
+echo "==> GitHub SSH (local key)"
+if [ -f "$HOME/.ssh/id_ed25519" ]; then
+  echo "    Local key found: ~/.ssh/id_ed25519"
+  echo "    Verify your GitHub connection:"
+  echo "        ssh -T git@github.com"
+else
+  echo "    No local key found at ~/.ssh/id_ed25519."
+  echo "    Generate one and register it with GitHub:"
+  echo "        ssh-keygen -t ed25519 -C \"{{ .email }}\""
+  echo "        gh ssh-key add ~/.ssh/id_ed25519.pub"
+fi
 {{ end -}}
