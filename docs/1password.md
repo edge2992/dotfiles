@@ -117,12 +117,46 @@ chezmoi apply
 
 ## SSH エージェントの承認とロック（Claude Code などの非対話ツール向け）
 
-`~/.ssh/config` の `Host github.com` は 1Password SSH エージェント（`IdentityAgent`）を経由するため、
-`git push` などの SSH 接続には 1Password の承認（Touch ID / アプリ承認）が必要です。
-Claude Code のような非対話ツールは承認プロンプトに応答できないため、承認が切れた状態で
-push すると**応答待ちでハング**します。
+### 既定: ローカル鍵（`~/.ssh/id_ed25519`）
 
-### 仕組み
+Claude Code のような非対話ツールから git 操作をする場合、**既定のローカル鍵構成を推奨**します。
+`chezmoi.yaml` の `useOnePasswordSSHAgent` フラグ（デフォルト `false`）が opt-out の間、
+`~/.ssh/config` の `Host github.com` ブロックから `IdentityAgent` 行が自動的に取り除かれ、
+1Password 連携は一切介在しません。SSH クライアントは `~/.ssh/config` に何も指定がなくても
+デフォルトの鍵探索（`~/.ssh/id_ed25519` など）だけで `git@github.com` の認証に通ります。
+承認プロンプトも 1Password のロック状態も関係しないため、非対話ツールでもハングしません。
+
+**トレードオフ**: パスフレーズなしの秘密鍵をディスクに平置きすることになります。これは
+**FileVault（フルディスク暗号化）が有効であること**を前提にした選択です。ディスク暗号化を
+有効にしていない環境ではこの構成を使わないでください。
+
+新しいマシンでローカル鍵をセットアップする手順:
+
+```bash
+ssh-keygen -t ed25519 -C "your@email.com"
+gh ssh-key add ~/.ssh/id_ed25519.pub
+
+# 疎通確認
+ssh -T git@github.com
+```
+
+`chezmoi apply` 後に一度だけ実行される案内スクリプト
+（`run_once_after_10_notice-github-ssh.sh.tmpl`）が、鍵の有無に応じてこの手順か
+疎通確認コマンドのどちらかを表示します。
+
+### opt-in: 1Password SSH Agent（`useOnePasswordSSHAgent = true`）
+
+1Password の SSH Agent 経由でも GitHub 認証は可能ですが、これは **opt-in** の構成であり、
+承認プロンプトと自動ロックに起因するハングというコストが伴います。`chezmoi init` 時に
+`useOnePasswordSSHAgent` を `true` にすると、`~/.ssh/config` の `Host github.com` に
+`IdentityAgent` 行が追加されます。
+
+`~/.ssh/config` の `Host github.com` が 1Password SSH エージェント（`IdentityAgent`）を経由すると、
+`git push` などの SSH 接続には 1Password の承認（Touch ID / アプリ承認）が必要になります。
+Claude Code のような非対話ツールは承認プロンプトに応答できないため、承認が切れた状態で
+push すると**応答待ちでハング**します。opt-in する場合は、以下の runbook で緩和してください。
+
+#### 仕組み
 
 - 鍵の使用要求ごとに 1Password が承認プロンプトを表示する。承認は**アプリケーション単位**で
   記憶されるため、ターミナルから一度承認すれば、同じターミナル配下で動くツール（Claude Code 含む）は
@@ -135,7 +169,7 @@ push すると**応答待ちでハング**します。
   解錠プロンプトを出して**応答があるまでブロック**する（エラーにならず、SSH クライアント側からは
   ハングに見える）。そのため自動ロックの緩和もセットで必要
 
-### 推奨設定（1Password アプリの GUI 設定・chezmoi 管理外）
+#### 推奨設定（1Password アプリの GUI 設定・chezmoi 管理外）
 
 ※ 表記はバージョンにより多少異なる
 
@@ -148,7 +182,7 @@ push すると**応答待ちでハング**します。
 > **トレードオフ**: 離席中も 1Password が解錠されたままになる。macOS 側の画面ロック
 > （スリープ/スクリーンセーバーでの即時ロック）を必ず併用すること。
 
-### 残る制約
+#### 残る制約
 
 - 再起動や明示的なロックの後は、初回のみターミナルからの承認・解錠が必要。長時間の作業セッションの
   前に `ssh -T git@github.com` を一度実行しておくと確実
