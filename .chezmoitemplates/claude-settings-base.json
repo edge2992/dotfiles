@@ -131,6 +131,7 @@
       "Read(.env*)",
       "Read(id_rsa)",
       "Read(id_ed25519)",
+      "Read(~/.config/opencode/opencode.jsonc)",
       "Edit(.env*)"
     ],
     "defaultMode": "plan"
