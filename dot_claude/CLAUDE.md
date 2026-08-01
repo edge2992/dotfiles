@@ -1,10 +1,7 @@
 # Global Guidelines
 
-Project-specific instructions are in each project's `CLAUDE.md`.
-
 ## Rules
 
-- **Language**: Think in English. Respond in Japanese.
 - **Library docs**: Use Context7 MCP before implementing anything library-specific.
 - **Worktree isolation**: Always use git worktree for feature work and bug fixes. Never work directly on main. Use `isolation: "worktree"` with the Agent tool.
 - **Agentic coding**: Prefer autonomous, agent-driven approaches — subagents, parallel execution, proactive problem-solving.
@@ -47,6 +44,7 @@ Project-specific instructions are in each project's `CLAUDE.md`.
 - Body: _what_ and _why_, not _how_; wrap at 72 chars
 
 <!-- CODEGRAPH_START -->
+
 ## CodeGraph
 
 In repositories indexed by CodeGraph (a `.codegraph/` directory exists at the repo root), reach for it BEFORE grep/find or reading files when you need to understand or locate code:
