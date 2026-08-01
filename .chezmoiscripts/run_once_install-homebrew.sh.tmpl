@@ -3,58 +3,18 @@ set -euo pipefail
 {{ includeTemplate "install-prelude.sh" }}
 
 {{ if eq .chezmoi.os "darwin" }}
-echo "Installing Homebrew and core packages for macOS"
+# Bootstrap Homebrew itself only. Package declarations live in
+# .chezmoitemplates/Brewfile and are installed by run_after_10_brew-bundle.sh,
+# which re-runs whenever that Brewfile changes — unlike this run_once_ script,
+# which would never pick up newly added packages on an existing machine.
+echo "Installing Homebrew for macOS"
 
-# Install Homebrew if not present
 if ! command -v brew >/dev/null 2>&1; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-  # Add Homebrew to PATH for the rest of this script
+  # Add Homebrew to PATH for the rest of this apply.
   if [ -f /opt/homebrew/bin/brew ]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
   fi
-fi
-
-# Core packages
-brew install \
-  atuin \
-  bat \
-  chezmoi  \
-  direnv \
-  eza \
-  fd \
-  fzf \
-  gh \
-  ghq \
-  gitleaks \
-  glow \
-  go \
-  neovim \
-  ripgrep \
-  sheldon \
-  starship \
-  terminal-notifier \
-  tmux \
-  tree \
-  tree-sitter-cli \
-  wget
-
-# Fonts via Homebrew Cask
-brew install --cask font-udev-gothic-nf
-
-# Go tools not available via Homebrew
-if ! command -v memo >/dev/null 2>&1; then
-  log "Installing memo..."
-  go install github.com/mattn/memo@latest
-fi
-
-if ! command -v ccgate >/dev/null 2>&1; then
-  log "Installing ccgate..."
-  go install github.com/tak848/ccgate@latest
-fi
-
-if ! command -v jsonnet >/dev/null 2>&1; then
-  log "Installing jsonnet..."
-  go install github.com/google/go-jsonnet/cmd/jsonnet@latest
 fi
 {{ end }}

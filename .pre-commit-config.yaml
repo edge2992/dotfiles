@@ -47,3 +47,9 @@ repos:
         language: system
         files: (settings-merge-patch\.jq|executable_settings-sync\.sh|test-merge-patch\.sh)$
         pass_filenames: false
+      - id: brew-overlay-test
+        name: Brewfile overlay assembly tests
+        entry: scripts/test-brew-overlay.sh
+        language: system
+        files: (modify_Brewfile\.tmpl|chezmoitemplates/Brewfile|test-brew-overlay\.sh)$
+        pass_filenames: false

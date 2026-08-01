@@ -1,0 +1,28 @@
+#!/bin/sh
+# chezmoi modify script — generates ~/.config/homebrew/Brewfile
+# stdin (current file contents) is intentionally ignored; always rebuild from
+# the base template, then append the machine-local overlay if one is present.
+#
+# Overlay contract: $OVERLAY_DIR/Brewfile is plain Brewfile syntax and is
+# appended verbatim to the base. Unlike the Claude settings overlay this needs
+# no jsonnet — Brewfile is line-based, so concatenation is the merge.
+#
+# Keeping company-specific packages in the overlay keeps their names out of this
+# public repository, the same split used by dot_claude/modify_settings.json.tmpl.
+set -eu
+
+OVERLAY_DIR='{{ get . "brew_overlay_dir" | default (joinPath .chezmoi.homeDir ".config/brew-overlay") }}'
+OVERLAY="$OVERLAY_DIR/Brewfile"
+
+# Quoted heredoc: no shell expansion, so quotes/dollars in the Brewfile are safe.
+# `-}}` drops the newline before the delimiter; the template's own trailing
+# newline already terminates the last line, so the base is emitted byte for byte.
+cat <<'CHEZMOI_BASE_EOF'
+{{ includeTemplate "Brewfile" . -}}
+CHEZMOI_BASE_EOF
+
+if [ -f "$OVERLAY" ]; then
+  echo ""
+  echo "# --- overlay: $OVERLAY ---"
+  cat "$OVERLAY"
+fi

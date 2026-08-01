@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+{{ includeTemplate "install-prelude.sh" }}
+
+# go install で管理する Go ツール（Homebrew に無いもの）。
+#
+# `after` フェーズなのは、macOS では go 自体が Brewfile 経由で
+# run_after_10_brew-bundle.sh により導入されるため。after グループ内では
+# "10_brew-bundle.sh" < "install-go-tools.sh" の名前順で brew bundle が先に走る。
+
+if [ -n "${CHEZMOI_SKIP_GO_TOOLS:-}" ]; then
+  log "CHEZMOI_SKIP_GO_TOOLS is set. Skipping."
+  exit 0
+fi
+
+if ! command -v go >/dev/null 2>&1; then
+  log "go not found; skipping Go tool installation."
+  exit 0
+fi
+
+if ! command -v memo >/dev/null 2>&1; then
+  log "Installing memo..."
+  go install github.com/mattn/memo@latest
+fi
+
+if ! command -v ccgate >/dev/null 2>&1; then
+  log "Installing ccgate..."
+  go install github.com/tak848/ccgate@latest
+fi
+
+if ! command -v jsonnet >/dev/null 2>&1; then
+  log "Installing jsonnet..."
+  go install github.com/google/go-jsonnet/cmd/jsonnet@latest
+fi

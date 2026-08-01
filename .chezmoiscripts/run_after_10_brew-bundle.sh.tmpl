@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -euo pipefail
+{{ includeTemplate "install-prelude.sh" }}
+
+{{ if eq .chezmoi.os "darwin" }}
+# Install everything declared in ~/.config/homebrew/Brewfile (base + overlay,
+# assembled by private_dot_config/homebrew/modify_Brewfile.tmpl).
+#
+# Why run_after_ and not run_onchange_: run_onchange_ only hashes chezmoi source
+# state, so a change to the machine-local overlay would never trigger it. Hashing
+# the assembled Brewfile at runtime covers both the base and the overlay.
+#
+# The `10_` prefix orders this ahead of upgrade-homebrew within the after group:
+# declare-and-install first, upgrade second.
+BREWFILE="$HOME/.config/homebrew/Brewfile"
+STAMP="${XDG_CACHE_HOME:-$HOME/.cache}/chezmoi/brew-bundle.sha256"
+
+# Do nothing if brew isn't installed yet (run_once_install-homebrew handles setup).
+if ! command -v brew >/dev/null 2>&1; then
+  if [ -f /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  else
+    log "Homebrew not found; skipping bundle."
+    exit 0
+  fi
+fi
+
+if [ ! -f "$BREWFILE" ]; then
+  log "No Brewfile at $BREWFILE; skipping bundle."
+  exit 0
+fi
+
+new=$(shasum -a 256 "$BREWFILE" | cut -d' ' -f1)
+old=$(cat "$STAMP" 2>/dev/null || true)
+if [ "$new" = "$old" ]; then
+  log "Brewfile unchanged since last bundle; skipping."
+  exit 0
+fi
+
+# --no-upgrade: guarantee presence only. Version bumps are the job of
+# run_after_upgrade-homebrew.sh, which is throttled to once per 7 days.
+log "Installing Brewfile dependencies (--no-upgrade)..."
+if brew bundle install --no-upgrade --file="$BREWFILE"; then
+  mkdir -p "$(dirname "$STAMP")"
+  printf '%s\n' "$new" >"$STAMP"
+  log "Brewfile dependencies satisfied."
+else
+  # Unlike the upgrade script we deliberately do NOT stamp on failure: a package
+  # that never installed is a real gap and should be retried on the next apply.
+  log "WARNING: brew bundle install failed; will retry on next apply."
+fi
+
+# Never abort `chezmoi apply` over a single bad formula.
+exit 0
+{{ end }}

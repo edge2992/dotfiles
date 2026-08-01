@@ -39,3 +39,8 @@ docs/
 .claude/downloads/
 .claude/cache/
 **/.DS_Store
+
+# Homebrew bundle manifest is macOS-only.
+{{ if ne .chezmoi.os "darwin" }}
+.config/homebrew/Brewfile
+{{ end }}
