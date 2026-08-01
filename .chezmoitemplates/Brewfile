@@ -1,0 +1,64 @@
+# Base Homebrew declarations, shared by every macOS machine.
+#
+# This file is not applied directly. `private_dot_config/homebrew/modify_Brewfile.tmpl`
+# renders it and appends the optional machine-local overlay
+# ($brew_overlay_dir/Brewfile, default ~/.config/brew-overlay/Brewfile) to produce
+# ~/.config/homebrew/Brewfile, which `run_after_10_brew-bundle.sh.tmpl` installs.
+#
+# Machine-specific or company-specific packages belong in the overlay, not here —
+# anything added below is installed on ALL machines.
+#
+# Brewfile entries declare a name only; they never pin a version. `brew bundle
+# install --no-upgrade` merely guarantees presence, while version updates stay
+# with the 7-day throttle in run_after_upgrade-homebrew.sh.tmpl.
+
+# Shell / prompt
+brew "atuin"
+brew "sheldon"
+brew "starship"
+brew "direnv"
+
+# Core CLI
+brew "bat"
+brew "eza"
+brew "fd"
+brew "fzf"
+brew "ripgrep"
+brew "tree"
+brew "wget"
+
+# Editor
+brew "neovim"
+brew "tree-sitter-cli"
+
+# Terminal multiplexer
+brew "tmux"
+
+# Git / GitHub
+brew "gh"
+brew "ghq"
+brew "gitleaks"
+brew "glow"
+
+# chezmoi itself (so a bootstrapped machine keeps it up to date)
+brew "chezmoi"
+
+# Go toolchain and Go-ecosystem tooling
+brew "go"
+brew "go-task"
+brew "golangci-lint"
+brew "goreleaser"
+
+# JVM (project builds; SDKMAN still manages per-project JDK switching)
+brew "gradle"
+brew "openjdk@21"
+
+# Lint / CI parity with .pre-commit-config.yaml
+brew "shellcheck"
+
+# macOS notifications for Claude Code hooks
+brew "terminal-notifier"
+
+# Casks
+cask "font-udev-gothic-nf"
+cask "wezterm"

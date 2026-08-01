@@ -1,6 +1,6 @@
-.PHONY: lint lint-json lint-tmpl lint-merge-patch nvim-check
+.PHONY: lint lint-json lint-tmpl lint-merge-patch lint-brew-overlay nvim-check brew-check
 
-lint: lint-json lint-tmpl lint-merge-patch
+lint: lint-json lint-tmpl lint-merge-patch lint-brew-overlay
 
 NVIM_SRC := private_dot_config/nvim
 STYLUA := $(shell command -v stylua 2>/dev/null || echo $(HOME)/.local/share/nvim/mason/bin/stylua)
@@ -36,3 +36,17 @@ lint-tmpl:
 
 lint-merge-patch:
 	@scripts/test-merge-patch.sh
+
+lint-brew-overlay:
+	@scripts/test-brew-overlay.sh
+
+# macOS-only, so it stays out of `lint` (CI runs on Linux).
+# Reports drift both ways; never removes anything (no --force on cleanup).
+BREWFILE := $(HOME)/.config/homebrew/Brewfile
+
+brew-check:
+	@echo "==> Declared in Brewfile but missing from this machine"
+	@brew bundle check --verbose --file=$(BREWFILE) || true
+	@echo ""
+	@echo "==> Installed but not declared (reported only, nothing is removed)"
+	@brew bundle cleanup --file=$(BREWFILE) || true

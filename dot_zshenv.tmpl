@@ -11,6 +11,10 @@ typeset -U path
 {{ if eq .chezmoi.os "darwin" -}}
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
+# Assembled by chezmoi (base + machine-local overlay). Lets `brew bundle check`
+# and `brew bundle cleanup` run without --file. `--global` is not used because it
+# falls back to ~/.Brewfile when $XDG_CONFIG_HOME is unset.
+export HOMEBREW_BUNDLE_FILE="$HOME/.config/homebrew/Brewfile"
 {{ end -}}
 
 # Volta (Node.js manager)
