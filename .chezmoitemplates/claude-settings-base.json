@@ -138,7 +138,7 @@
   },
   "model": "opusplan[1m]",
   "alwaysThinkingEnabled": true,
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "PreToolUse": [
