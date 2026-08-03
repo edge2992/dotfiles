@@ -136,7 +136,7 @@
     ],
     "defaultMode": "plan"
   },
-  "model": "opusplan[1m]",
+  "model": "opusplan",
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
   "enableAllProjectMcpServers": true,
@@ -254,7 +254,8 @@
     }
   },
   "env": {
-    "CLAUDE_CODE_ENABLE_AUTO_MODE": "1"
+    "CLAUDE_CODE_ENABLE_AUTO_MODE": "1",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "us.anthropic.claude-sonnet-5"
   },
   "language": "japanese",
   "preferredNotifChannel": "auto",
