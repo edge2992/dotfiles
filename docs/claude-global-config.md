@@ -39,7 +39,7 @@ dot_claude/
 
 | 項目 | 値 | 説明 |
 | --- | --- | --- |
-| `model` | `opus` | 既定モデル |
+| `model` | `opusplan[1m]` | 既定モデル（Plan modeはOpus、実行はSonnetに自動切替、1Mコンテキスト） |
 | `alwaysThinkingEnabled` | `true` | 拡張思考を常時有効化 |
 | `effortLevel` | `high` | 推論の労力レベル |
 | `defaultMode`（permissions） | `plan` | 既定でプランモード起動 |
