@@ -61,4 +61,4 @@ brew "terminal-notifier"
 
 # Casks
 cask "font-udev-gothic-nf"
-cask "wezterm"
+cask "wezterm@nightly"

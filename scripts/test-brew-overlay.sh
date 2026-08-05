@@ -54,7 +54,7 @@ echo "Testing Brewfile overlay assembly..."
 mkdir -p "$TMP/empty"
 render_and_run "$TMP/empty" "$TMP/base-only.out"
 check_contains "base package present without overlay" "$TMP/base-only.out" 'brew "ripgrep"'
-check_contains "base cask present without overlay" "$TMP/base-only.out" 'cask "wezterm"'
+check_contains "base cask present without overlay" "$TMP/base-only.out" 'cask "wezterm@nightly"'
 check_absent "no overlay marker without overlay" "$TMP/base-only.out" '--- overlay:'
 
 # The rendered base must match .chezmoitemplates/Brewfile byte for byte, so the
