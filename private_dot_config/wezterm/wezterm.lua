@@ -33,6 +33,12 @@ local function font_size_for_active_screen()
 end
 
 -- Appearance
+-- Tokyo Night の bright black（chalk.gray 等が使う ANSI 8）は背景とのコントラストが
+-- 低く（#414868 対 #1a1b26 で約1.9:1）、ccusage や takt が gray で出す補足情報が
+-- 読みにくいため、その1色だけ明るく上書きする（背景比 約4.4:1）。
+local tokyo_night = wezterm.color.get_builtin_schemes()["Tokyo Night"]
+tokyo_night.brights[1] = "#7c818c"
+config.color_schemes = { ["Tokyo Night"] = tokyo_night }
 config.color_scheme = "Tokyo Night"
 config.term = "xterm-256color"
 config.window_decorations = "RESIZE"
