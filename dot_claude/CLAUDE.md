@@ -22,7 +22,8 @@
   Bedrock. They are pinned instead by same-named definitions in
   `~/.claude/agents/Explore.md` (haiku) and `Plan.md` (sonnet), which override
   the built-ins. Don't delete those files expecting the CLAUDE.md rule to cover
-  them.
+  them, and pin them with a version-form ID (`claude-haiku-4-5`) — a bare
+  `haiku`/`sonnet` alias is silently ignored there on Bedrock.
 - Use subagents liberally to keep main context window clean
 - Offload research, exploration, and parallel analysis to subagents
 - For complex problems, throw more compute at it via subagents
