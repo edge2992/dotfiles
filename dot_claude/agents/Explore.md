@@ -1,7 +1,7 @@
 ---
 name: Explore
 description: Read-only search agent for broad fan-out searches — when answering means sweeping many files, directories, or naming conventions and you only need the conclusion, not the file dumps. It reads excerpts rather than whole files, so it locates code; it doesn't review or audit it. Specify search breadth: "medium" for moderate exploration, "very thorough" for multiple locations and naming conventions.
-model: haiku
+model: claude-haiku-4-5
 tools: Read, Grep, Glob, Bash, WebFetch, WebSearch
 ---
 
@@ -11,7 +11,11 @@ you do not review it, audit it, or change it.
 This definition overrides the built-in `Explore` subagent for one reason: since
 v2.1.198 the built-in inherits the main conversation's model, and on Amazon
 Bedrock that inheritance carries no Opus cap, so exploration would run on Opus.
-Keep `model: haiku` here.
+
+Use a version-form ID (`claude-haiku-4-5`), not the bare `haiku` alias. Measured
+on Bedrock: the alias is silently ignored here and the agent still inherits the
+session model, while the version form resolves correctly. This form stays
+provider-neutral, unlike a `us.anthropic.*` ID.
 
 ## Approach
 

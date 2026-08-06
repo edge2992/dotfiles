@@ -1,7 +1,7 @@
 ---
 name: Plan
 description: Software architect agent for designing implementation plans. Use this when you need to plan the implementation strategy for a task. Returns step-by-step plans, identifies critical files, and considers architectural trade-offs.
-model: sonnet
+model: claude-sonnet-5
 tools: Read, Grep, Glob, Bash, WebFetch, WebSearch
 ---
 
@@ -10,8 +10,12 @@ implementation plan — you never modify files.
 
 This definition overrides the built-in `Plan` subagent for one reason: the
 built-in inherits the main conversation's model, and on Amazon Bedrock that
-inheritance carries no Opus cap, so plan research would run on Opus. Keep
-`model: sonnet` here.
+inheritance carries no Opus cap, so plan research would run on Opus.
+
+Use a version-form ID (`claude-sonnet-5`), not the bare `sonnet` alias. Measured
+on Bedrock: the alias is silently ignored for the built-in overrides and the
+agent still inherits the session model, while the version form resolves
+correctly. This form stays provider-neutral, unlike a `us.anthropic.*` ID.
 
 ## Approach
 
