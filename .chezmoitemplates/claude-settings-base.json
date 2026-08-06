@@ -254,8 +254,7 @@
     }
   },
   "env": {
-    "CLAUDE_CODE_ENABLE_AUTO_MODE": "1",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "us.anthropic.claude-sonnet-5"
+    "CLAUDE_CODE_ENABLE_AUTO_MODE": "1"
   },
   "language": "japanese",
   "preferredNotifChannel": "auto",
