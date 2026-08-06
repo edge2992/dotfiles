@@ -16,6 +16,13 @@
   research & web search → `"sonnet"` (or `"haiku"` for simple lookups),
   mechanical tasks → `"haiku"`, implementation → per-repo policy.
   The expensive main model is for orchestration, review, and synthesis only.
+- **Built-in `Explore` / `Plan` don't read this file.** They are the only
+  subagents that skip CLAUDE.md, so the rule above cannot reach them — and since
+  v2.1.198 they inherit the main conversation's model, with no Opus cap on
+  Bedrock. They are pinned instead by same-named definitions in
+  `~/.claude/agents/Explore.md` (haiku) and `Plan.md` (sonnet), which override
+  the built-ins. Don't delete those files expecting the CLAUDE.md rule to cover
+  them.
 - Use subagents liberally to keep main context window clean
 - Offload research, exploration, and parallel analysis to subagents
 - For complex problems, throw more compute at it via subagents
