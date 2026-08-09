@@ -5,6 +5,13 @@ local config = wezterm.config_builder()
 -- 実行時 OS 判定（chezmoi テンプレートではなく WezTerm 側で分岐）
 local is_macos = wezterm.target_triple:find("darwin") ~= nil
 
+-- 仕事モード（画面共有・本番作業時に背景写真/透過を切って完全不透明にする手動トグル）。
+-- automatically_reload_config でファイル全体が再実行されてもリロードをまたいで状態を
+-- 保持したいため、プレーンな local 変数ではなく wezterm.GLOBAL を使う。
+local function is_work_mode()
+  return wezterm.GLOBAL.work_mode or false
+end
+
 -- Font
 config.font = wezterm.font("UDEV Gothic NF")
 config.font_size = 12.0
@@ -116,6 +123,21 @@ for _, k in ipairs(window_keys) do
   table.insert(config.keys, k)
 end
 
+-- 仕事モードトグル（フォントサイズ調整・ウィンドウフォーカス切替と同じ修飾キー方針）
+local work_mode_keys
+if is_macos then
+  work_mode_keys = {
+    { key = "P", mods = "SUPER", action = act.EmitEvent("toggle-work-mode") },
+  }
+else
+  work_mode_keys = {
+    { key = "P", mods = "CTRL|SHIFT", action = act.EmitEvent("toggle-work-mode") },
+  }
+end
+for _, k in ipairs(work_mode_keys) do
+  table.insert(config.keys, k)
+end
+
 -- ウィンドウ状態に応じた動的設定（config overrides）
 -- - フォントサイズ: アクティブディスプレイの解像度で切替（全 OS）
 -- - 背景写真: 全画面時だけ敷く（macOS 限定。native fullscreen で背面が黒潰れする
@@ -151,7 +173,12 @@ local function compute_overrides(window)
     overrides.font_size = size
   end
 
-  if is_macos and window:get_dimensions().is_full_screen then
+  if is_work_mode() then
+    -- 仕事モード: 人に見せる場面向けに背景写真なし・完全不透明で固定。
+    -- 全画面時の背景写真自動表示より優先する（手動トグルの明示的な意図を尊重）。
+    overrides.window_background_opacity = 1.0
+    overrides.text_background_opacity = 1.0
+  elseif is_macos and window:get_dimensions().is_full_screen then
     local img = pick_daily_background()
     if img then
       overrides.window_background_image = img
@@ -169,10 +196,16 @@ local function apply_overrides(window)
   local new = compute_overrides(window)
   -- 変化が無いときは set_config_overrides を呼ばない
   -- （window-config-reloaded が再発火して無限ループになるのを防ぐ）。
-  -- 前提: hsb / opacity は image の有無に連動する定数なので代表キー比較で足りる。
-  -- hsb 等を独立に変化させる変更を入れる場合は、この比較にそのキーも追加すること
+  -- 前提: hsb は image の有無に連動する定数なので代表キー比較で足りる。
+  -- 独立に変化しうるフィールドを追加する場合は、この比較にそのキーも追加すること
   -- （テーブルの参照比較は毎回不一致→無限ループになるためフィールド単位で比較する）。
-  if current.font_size == new.font_size and current.window_background_image == new.window_background_image then
+  -- 仕事モードは image を変えずに opacity だけ変えるため、opacity 系も比較対象に含める。
+  if
+    current.font_size == new.font_size
+    and current.window_background_image == new.window_background_image
+    and current.window_background_opacity == new.window_background_opacity
+    and current.text_background_opacity == new.text_background_opacity
+  then
     return
   end
   window:set_config_overrides(new)
@@ -183,6 +216,11 @@ wezterm.on("window-resized", function(window, _pane)
 end)
 wezterm.on("window-config-reloaded", function(window, _pane)
   apply_overrides(window)
+end)
+wezterm.on("toggle-work-mode", function(window, _pane)
+  wezterm.GLOBAL.work_mode = not is_work_mode()
+  apply_overrides(window)
+  window:toast_notification("wezterm", "仕事モード: " .. (is_work_mode() and "ON" or "OFF"), nil, 2000)
 end)
 
 return config
