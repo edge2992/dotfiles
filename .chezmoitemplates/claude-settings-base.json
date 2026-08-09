@@ -235,6 +235,7 @@
     "claude-code-setup@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
+    "codex@openai-codex": true,
     "commit-commands@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
     "document-skills@anthropic-agent-skills": true,
@@ -250,6 +251,12 @@
       "source": {
         "source": "github",
         "repo": "obra/superpowers-marketplace"
+      }
+    },
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
       }
     }
   },
