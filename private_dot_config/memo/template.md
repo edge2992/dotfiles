@@ -8,4 +8,3 @@ type: journal
 
 [[generated-by-memo]]
 ---
-
