@@ -70,16 +70,25 @@ render() {
 # For modify scripts: render the template to a shell script, execute it,
 # then validate the output is valid JSON. On success the produced JSON is
 # left in RENDER_MODIFY_OUT for profile-specific assertions.
+#
+# The rendered script is written to a file and run from there (not piped
+# into `sh`'s own stdin) so its stdin is free for us to control: set
+# RENDER_MODIFY_STDIN to a file path to simulate the "current target
+# contents" chezmoi passes on stdin; it defaults to /dev/null (empty,
+# matching a first-apply run). Piping the script text itself into `sh`'s
+# stdin would collide with any `cat`/`read` the script does on its own
+# stdin — exactly what modify_settings.json.tmpl's passthrough now does.
 RENDER_MODIFY_OUT=""
 render_modify() {
-  local cfg="$1" tmpl="$2" label="$3" out script_out
+  local cfg="$1" tmpl="$2" label="$3" stdin_file="${RENDER_MODIFY_STDIN:-/dev/null}" out script_out
   RENDER_MODIFY_OUT=""
   if ! out="$(chezmoi execute-template --config "$cfg" --source . <"$tmpl" 2>&1)"; then
     echo "  FAIL: $tmpl ($label) — template did not render:" >&2
     printf '%s\n' "$out" >&2
     return 1
   fi
-  if ! script_out="$(printf '%s' "$out" | sh 2>&1)"; then
+  printf '%s' "$out" >"$tmpdir/modify-script.sh"
+  if ! script_out="$(sh "$tmpdir/modify-script.sh" <"$stdin_file" 2>&1)"; then
     echo "  FAIL: $tmpl ($label) — script execution failed:" >&2
     printf '%s\n' "$script_out" >&2
     return 1
@@ -107,12 +116,45 @@ while IFS= read -r tmpl; do
   # default profile: no overlay -> the base must pass through untouched
   if render_modify "$default_cfg" "$tmpl" "default"; then
     if [ "$tmpl" = "$settings_tmpl" ]; then
+      base_rendered="$(chezmoi execute-template --config "$default_cfg" --source . \
+        <.chezmoitemplates/claude-settings-base.json)"
       if diff <(printf '%s' "$RENDER_MODIFY_OUT" | jq -S .) \
-              <(chezmoi execute-template --config "$default_cfg" --source . \
-                  <.chezmoitemplates/claude-settings-base.json | jq -S .) >/dev/null; then
+              <(printf '%s' "$base_rendered" | jq -S .) >/dev/null; then
         echo "  OK: $tmpl (default output == base)"
       else
         echo "  FAIL: $tmpl (default) — output differs from claude-settings-base.json" >&2
+        fail=1
+      fi
+
+      # Passthrough regression check: stdin with a harmless key-order shuffle
+      # (no content change) must come back byte-for-byte — this is what
+      # keeps `chezmoi status` quiet against Claude Code's own key reordering.
+      reordered_fixture="$tmpdir/settings-current-reordered.json"
+      printf '%s' "$base_rendered" | jq '. as $o | ($o | del(.model)) + {model: $o.model}' >"$reordered_fixture"
+      if RENDER_MODIFY_STDIN="$reordered_fixture" render_modify "$default_cfg" "$tmpl" "passthrough, reordered stdin"; then
+        if [ "$(jq -c 'keys_unsorted' "$reordered_fixture")" = "$(printf '%s' "$RENDER_MODIFY_OUT" | jq -c 'keys_unsorted')" ]; then
+          echo "  OK: $tmpl (passthrough preserves stdin key order on no-op edit)"
+        else
+          echo "  FAIL: $tmpl (passthrough) — key order not preserved; rendered output returned instead of stdin" >&2
+          fail=1
+        fi
+      else
+        fail=1
+      fi
+
+      # A genuine content change in stdin must NOT be passed through — the
+      # freshly rendered output should win instead of hiding a real diff.
+      diff_fixture="$tmpdir/settings-current-diff.json"
+      printf '%s' "$base_rendered" | jq 'del(.model)' >"$diff_fixture"
+      if RENDER_MODIFY_STDIN="$diff_fixture" render_modify "$default_cfg" "$tmpl" "no passthrough on real diff"; then
+        if diff <(printf '%s' "$RENDER_MODIFY_OUT" | jq -S .) \
+                <(printf '%s' "$base_rendered" | jq -S .) >/dev/null; then
+          echo "  OK: $tmpl (real content diff in stdin still returns freshly rendered output)"
+        else
+          echo "  FAIL: $tmpl (real diff) — output doesn't match freshly rendered base" >&2
+          fail=1
+        fi
+      else
         fail=1
       fi
     fi

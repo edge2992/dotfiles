@@ -1,7 +1,14 @@
 #!/bin/sh
 # chezmoi modify script — generates ~/.claude/settings.json
-# stdin (current file contents) is intentionally ignored; always rebuild from
-# the base template, then merge the private overlay repo if one is present.
+# Always rebuild from the base template, then merge the private overlay repo
+# if one is present. stdin (the current target contents) is captured too: if
+# the rebuilt output is semantically identical to what's already there, we
+# pass stdin through byte-for-byte instead of the freshly rendered JSON. This
+# matters because Claude Code rewrites settings.json in place and reorders
+# keys as it does (e.g. moving a toggled key to the end) — without this
+# passthrough, `chezmoi status`/`diff` would show key-order churn forever
+# even when nothing meaningful changed. Real content changes still win: the
+# comparison is semantic (sorted-key JSON), not textual.
 #
 # Overlay contract: $OVERLAY_DIR/overlay.jsonnet must be a jsonnet function
 #   function(base, data) base + { ... }
@@ -15,27 +22,45 @@ OVERLAY="$OVERLAY_DIR/overlay.jsonnet"
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
+# Capture stdin (current target contents; empty on first apply) up front, so
+# it isn't lost regardless of which path below produces the final output.
+cat >"$TMP/current.json"
+
 # Quoted heredocs: no shell expansion, so quotes/dollars in the JSON are safe.
 cat >"$TMP/base.json" <<'CHEZMOI_BASE_EOF'
 {{ includeTemplate "claude-settings-base.json" . }}
 CHEZMOI_BASE_EOF
 
 if [ ! -f "$OVERLAY" ]; then
-  cat "$TMP/base.json"
-  exit 0
-fi
+  cp "$TMP/base.json" "$TMP/out.json"
+else
+  if ! command -v jsonnet >/dev/null 2>&1; then
+    echo "modify_settings: $OVERLAY exists but jsonnet is not installed" >&2
+    echo "  fix: go install github.com/google/go-jsonnet/cmd/jsonnet@latest" >&2
+    exit 1
+  fi
 
-if ! command -v jsonnet >/dev/null 2>&1; then
-  echo "modify_settings: $OVERLAY exists but jsonnet is not installed" >&2
-  echo "  fix: go install github.com/google/go-jsonnet/cmd/jsonnet@latest" >&2
-  exit 1
-fi
-
-cat >"$TMP/data.json" <<'CHEZMOI_DATA_EOF'
+  cat >"$TMP/data.json" <<'CHEZMOI_DATA_EOF'
 {{ omit . "chezmoi" | toJson }}
 CHEZMOI_DATA_EOF
 
-jsonnet -J "$OVERLAY_DIR" \
-  --tla-code-file base="$TMP/base.json" \
-  --tla-code-file data="$TMP/data.json" \
-  "$OVERLAY"
+  jsonnet -J "$OVERLAY_DIR" \
+    --tla-code-file base="$TMP/base.json" \
+    --tla-code-file data="$TMP/data.json" \
+    "$OVERLAY" >"$TMP/out.json"
+fi
+
+# Passthrough: if the current target is already semantically equal to the
+# freshly rendered output, return it verbatim (preserving its key order)
+# instead of the rendered JSON. Falls back to the rendered output whenever
+# jq is missing, stdin was empty (nothing to compare), or either side fails
+# to parse/normalize — never silently swallows a real content difference.
+if command -v jq >/dev/null 2>&1 &&
+  [ -s "$TMP/current.json" ] &&
+  jq -S . "$TMP/current.json" >"$TMP/cur.norm" 2>/dev/null &&
+  jq -S . "$TMP/out.json" >"$TMP/out.norm" 2>/dev/null &&
+  cmp -s "$TMP/cur.norm" "$TMP/out.norm"; then
+  cat "$TMP/current.json"
+else
+  cat "$TMP/out.json"
+fi

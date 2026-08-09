@@ -275,5 +275,6 @@
   },
   "voiceEnabled": true,
   "skipWorkflowUsageWarning": true,
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "remoteControlAtStartup": true
 }
