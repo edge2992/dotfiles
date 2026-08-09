@@ -12,6 +12,7 @@ fi
 
 (( $+commands[atuin] )) && eval "$(atuin init zsh)"
 (( $+commands[direnv] )) && eval "$(direnv hook zsh)"
+(( $+commands[dw] )) && eval "$(dw init zsh)"
 
 # SDKMAN (Java/JVM manager)
 [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
