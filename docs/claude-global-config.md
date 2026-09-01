@@ -94,6 +94,12 @@ switch-client + WezTerm activate でフォーカス復帰）。ntfy の topic �
 `claude-code-setup`、`claude-md-management`、`code-review`、`commit-commands`、
 `context7`、`document-skills`、`gopls-lsp`、`skill-creator`、`superpowers`。
 
+社内（homelife-backend）のプラグインは公開リポジトリには置かず、
+company overlay（`~/.config/claude-overlay/overlay.jsonnet`。`dot_claude/modify_settings.json.tmpl`
+がこのファイルを検出すると `claude-settings-base.json` にマージする）
+側の `extraKnownMarketplaces+:` / `enabledPlugins+:` で追加する。
+マーケットプレイスの実体は社内 GHE（`homelife-backend/claude-code-marketplace`）。
+
 ## 関連
 
 - ルート [`CLAUDE.md`](../CLAUDE.md) — このリポジトリ自体の作業ルール（chezmoi 命名規則・PR ワークフロー）
