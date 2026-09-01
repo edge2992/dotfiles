@@ -8,6 +8,7 @@
 - **PRs**: Commit and push to feature branches without asking. Create PRs without asking, too.
 - **AWS resources**: When viewing or querying AWS resources, always use the `mcp__aws-mcp__aws___call_aws` MCP tool.
 - **Python scripts**: Always use `uv` to run Python scripts (`uv run script.py`). Use `uv` for package management instead of `pip`/`python`.
+- **Codex review model**: `/codex:review` and `/codex:adversarial-review` call the Codex app-server's `review/start` RPC, which does NOT inherit the top-level `model` from `~/.codex/config.toml` the way interactive/chat threads do — without an explicit `--model` it silently falls back to a different default model. Before running either command, if the user hasn't already passed `--model`/`-m`, read the default with `grep -m1 '^model' ~/.codex/config.toml` and append `--model <that value>` to the arguments. Do not fix this by editing the plugin's own files under `~/.claude/plugins/cache/` — that's plugin-managed and gets overwritten/reinstalled; this note is the actual persistent workaround until it's fixed upstream in `openai/codex-plugin-cc`.
 
 ## Subagent Strategy
 
