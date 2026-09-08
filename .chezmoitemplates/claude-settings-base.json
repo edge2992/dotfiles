@@ -261,7 +261,8 @@
     }
   },
   "env": {
-    "CLAUDE_CODE_ENABLE_AUTO_MODE": "1"
+    "CLAUDE_CODE_ENABLE_AUTO_MODE": "1",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
   },
   "language": "japanese",
   "preferredNotifChannel": "auto",
