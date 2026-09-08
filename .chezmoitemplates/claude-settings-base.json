@@ -136,7 +136,7 @@
     ],
     "defaultMode": "plan"
   },
-  "model": "opusplan",
+  "model": "sonnet",
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
   "enableAllProjectMcpServers": true,
