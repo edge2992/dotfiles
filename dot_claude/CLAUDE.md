@@ -11,6 +11,7 @@
 
 - Delegate exploration, research, and cross-cutting analysis; keep them out of main context.
 - Run independent tasks in parallel. Keep nesting shallow.
+- Always set `model` explicitly on Agent/Workflow calls. Omitting it falls back to the main session's model (e.g. Opus), not a cheaper one. If you must fall back, default to `sonnet`.
 
 ## Done means proven
 
