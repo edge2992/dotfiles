@@ -263,6 +263,12 @@
         "source": "github",
         "repo": "openai/codex-plugin-cc"
       }
+    },
+    "yomiyasu": {
+      "source": {
+        "source": "github",
+        "repo": "nanaism/yomiyasu"
+      }
     }
   },
   "env": {
