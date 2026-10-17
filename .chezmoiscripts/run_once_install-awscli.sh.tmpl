@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+{{ includeTemplate "install-prelude.sh" }}
+
+{{ if eq .chezmoi.os "linux" }}
+# AWS CLI v2 (official bundle). macOS gets awscli from the Brewfile instead.
+# Installed per-user under ~/.local so no sudo is needed; `unzip` comes from
+# run_once_before_install-build-deps. Needed by
+# run_onchange_after_setup-aws-agent-toolkit, which registers aws-mcp.
+export PATH="$HOME/.local/bin:$PATH"
+
+if command -v aws >/dev/null 2>&1; then
+  log "AWS CLI is already installed: $(aws --version 2>&1)"
+  exit 0
+fi
+
+case "$(uname -m)" in
+  x86_64) AWS_ARCH="x86_64" ;;
+  aarch64) AWS_ARCH="aarch64" ;;
+  *)
+    log "Unsupported architecture for AWS CLI: $(uname -m)"
+    exit 1
+    ;;
+esac
+
+log "Installing AWS CLI v2..."
+workdir=$(mktemp -d)
+trap 'rm -rf "$workdir"' EXIT
+curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-${AWS_ARCH}.zip" -o "$workdir/awscliv2.zip"
+unzip -q "$workdir/awscliv2.zip" -d "$workdir"
+mkdir -p "$HOME/.local/bin"
+"$workdir/aws/install" --install-dir "$HOME/.local/aws-cli" --bin-dir "$HOME/.local/bin"
+
+log "AWS CLI installed: $(aws --version 2>&1)"
+{{ end }}

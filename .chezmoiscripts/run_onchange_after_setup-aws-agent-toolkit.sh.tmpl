@@ -10,7 +10,8 @@ set -euo pipefail
 #
 # `after` phase: on macOS awscli comes from the Brewfile, and within the after
 # group "10_brew-bundle.sh" sorts before "setup-aws-agent-toolkit.sh". On Linux
-# awscli is not provisioned, so this skips unless it was installed by hand.
+# awscli comes from run_once_install-awscli (into ~/.local/bin), which runs in
+# the regular phase before this one.
 
 export PATH="$HOME/.local/bin:$PATH"
 # chezmoi runs scripts in a non-login shell, so brew may not be on PATH yet.
