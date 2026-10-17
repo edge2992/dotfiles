@@ -9,9 +9,14 @@ set -euo pipefail
 # vendored into the chezmoi source.
 #
 # `after` phase: on macOS awscli comes from the Brewfile, and within the after
-# group "10_brew-bundle.sh" sorts before "setup-aws-agent-toolkit.sh".
+# group "10_brew-bundle.sh" sorts before "setup-aws-agent-toolkit.sh". On Linux
+# awscli is not provisioned, so this skips unless it was installed by hand.
 
 export PATH="$HOME/.local/bin:$PATH"
+# chezmoi runs scripts in a non-login shell, so brew may not be on PATH yet.
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
 if ! command -v aws >/dev/null 2>&1; then
   log "aws CLI not found. Skipping AWS agent-toolkit setup."
