@@ -14,22 +14,36 @@ if command -v aws >/dev/null 2>&1; then
   exit 0
 fi
 
-case "$(uname -m)" in
-  x86_64) AWS_ARCH="x86_64" ;;
-  aarch64) AWS_ARCH="aarch64" ;;
-  *)
-    log "Unsupported architecture for AWS CLI: $(uname -m)"
-    exit 1
-    ;;
-esac
+AWS_INSTALL_DIR="$HOME/.local/aws-cli"
+AWS_BIN_DIR="$HOME/.local/bin"
 
-log "Installing AWS CLI v2..."
-workdir=$(mktemp -d)
-trap 'rm -rf "$workdir"' EXIT
-curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-${AWS_ARCH}.zip" -o "$workdir/awscliv2.zip"
-unzip -q "$workdir/awscliv2.zip" -d "$workdir"
-mkdir -p "$HOME/.local/bin"
-"$workdir/aws/install" --install-dir "$HOME/.local/aws-cli" --bin-dir "$HOME/.local/bin"
+if [ ! -x "$AWS_INSTALL_DIR/v2/current/bin/aws" ]; then
+  case "$(uname -m)" in
+    x86_64) AWS_ARCH="x86_64" ;;
+    aarch64) AWS_ARCH="aarch64" ;;
+    *)
+      log "Unsupported architecture for AWS CLI: $(uname -m)"
+      exit 1
+      ;;
+  esac
 
+  log "Installing AWS CLI v2..."
+  workdir=$(mktemp -d)
+  trap 'rm -rf "$workdir"' EXIT
+  curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-${AWS_ARCH}.zip" -o "$workdir/awscliv2.zip"
+  unzip -q "$workdir/awscliv2.zip" -d "$workdir"
+  "$workdir/aws/install" --install-dir "$AWS_INSTALL_DIR" --bin-dir "$AWS_BIN_DIR"
+fi
+
+# Re-link unconditionally: the installer skips an already-present version
+# without restoring missing bin links, so a retry would otherwise stay broken.
+mkdir -p "$AWS_BIN_DIR"
+ln -sf "$AWS_INSTALL_DIR/v2/current/bin/aws" "$AWS_BIN_DIR/aws"
+ln -sf "$AWS_INSTALL_DIR/v2/current/bin/aws_completer" "$AWS_BIN_DIR/aws_completer"
+
+if ! aws --version >/dev/null 2>&1; then
+  log "aws still not usable after install; PATH is: $PATH"
+  exit 1
+fi
 log "AWS CLI installed: $(aws --version 2>&1)"
 {{ end }}
