@@ -27,6 +27,9 @@ brew "ripgrep"
 brew "tree"
 brew "wget"
 
+# Cloud
+brew "awscli"
+
 # Editor
 brew "neovim"
 brew "tree-sitter-cli"

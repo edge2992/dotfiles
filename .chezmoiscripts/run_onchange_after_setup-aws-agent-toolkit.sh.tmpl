@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+{{ includeTemplate "install-prelude.sh" }}
+
+# Agent Toolkit for AWS: installs the default AWS skills into every detected
+# coding agent (~/.claude/skills, ~/.agents/skills, …) and registers the aws-mcp
+# server. The skills are third-party content updated via
+# `aws agent-toolkit update-skill`, so they are installed here rather than
+# vendored into the chezmoi source.
+#
+# `after` phase: on macOS awscli comes from the Brewfile, and within the after
+# group "10_brew-bundle.sh" sorts before "setup-aws-agent-toolkit.sh".
+
+export PATH="$HOME/.local/bin:$PATH"
+
+if ! command -v aws >/dev/null 2>&1; then
+  log "aws CLI not found. Skipping AWS agent-toolkit setup."
+  exit 0
+fi
+
+if ! command -v claude >/dev/null 2>&1; then
+  log "Claude CLI not found. Skipping AWS agent-toolkit setup."
+  exit 0
+fi
+
+# The skill catalog call fails with NoRegion when no default region is set.
+log "Setting up AWS agent-toolkit (skills + aws-mcp)"
+aws configure agent-toolkit --yes --region us-east-1 ||
+  log "aws configure agent-toolkit failed; rerun it manually."

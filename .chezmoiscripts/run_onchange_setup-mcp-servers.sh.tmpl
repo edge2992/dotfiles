@@ -39,3 +39,7 @@ if command -v npx >/dev/null 2>&1; then
 else
   log "npx not found. Skipping playwright (install-volta provides node)."
 fi
+
+# aws-knowledge-mcp-server: AWS docs / regional availability (remote http, no auth).
+# aws-mcp (credentialed) is registered by run_onchange_after_setup-aws-agent-toolkit.
+register_mcp aws-knowledge-mcp-server --transport http https://knowledge-mcp.global.api.aws
