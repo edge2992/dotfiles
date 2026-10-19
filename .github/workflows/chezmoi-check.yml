@@ -130,6 +130,7 @@ jobs:
           for f in \
             .chezmoiscripts/run_once_before_install-build-deps.sh.tmpl \
             .chezmoiscripts/run_once_install-linux-packages.sh.tmpl \
+            .chezmoiscripts/run_once_install-awscli.sh.tmpl \
             .chezmoiscripts/run_once_install-python-tools.sh.tmpl \
             .chezmoiscripts/run_onchange_install-fzf.sh.tmpl \
           ; do
@@ -146,6 +147,7 @@ jobs:
           go version
           fzf --version
           uv --version
+          aws --version
           command -v gcc >/dev/null || command -v cc >/dev/null
           for opt in htop rg tmux; do
             if command -v "$opt" >/dev/null 2>&1; then
