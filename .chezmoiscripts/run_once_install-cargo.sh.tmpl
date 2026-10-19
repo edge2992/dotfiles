@@ -17,14 +17,12 @@ else
   . "$HOME/.cargo/env"
 fi
 
-# Rust tools — entries are "name [extra cargo install args]"
-for spec in "sheldon" "eza" "starship --locked" "atuin"; do
-  # shellcheck disable=SC2086 # intentional word-split to pass extra args
-  set -- $spec
-  name="$1"
-  shift
+# Rust tools — always --locked: without it cargo re-resolves dependencies and
+# can pick incompatible semver-compatible releases (e.g. eza fails to build when
+# palette_derive 0.7.6 is paired with palette 0.7.5).
+for name in sheldon eza starship atuin; do
   if ! command -v "$name" >/dev/null 2>&1; then
     log "Installing $name..."
-    cargo install "$name" "$@"
+    cargo install --locked "$name"
   fi
 done
