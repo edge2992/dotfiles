@@ -46,7 +46,6 @@
       "Bash(mkdir:*)",
       "Bash(mv:*)",
       "Bash(cp:*)",
-      "Bash(rm:*)",
       "Bash(cat:*)",
       "Bash(head:*)",
       "Bash(tail:*)",
@@ -54,7 +53,6 @@
       "Bash(wc:*)",
       "Bash(sort:*)",
       "Bash(uniq:*)",
-      "Bash(npm run:*)",
       "Bash(make:*)",
       "Bash(shellcheck:*)",
       "Bash(grep:*)",
@@ -146,20 +144,6 @@
   "effortLevel": "xhigh",
   "enableAllProjectMcpServers": true,
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 ~/.claude/hooks/gh-pr-autoapprove.py",
-            "if": "Bash(gh pr:*)",
-            "timeout": 10,
-            "statusMessage": "Checking gh pr auto-approve"
-          }
-        ]
-      }
-    ],
     "PostToolUse": [
       {
         "matcher": "Write(~/.claude/settings.json)",
@@ -249,7 +233,9 @@
     "playwright@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
     "slack@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "eli5@claude-community": true,
+    "pstack@pstack-claude": true
   },
   "extraKnownMarketplaces": {
     "superpowers-marketplace": {
@@ -268,6 +254,18 @@
       "source": {
         "source": "github",
         "repo": "nanaism/yomiyasu"
+      }
+    },
+    "claude-community": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-community"
+      }
+    },
+    "pstack-claude": {
+      "source": {
+        "source": "github",
+        "repo": "michael-denyer/pstack-claude"
       }
     }
   },
@@ -288,5 +286,41 @@
   "voiceEnabled": true,
   "skipWorkflowUsageWarning": true,
   "skipDangerousModePermissionPrompt": true,
-  "remoteControlAtStartup": true
+  "remoteControlAtStartup": true,
+  "timeFormat": "auto",
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Bash(bin/inbox:*) in /Users/edgissa/ghq/github.com/edge2992/idea_inbox",
+      "Bash(uv run:*) in /Users/edgissa/ghq/github.com/edge2992/idea_inbox",
+      "Bash(uv add:*) in /Users/edgissa/ghq/github.com/edge2992/idea_inbox"
+    ],
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Cloud provider(s)**: AWS (via `mcp__aws-mcp__aws___call_aws`, per ~/.claude/CLAUDE.md; hosts aws-mcp.ap-northeast-1.api.aws and knowledge-mcp.global.api.aws contacted)",
+      "**Repository visibility**: private (edge2992/idea_inbox, confirmed via gh)",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: None configured",
+      "**Default / protected branches**: main (default); no classic protected branches listed, rulesets not queryable here so protection status is not fully confirmed — treat main as sensitive to force-push/history-rewrite regardless",
+      "**CI/CD deploy targets**: None configured",
+      "**Network posture**: None configured",
+      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine with open internet",
+      "**Source control**: The trusted repo (edge2992/idea_inbox) and its origin remote (ssh://github.com/edge2992/idea_inbox.git) only",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: None configured",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: topics/cloud-iac/tickets/t3-cloudflare-terraform.md (Cloudflare/IaC-related ticket content) — share only with audiences cleared at the [named+specifics] bar",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment; also treat topics/cloud-iac/tickets/t3-cloudflare-terraform.md's Terraform/Cloudflare scope with care",
+      "### User-specific",
+      "**Primary use of Claude Code**: personal idea/task inbox management (idea_inbox repo) — Markdown ticket tracking for self and agent delegation (Claude Code, Grok Bot)",
+      "**Trusted repo**: /Users/edgissa/ghq/github.com/edge2992/idea_inbox (private) and its origin remote",
+      "**Org-specific CLIs**: bin/inbox (project ticket CLI, Python stdlib only); uv for Python (per ~/.claude/CLAUDE.md, never pip or bare python)",
+      "Routine under edge2992/idea_inbox prefix: ticket/topic edits, bin/inbox operations, and git commit/push/PR to origin are routine per repo conventions (CLAUDE.md: \"Commit, push, and open PRs without asking\")"
+    ]
+  }
 }
