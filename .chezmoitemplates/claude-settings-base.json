@@ -294,7 +294,8 @@
       "$defaults",
       "Bash(bin/inbox:*) in /Users/edgissa/ghq/github.com/edge2992/idea_inbox",
       "Bash(uv run:*) in /Users/edgissa/ghq/github.com/edge2992/idea_inbox",
-      "Bash(uv add:*) in /Users/edgissa/ghq/github.com/edge2992/idea_inbox"
+      "Bash(uv add:*) in /Users/edgissa/ghq/github.com/edge2992/idea_inbox",
+      "In /Users/edgissa/ghq/github.com/edge2992/sap-integration-learning (origin edge2992/sap-integration-learning) and its git worktrees only: creating PRs, merging Claude's own PRs with `gh pr merge --squash --delete-branch` once checks pass or none exist, pulling main, and deleting merged local branches/worktrees are routine and pre-approved by the user. This does not apply to any other repository."
     ],
     "environment": [
       "### Org-wide",
@@ -321,7 +322,8 @@
       "**Primary use of Claude Code**: personal idea/task inbox management (idea_inbox repo) — Markdown ticket tracking for self and agent delegation (Claude Code, Grok Bot)",
       "**Trusted repo**: /Users/edgissa/ghq/github.com/edge2992/idea_inbox (private) and its origin remote",
       "**Org-specific CLIs**: bin/inbox (project ticket CLI, Python stdlib only); uv for Python (per ~/.claude/CLAUDE.md, never pip or bare python)",
-      "Routine under edge2992/idea_inbox prefix: ticket/topic edits, bin/inbox operations, and git commit/push/PR to origin are routine per repo conventions (CLAUDE.md: \"Commit, push, and open PRs without asking\")"
+      "Routine under edge2992/idea_inbox prefix: ticket/topic edits, bin/inbox operations, and git commit/push/PR to origin are routine per repo conventions (CLAUDE.md: \"Commit, push, and open PRs without asking\")",
+      "**Trusted repo**: /Users/edgissa/ghq/github.com/edge2992/sap-integration-learning (private, origin https://github.com/edge2992/sap-integration-learning.git) — here the full PR lifecycle (branch, commit, push, open PR, wait for checks, squash-merge Claude's own PR without human approval, delete branch) is routine per the user's explicit instruction; direct pushes to main and `--admin` merges remain out of bounds"
     ]
   }
 }
