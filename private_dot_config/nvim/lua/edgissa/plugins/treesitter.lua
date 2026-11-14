@@ -42,7 +42,10 @@ return {
           local ok = pcall(vim.treesitter.language.inspect, lang)
           if ok then
             vim.treesitter.start()
-            vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+            -- markdown's indents query drops list indentation; let autoindent keep it
+            if lang ~= "markdown" then
+              vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+            end
           end
         end,
       })

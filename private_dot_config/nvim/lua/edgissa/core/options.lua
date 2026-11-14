@@ -24,6 +24,7 @@ opt.tabstop = 2 -- 2 spaces for tabs (prettier default)
 opt.shiftwidth = 2 -- 2 spaces for indent width
 opt.expandtab = true -- expand tab to spaces
 opt.autoindent = true -- copy indent from current line when starting new one
+vim.g.markdown_recommended_style = 0 -- stop ftplugin/markdown from forcing 4-space indent
 
 -- Search
 opt.ignorecase = true -- ignore case when searching
