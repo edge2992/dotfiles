@@ -12,8 +12,20 @@ alias slackcat='cat'
 alias cw='claude -w'
 
 # ls command
-command -v eza &> /dev/null && alias ls='eza --icons --group --git --group-directories-first' || \
+# eza blocks when stdin is an open non-TTY pipe (e.g. Claude Code background
+# shells), so only use it when both stdin and stdout are terminals.
+unalias ls 2> /dev/null
+if command -v eza &> /dev/null; then
+  ls() {
+    if [[ -t 0 && -t 1 ]]; then
+      eza --icons --group --git --group-directories-first "$@"
+    else
+      command ls "$@"
+    fi
+  }
+else
   alias ls='ls --color=auto {{ if eq .chezmoi.os "linux" }}--group-directories-first {{ end }}-h'
+fi
 
 {{ if eq .chezmoi.os "darwin" }}
 # open shortcut (consistent with Linux xdg-open)
